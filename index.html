@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <link
+      href="https://cdn.boxicons.com/fonts/basic/boxicons.min.css"
+      rel="stylesheet"
+    />
+
+    <link rel="shortcut icon" href="" type="image/x-icon" />
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="header1">
+      <div class="logo-header">
+        <img src="../polly/icones/logo2.png" alt="" />
+      </div>
+
+      <h1>Sistema de Gestão - ONG Esperança</h1>
+    </header>
+
+    <header class="header2">
+      <div class="menu-header">
+        <ul>
+          <li>
+            <i class="bx bx-dashboard-alt"></i
+            ><span class="texto-lado">Dashboard</span>
+          </li>
+          <li>
+            <i class="bx bx-user"></i
+            ><span class="texto-lado">Ficha Residentes</span>
+          </li>
+          <li>
+            <i class="bx bx-copy"></i
+            ><span class="texto-lado">Medicamentos</span>
+          </li>
+          <li>
+            <i class="bx bx-folder-open"></i
+            ><span class="texto-lado">Atividades</span>
+          </li>
+          <li>
+            <i class="bx bx-clipboard"></i
+            ><span class="texto-lado">Relatórios</span>
+          </li>
+          <li>
+            <i class="bx bx-cog"></i>
+            <span class="texto-lado">Adiministração</span>
+          </li>
+        </ul>
+      </div>
+    </header>
+
+    <main class="area-gerente">
+      <div class="boas-vinda">
+        <h2>Olá, nome do usuario!</h2>
+      </div>
+
+      <div class="boxes-container">
+        <div class="box">
+          <h3>10</h3>
+          <p>Residentes</p>
+        </div>
+        <div class="box">
+          <h3>5</h3>
+          <p>Medicamentos Pendentes do Dia</p>
+        </div>
+        <div class="box">
+          <h3>3</h3>
+          <p>Atividades Programadas Pra Hoje</p>
+        </div>
+      </div>
+
+      <div class="ficha-container">
+        <div class="ficha">
+          <div class="ficha-header">
+            <h2>Fichas de Residentes</h2>
+            <button class="btn-nova-ficha">Nova Ficha</button>
+          </div>
+
+          <div class="lista-residentes-container">
+            <table class="tabela-residentes">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Idade</th>
+                  <th>Categoria</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>João Silva</td>
+                  <td>5</td>
+                  <td>Criança</td>
+                  <td><a href="#" class="acao-ver-ficha">Ver ficha</a></td>
+                </tr>
+                <tr>
+                  <td>Maria Santos</td>
+                  <td>78</td>
+                  <td>Idoso</td>
+                  <td><a href="#" class="acao-ver-ficha">Ver ficha</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script href="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,98 @@
+/* Container principal do formulário */
+.form-container {
+  padding: 20px;
+}
+
+/* Esconde todas as etapas por padrão */
+.form-step {
+  display: none;
+}
+
+/* Mostra apenas a etapa que tiver a classe "active" */
+.form-step.active {
+  display: block;
+}
+
+.form-title {
+  color: #555;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* Agrupamento de label e input */
+.form-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  color: #333;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+/* Estilo geral para inputs e selects */
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  font-size: 16px;
+  box-sizing: border-box; /* Garante que o padding não altere a largura */
+}
+
+/* Linha com múltiplos campos */
+.form-row {
+  display: flex;
+  gap: 20px; /* Espaço entre os campos na mesma linha */
+}
+
+.form-row .form-group {
+  flex: 1; /* Faz com que os grupos ocupem o mesmo espaço */
+}
+
+/* Navegação dos botões */
+.form-navigation {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-navigation button {
+  padding: 15px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-next,
+.btn-submit {
+  background-color: var(--tertiary-color);
+  color: white;
+}
+.btn-next:hover,
+.btn-submit:hover {
+  background-color: #5a94ca; /* Um tom um pouco mais escuro */
+}
+
+.btn-cancel,
+.btn-prev {
+  background-color: white;
+  color: var(--tertiary-color);
+  border: 1px solid var(--tertiary-color);
+}
+.btn-cancel:hover,
+.btn-prev:hover {
+  background-color: #f1f8ff;
+}
