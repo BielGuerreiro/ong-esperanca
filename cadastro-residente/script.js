@@ -1,33 +1,62 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const formSteps = document.querySelectorAll(".form-step");
-  const nextButtons = document.querySelectorAll(".btn-next");
-  const prevButtons = document.querySelectorAll(".btn-prev");
-  let currentStep = 0;
+  const etapas = document.querySelectorAll(".etapa-form");
+  const botoesProximo = document.querySelectorAll(".btn-proximo");
+  const botoesVoltar = document.querySelectorAll(".btn-voltar");
+  let etapaAtual = 0;
 
-  function showStep(stepIndex) {
-    formSteps.forEach((step, index) => {
-      step.classList.toggle("active", index === stepIndex);
+  function mostrarEtapa(indiceEtapa) {
+    etapas.forEach((etapa, indice) => {
+      etapa.classList.toggle("ativo", indice === indiceEtapa);
     });
   }
 
-  nextButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      if (currentStep < formSteps.length - 1) {
-        currentStep++;
-        showStep(currentStep);
+  botoesProximo.forEach((botao) => {
+    botao.addEventListener("click", () => {
+      // Verifica se não é a última etapa
+      if (etapaAtual < etapas.length - 1) {
+        etapaAtual++;
+        mostrarEtapa(etapaAtual);
       }
     });
   });
 
-  prevButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      if (currentStep > 0) {
-        currentStep--;
-        showStep(currentStep);
+  botoesVoltar.forEach((botao) => {
+    botao.addEventListener("click", () => {
+      if (etapaAtual > 0) {
+        etapaAtual--;
+        mostrarEtapa(etapaAtual);
       }
     });
   });
 
-  // Mostra a primeira etapa inicialmente
-  showStep(currentStep);
+  mostrarEtapa(etapaAtual);
+});
+
+// Validação para os campos de data
+function configurarValidacaoDatas() {
+  const hoje = new Date().toISOString().split("T")[0];
+
+  // Campo Data de Nascimento
+  const inputNascimento = document.getElementById("nascimento");
+  if (inputNascimento) {
+    inputNascimento.max = hoje;
+    inputNascimento.min = "1900-01-01";
+  }
+
+  // Campos de Entrada e Saída
+  const inputEntrada = document.getElementById("entrada");
+  const inputSaida = document.getElementById("saida");
+
+  if (inputEntrada) {
+    inputEntrada.max = "2100-12-31";
+    inputEntrada.min = "1900-01-01";
+  }
+  if (inputSaida) {
+    inputSaida.max = "2100-12-31";
+    inputSaida.min = "1900-01-01";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  configurarValidacaoDatas();
 });

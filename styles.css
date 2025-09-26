@@ -139,6 +139,7 @@ body {
 .box p {
   font-size: 28px;
   font-weight: bold;
+  max-width: 400px;
   color: var(--tertiary-color);
 }
 

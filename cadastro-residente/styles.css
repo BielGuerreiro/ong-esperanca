@@ -1,98 +1,129 @@
-/* Container principal do formulário */
-.form-container {
-  padding: 20px;
+/* Estilos Gerais */
+:root {
+  --cor-principal: #6fa9e4;
+  --cor-fundo-input: #f5f5f57c;
+  --cor-borda: #dce8f6;
+  --cor-texto-label: #2c5b8b;
+  --cor-texto-placeholder: #a9c5e3;
 }
 
-/* Esconde todas as etapas por padrão */
-.form-step {
-  display: none;
-}
-
-/* Mostra apenas a etapa que tiver a classe "active" */
-.form-step.active {
-  display: block;
-}
-
-.form-title {
-  color: #555;
-  margin-bottom: 30px;
-  text-align: center;
-}
-
-/* Agrupamento de label e input */
-.form-group {
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  color: #333;
-  margin-bottom: 8px;
-  font-weight: bold;
-}
-
-/* Estilo geral para inputs e selects */
-.form-group input,
-.form-group select {
-  width: 100%;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #f8f9fa;
-  font-size: 16px;
-  box-sizing: border-box; /* Garante que o padding não altere a largura */
-}
-
-/* Linha com múltiplos campos */
-.form-row {
-  display: flex;
-  gap: 20px; /* Espaço entre os campos na mesma linha */
-}
-
-.form-row .form-group {
-  flex: 1; /* Faz com que os grupos ocupem o mesmo espaço */
-}
-
-/* Navegação dos botões */
-.form-navigation {
-  margin-top: 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.form-navigation button {
-  padding: 15px;
-  border-radius: 8px;
-  border: none;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
+body {
+  background-color: #f0f5fa;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  transition: background-color 0.3s ease;
+  min-height: 100vh;
 }
 
-.btn-next,
-.btn-submit {
-  background-color: var(--tertiary-color);
+main {
+  width: 100%;
+  max-width: 900px;
+}
+
+.container-formulario {
+  background-color: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.formulario-etapas {
+  width: 100%;
+}
+
+.etapa-form {
+  display: none;
+}
+.etapa-form.ativo {
+  display: block;
+}
+
+.grupo-form {
+  margin-bottom: 20px;
+}
+
+.grupo-form label {
+  display: block;
+  color: var(--cor-texto-label);
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* inpuits s ____________________________________________________________________________________________ */
+.grupo-form input,
+.grupo-form select {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 20px;
+  background-color: var(--cor-fundo-input);
+  font-size: 16px;
+  box-sizing: border-box;
+  color: var(--cor-texto-label);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-shadow: 0 4px 6px -2px #0000005e;
+  transition: all 0.2s ease-in-out;
+}
+
+.grupo-form input::placeholder {
+  color: var(--cor-texto-placeholder);
+}
+
+.linha-form {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.campo-expandir {
+  flex-grow: 1;
+}
+
+/* icones do calendarios nas datas _____________________________________________________________________________________ */
+input[type="date"] {
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%23a9c5e3" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 24px;
+  padding-right: 50px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  cursor: pointer;
+}
+
+.navegacao-form {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 15px;
+}
+
+.navegacao-form button {
+  border-radius: 12px;
+  border: none;
+  height: 6vh;
+  width: 40vh;
+  align-self: center;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-proximo,
+.btn-enviar {
+  background-color: var(--cor-principal);
   color: white;
 }
-.btn-next:hover,
-.btn-submit:hover {
-  background-color: #5a94ca; /* Um tom um pouco mais escuro */
-}
 
-.btn-cancel,
-.btn-prev {
+.btn-cancelar,
+.btn-voltar {
   background-color: white;
-  color: var(--tertiary-color);
-  border: 1px solid var(--tertiary-color);
-}
-.btn-cancel:hover,
-.btn-prev:hover {
-  background-color: #f1f8ff;
+  color: var(--cor-principal);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
 }
