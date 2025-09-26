@@ -20,6 +20,16 @@ main {
   max-width: 900px;
 }
 
+.logo-header {
+  position: absolute;
+  left: 10%;
+}
+
+.logo-header img {
+  height: 10%;
+  width: 10%;
+}
+
 .container-formulario {
   background-color: white;
   padding: 30px;
@@ -126,4 +136,37 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background-color: white;
   color: var(--cor-principal);
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+}
+
+.grupo-form input,
+.grupo-form select,
+.grupo-form textarea {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 12px;
+  background-color: var(--cor-fundo-input);
+  font-size: 16px;
+  box-sizing: border-box;
+  color: var(--cor-texto-label);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-shadow: 0 4px 6px -2px #0000005e;
+  transition: all 0.2s ease-in-out;
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* --- ESTILOS DE VALIDAÇÃO --- */
+
+/* Este estilo só será aplicado a campos inválidos DEPOIS 
+  que o formulário tiver a classe .form-foi-validado 
+*/
+.form-foi-validado input:invalid,
+.form-foi-validado select:invalid,
+.form-foi-validado textarea:invalid {
+  border-color: #d9534f; /* Vermelho para indicar erro */
 }

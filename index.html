@@ -10,14 +10,14 @@
       rel="stylesheet"
     />
 
-    <link rel="shortcut icon" href="" type="image/x-icon" />
+    <link rel="shortcut icon" href="img/logo.png" type="image/x-icon" />
 
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header class="header1">
       <div class="logo-header">
-        <img src="../polly/icones/logo2.png" alt="" />
+        <img src="" alt="" />
       </div>
 
       <h1>Sistema de Gestão - ONG Esperança</h1>
@@ -78,9 +78,10 @@
         <div class="ficha">
           <div class="ficha-header">
             <h2>Fichas de Residentes</h2>
-            <button class="btn-nova-ficha">Nova Ficha</button>
+            <a href="/cadastro-residente/index.html" class="btn-nova-ficha"
+              >Nova Ficha</a
+            >
           </div>
-
           <div class="lista-residentes-container">
             <table class="tabela-residentes">
               <thead>
@@ -91,17 +92,11 @@
                   <th>Ações</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="lista-residentes-body">
                 <tr>
-                  <td>João Silva</td>
-                  <td>5</td>
+                  <td>Maria da Silva (Exemplo)</td>
+                  <td>8</td>
                   <td>Criança</td>
-                  <td><a href="#" class="acao-ver-ficha">Ver ficha</a></td>
-                </tr>
-                <tr>
-                  <td>Maria Santos</td>
-                  <td>78</td>
-                  <td>Idoso</td>
                   <td><a href="#" class="acao-ver-ficha">Ver ficha</a></td>
                 </tr>
               </tbody>
