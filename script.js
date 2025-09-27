@@ -1,13 +1,49 @@
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("Script da página principal carregado com sucesso!");
+  const menuItens = document.querySelectorAll(".menu-header li");
+  const paginas = document.querySelectorAll(".pagina-conteudo");
 
-  // Carrega a lista de residentes salvos na sessão
+  menuItens.forEach((item) => {
+    item.addEventListener("click", function () {
+      const paginaAlvoId = this.dataset.pagina;
+      const paginaAlvo = document.getElementById(paginaAlvoId);
+      const paginaAtual = document.querySelector(".pagina-conteudo.ativa");
+
+      if (paginaAlvo === paginaAtual) {
+        return;
+      }
+
+      menuItens.forEach((i) => i.classList.remove("menu-ativo"));
+      this.classList.add("menu-ativo");
+
+      if (paginaAtual) {
+        paginaAtual.classList.add("pagina-saindo");
+
+        paginaAtual.addEventListener(
+          "animationend",
+          () => {
+            paginaAtual.classList.remove("ativa", "pagina-saindo");
+          },
+          { once: true }
+        );
+      }
+
+      paginaAlvo.classList.add("ativa", "pagina-entrando");
+
+      paginaAlvo.addEventListener(
+        "animationend",
+        () => {
+          paginaAlvo.classList.remove("pagina-entrando");
+        },
+        { once: true }
+      );
+    });
+  });
+
+  // --- LÓGICA DA PÁGINA DE RESIDENTES _____________________________________________________
   const listaResidentes = JSON.parse(
     sessionStorage.getItem("listaResidentes") || "[]"
   );
   const tabelaBody = document.getElementById("lista-residentes-body");
-
-  // NOVO: Seleciona o elemento h3 do contador pelo novo ID
   const contadorResidentesEl = document.getElementById("contador-residentes");
 
   function calcularIdade(dataNascimento) {
@@ -44,15 +80,15 @@ document.addEventListener("DOMContentLoaded", function () {
     tabelaBody.appendChild(tr);
   }
 
-  // Adiciona cada residente salvo na tabela
-  if (listaResidentes.length > 0) {
-    listaResidentes.forEach((residente) => {
-      adicionarResidenteNaTabela(residente);
-    });
-  }
+  if (tabelaBody) {
+    if (listaResidentes.length > 0) {
+      listaResidentes.forEach((residente) =>
+        adicionarResidenteNaTabela(residente)
+      );
+    }
 
-  // NOVO: Atualiza o contador com o número total de linhas na tabela
-  // (Isso conta o residente de exemplo + os que foram cadastrados)
-  const totalResidentes = tabelaBody.getElementsByTagName("tr").length;
-  contadorResidentesEl.textContent = totalResidentes;
+    const totalResidentes = tabelaBody.getElementsByTagName("tr").length;
+    if (contadorResidentesEl)
+      contadorResidentesEl.textContent = totalResidentes;
+  }
 });

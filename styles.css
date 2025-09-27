@@ -69,20 +69,37 @@ body {
 .menu-header {
   position: relative;
   top: 8vh;
-  left: 20%;
   z-index: 2;
 }
 
 .menu-header ul {
-  display: grid;
-  gap: 70px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Reduzimos o espaço de 70px para 10px */
+  padding: 0 10px; /* Adiciona um pequeno respiro nas laterais */
+  box-sizing: border-box;
 }
 
 .menu-header li {
   color: var(--tertiary-color);
-  font-size: 30px;
+  font-size: 20px; /* Um pouco menor para melhor encaixe */
   display: flex;
   align-items: center;
+  padding: 12px 20px; /* Aumenta a área do "quadrado" */
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* Efeito suave ao passar o mouse */
+.menu-header li:hover {
+  background-color: #f5f9fd;
+}
+
+/* Estilo para o item de menu selecionado */
+.menu-header li.menu-ativo {
+  background-color: #eaf2fa; /* Cor de fundo para destacar */
+  font-weight: bold; /* Opcional: deixa o texto em negrito */
 }
 
 .menu-header span {
@@ -94,13 +111,18 @@ body {
 
 /* home page _____________________________________________________________________________________________ */
 
-.area-gerente {
+main.container-geral {
   position: relative;
-  height: auto;
+  overflow: hidden;
+}
+
+.container-geral {
+  position: relative;
   margin-left: 18%;
   padding: 30px;
   top: 10vh;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .boas-vinda h2 {
@@ -219,4 +241,200 @@ body {
   color: var(--tertiary-color);
   text-decoration: none;
   font-weight: bold;
+}
+
+/* deixa none as paginas nao acessadas ________________________________________________ */
+.pagina-conteudo {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+.pagina-conteudo.ativa {
+  position: relative;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.menu-header li.menu-ativo {
+  background-color: #f0f5fa;
+  border-radius: 8px;
+}
+
+/* animacao de troca de sessao do prinicpal _________________________________________________ */
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.pagina-entrando {
+  animation: slideInFromLeft 0.5s ease-out forwards;
+}
+
+.pagina-saindo {
+  animation: slideOutToRight 0.5s ease-out forwards;
+}
+
+/* ESTILOS DA PÁGINA DE FUNCIONÁRIOS ______________________________________________________________________  */
+.tabela-funcionarios {
+  width: 100%;
+  border-collapse: collapse;
+}
+.tabela-funcionarios th,
+.tabela-funcionarios td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+.tabela-funcionarios th {
+  color: #888;
+  font-size: 14px;
+}
+
+/* status ____________________________________________ */
+.status-trabalhando {
+  background-color: #28a745;
+}
+.status-folga {
+  background-color: #6c757d;
+}
+.status-falta {
+  background-color: #dc3545;
+}
+
+.status-pendente {
+  background-color: #ffc107;
+}
+
+.btn-acao-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  text-decoration: none;
+  color: white;
+  font-size: 18px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-acao-icone:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-editar {
+  background-color: var(--tertiary-color);
+}
+
+.btn-excluir {
+  background-color: #dc3546c0;
+}
+
+.tabela-funcionarios td.acoes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* sessao medicamento ____________________________________________________________________ */
+.filtros-medicamentos {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.filtro-btn {
+  padding: 8px 15px;
+  border: 1px solid var(--cor-borda);
+  background-color: white;
+  color: var(--cor-texto-label);
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.filtro-btn:hover {
+  background-color: #f0f5fa;
+}
+
+.filtro-btn.ativo {
+  background-color: var(--cor-principal);
+  color: white;
+  border-color: var(--cor-principal);
+}
+
+.tabela-medicamentos {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0;
+}
+.tabela-medicamentos th,
+.tabela-medicamentos td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+.tabela-medicamentos th {
+  color: #888;
+  font-size: 14px;
+}
+
+.status {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 12px;
+  color: white;
+}
+
+.status-ok {
+  background-color: #28a745;
+}
+.status-pendente {
+  background-color: #ffc107;
+}
+.status-atrasado {
+  background-color: #dc3545;
+}
+
+.btn-acao {
+  padding: 6px 12px;
+  border-radius: 5px;
+  border: none;
+  background-color: var(--cor-principal);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+.btn-acao:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+.btn-acao.btn-atrasado {
+  background-color: #dc3545;
 }
