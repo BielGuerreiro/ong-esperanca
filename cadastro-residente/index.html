@@ -11,27 +11,34 @@
     <main>
       <div class="container-formulario">
         <form id="form-residente" class="formulario-etapas">
-          <!-- priemira area ______________________________________________________________ -->
+          <!-- primeira parte ________________________________________________________________________ -->
           <div id="etapa-1" class="etapa-form ativo">
-            <!-- nome ____________________________________________________________________ -->
+            <!-- nome ______________________________________________________________________________ -->
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
-                <label for="primeiro-nome">Primeiro nome</label>
+                <label for="primeiro-nome"
+                  >Primeiro nome<span class="obrigatorio">*</span></label
+                >
                 <input
                   type="text"
                   id="primeiro-nome"
+                  name="primeiro-nome"
                   placeholder="Digite o nome"
                   maxlength="50"
                   required
                 />
               </div>
 
-              <!-- sobrenome ________________________________________________________________ -->
+              <!-- sobrenome _________________________________________________________________________________ -->
+
               <div class="grupo-form campo-expandir">
-                <label for="sobrenome">Sobrenome</label>
+                <label for="sobrenome"
+                  >Sobrenome <span class="obrigatorio">*</span></label
+                >
                 <input
                   type="text"
                   id="sobrenome"
+                  name="sobrenome"
                   placeholder="Digite o sobrenome"
                   maxlength="100"
                   required
@@ -39,34 +46,40 @@
               </div>
             </div>
 
-            <!-- cpf __________________________________________________________________________ -->
+            <!-- cpf  _________________________________________________________________________________ -->
             <div class="linha-form">
               <div class="grupo-form">
                 <label for="cpf">CPF (Opcional)</label>
                 <input
                   type="text"
                   id="cpf"
+                  name="cpf"
                   placeholder="000.000.000-00"
                   maxlength="11"
                   inputmode="numeric"
                 />
               </div>
 
-              <!-- documento _______________________________________________________________________ -->
+              <!-- documento _________________________________________________________________________________ -->
+
               <div class="grupo-form campo-expandir">
                 <label for="documento">Documento (Opcional)</label>
                 <input
                   type="text"
                   id="documento"
+                  name="documento"
                   placeholder="Digite o documento"
                   maxlength="255"
                 />
               </div>
 
-              <!-- genero _____________________________________________________________________________ -->
+              <!-- genero _________________________________________________________________________________ -->
+
               <div class="grupo-form">
-                <label for="sexo">Sexo</label>
-                <select id="sexo" required>
+                <label for="sexo"
+                  >Sexo <span class="obrigatorio">*</span></label
+                >
+                <select id="sexo" name="sexo" required>
                   <option value="" disabled selected>Selecionar</option>
                   <option value="masculino">Masculino</option>
                   <option value="feminino">Feminino</option>
@@ -74,19 +87,24 @@
               </div>
             </div>
 
-            <!-- data nascimento ___________________________________________________________________ -->
+            <!-- data de nascimento  _________________________________________________________________________________ -->
+
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
-                <label for="nascimento">Data de nascimento</label>
-                <input type="date" id="nascimento" required />
+                <label for="nascimento"
+                  >Data de nascimento <span class="obrigatorio">*</span></label
+                >
+                <input type="date" id="nascimento" name="nascimento" required />
               </div>
 
-              <!-- numero do sus ______________________________________________________________________________ -->
+              <!-- numero sus _________________________________________________________________________________ -->
+
               <div class="grupo-form campo-expandir">
                 <label for="sus">Número do SUS (Opcional)</label>
                 <input
                   type="text"
                   id="sus"
+                  name="sus"
                   placeholder="Digite o número"
                   inputmode="numeric"
                   maxlength="15"
@@ -94,11 +112,14 @@
               </div>
             </div>
 
-            <!-- cor ________________________________________________________________________________ -->
+            <!-- etinia _________________________________________________________________________________ -->
+
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
-                <label for="etnia">Etnia</label>
-                <select id="etnia" required>
+                <label for="etnia"
+                  >Etnia <span class="obrigatorio">*</span></label
+                >
+                <select id="etnia" name="etnia" required>
                   <option value="" disabled selected>Selecionar</option>
                   <option value="branca">Branca</option>
                   <option value="preta">Preta</option>
@@ -109,20 +130,22 @@
                 </select>
               </div>
 
-              <!-- pcd  _________________________________________________________________________________-->
+              <!-- pcd _________________________________________________________________________________ -->
+
               <div class="grupo-form campo-expandir">
-                <label for="pcd">Pcd</label>
-                <select id="pcd" required>
+                <label for="pcd">Pcd <span class="obrigatorio">*</span></label>
+                <select id="pcd" name="pcd" required>
                   <option value="" disabled selected>Selecionar</option>
                   <option value="sim">Sim</option>
                   <option value="nao">Não</option>
                 </select>
               </div>
 
-              <!-- tipo sanguinio ____________________________________________________________________ -->
+              <!-- sangue _________________________________________________________________________________ -->
+
               <div class="grupo-form campo-expandir">
                 <label for="sangue">Tipo sanguíneo (Opcional)</label>
-                <select id="sangue">
+                <select id="sangue" name="sangue">
                   <option value="" disabled selected>Selecionar</option>
                   <option value="A+">A+</option>
                   <option value="A-">A-</option>
@@ -136,38 +159,44 @@
               </div>
             </div>
 
-            <!-- data entrada _____________________________________________________________ -->
+            <!-- data entrada _________________________________________________________________________________ -->
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
-                <label for="entrada">Data de entrada</label>
-                <input type="date" id="entrada" required />
+                <label for="entrada"
+                  >Data de entrada <span class="obrigatorio">*</span></label
+                >
+                <input type="date" id="entrada" name="entrada" required />
               </div>
 
-              <!-- data saida _______________________________________________________________________ -->
+              <!-- data saida _________________________________________________________________________________ -->
+
               <div class="grupo-form campo-expandir">
-                <label for="saida">Data de saída (Somente na Saída)</label>
-                <input type="date" id="saida" />
+                <label for="saida">Data de saída (Opcional)</label>
+                <input type="date" id="saida" name="saida" />
               </div>
             </div>
 
-            <!-- botoes ______________________________________________________________________________ -->
+            <!-- bottoes _________________________________________________________________________________ -->
+
             <div class="navegacao-form">
+              <button type="button" class="btn-proximo">PRÓXIMO &rarr;</button>
               <button type="button" class="btn-cancelar">
                 &larr; CANCELAR
               </button>
-              <button type="button" class="btn-proximo">PRÓXIMO &rarr;</button>
             </div>
           </div>
 
-          <!-- segunda area _________________________________________________________________________ -->
+          <!-- segunda parte  _________________________________________________________________________________ -->
+
           <div id="etapa-2" class="etapa-form">
-            <!-- cep ______________________________________________________________________________ -->
+            <!-- cep _________________________________________________________________________________ -->
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
-                <label for="cep">CEP</label>
+                <label for="cep">CEP <span class="obrigatorio">*</span></label>
                 <input
                   type="text"
                   id="cep"
+                  name="cep"
                   placeholder="00000-000"
                   inputmode="numeric"
                   maxlength="8"
@@ -176,24 +205,30 @@
               </div>
             </div>
 
-            <!-- nome da rua _____________________________________________________________________ -->
+            <!-- nome rua _________________________________________________________________________________ -->
+
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
-                <label for="rua">Rua</label>
+                <label for="rua">Rua <span class="obrigatorio">*</span></label>
                 <input
                   type="text"
                   id="rua"
+                  name="rua"
                   placeholder="Digite o nome da rua"
                   required
                 />
               </div>
-              <!-- numero da rua _____________________________________________________________________ -->
+
+              <!-- numero rua _________________________________________________________________________________ -->
 
               <div class="grupo-form">
-                <label for="numero">Nº</label>
+                <label for="numero"
+                  >Nº <span class="obrigatorio">*</span></label
+                >
                 <input
                   type="text"
                   id="numero"
+                  name="numero"
                   placeholder="Número"
                   inputmode="numeric"
                   required
@@ -201,48 +236,58 @@
               </div>
             </div>
 
-            <!-- complemento ______________________________________________________________________________ -->
+            <!-- complemento  _________________________________________________________________________________ -->
+
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="complemento">Complemento (Opcional)</label>
                 <input
                   type="text"
                   id="complemento"
+                  name="complemento"
                   placeholder="Apto, Bloco, Casa, etc."
                 />
               </div>
             </div>
 
-            <!-- bairro ________________________________________________________________________________________ -->
+            <!-- bairro _________________________________________________________________________________ -->
 
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
-                <label for="bairro">Bairro</label>
+                <label for="bairro"
+                  >Bairro <span class="obrigatorio">*</span></label
+                >
                 <input
                   type="text"
                   id="bairro"
+                  name="bairro"
                   placeholder="Digite o bairro"
                   required
                 />
               </div>
             </div>
 
-            <!-- cidade ___________________________________________________________________________ -->
+            <!-- cidade  _________________________________________________________________________________ -->
+
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
-                <label for="cidade">Cidade</label>
+                <label for="cidade"
+                  >Cidade <span class="obrigatorio">*</span></label
+                >
                 <input
                   type="text"
                   id="cidade"
+                  name="cidade"
                   placeholder="Digite a cidade"
                   required
                 />
               </div>
 
-              <!-- estado _________________________________________________________________________________ -->
+              <!-- estado  _________________________________________________________________________________ -->
+
               <div class="grupo-form">
-                <label for="uf">UF</label>
-                <select id="uf" required>
+                <label for="uf">UF <span class="obrigatorio">*</span></label>
+                <select id="uf" name="uf" required>
                   <option value="" disabled selected>UF</option>
                   <option value="AC">Acre</option>
                   <option value="AL">Alagoas</option>
@@ -275,41 +320,45 @@
               </div>
             </div>
 
-            <!-- botoes __________________________________________________________________________________ -->
+            <!-- bottoes _________________________________________________________________________________ -->
+
             <div class="navegacao-form">
-              <button type="button" class="btn-voltar">&larr; VOLTAR</button>
               <button type="button" class="btn-proximo">PRÓXIMO &rarr;</button>
+              <button type="button" class="btn-voltar">&larr; VOLTAR</button>
             </div>
           </div>
 
-          <!-- terceira parte ____________________________________________________________________________ -->
+          <!-- terceira parte  _________________________________________________________________________________ -->
           <div id="etapa-3" class="etapa-form">
-            <!-- escola ________________________________________________________________________________ -->
+            <!-- escola _________________________________________________________________________________ -->
             <div class="grupo-form">
               <label for="escola">Escola (Opcional)</label>
               <input
                 type="text"
                 id="escola"
+                name="escola"
                 placeholder="Nome da instituição de ensino"
               />
             </div>
 
-            <!-- doecas _____________________________________________________________________________ -->
+            <!-- doencas? _________________________________________________________________________________ -->
+
             <div class="grupo-form">
               <label for="doencas"
                 >Possui doenças? Se sim, quais? (Opcional)</label
               >
               <textarea
                 id="doencas"
+                name="doencas"
                 rows="3"
                 placeholder="Especifique aqui"
               ></textarea>
             </div>
 
-            <!-- vacinas ______________________________________________________________________________ -->
+            <!-- vacinas _________________________________________________________________________________ -->
             <div class="grupo-form">
               <label for="vacinas">Vacinas (Opcional)</label>
-              <select id="vacinas">
+              <select id="vacinas" name="vacinas">
                 <option value="" disabled selected>Selecionar status</option>
                 <option value="em_dia">Em dia</option>
                 <option value="pendente">Pendente</option>
@@ -317,20 +366,22 @@
               </select>
             </div>
 
-            <!-- descricao ______________________________________________________________________________ -->
+            <!-- descricao _________________________________________________________________________________ -->
+
             <div class="grupo-form">
               <label for="descricao">Descrição (Opcional)</label>
               <textarea
                 id="descricao"
+                name="descricao"
                 rows="6"
-                placeholder="Adicione observações importantes, histórico ou outras informações relevantes..."
+                placeholder="Adicione observações importantes..."
               ></textarea>
             </div>
 
-            <!-- botoes ______________________________________________________________________________ -->
+            <!-- bottoes _________________________________________________________________________________ -->
             <div class="navegacao-form">
+              <button type="submit" class="btn-enviar">CADASTRAR &rarr;</button>
               <button type="button" class="btn-voltar">&larr; VOLTAR</button>
-              <button type="submit" class="btn-enviar">CADASTRA &rarr;</button>
             </div>
           </div>
         </form>

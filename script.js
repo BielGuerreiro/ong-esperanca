@@ -1,9 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
+  console.log("Script da página principal carregado com sucesso!");
+
   // Carrega a lista de residentes salvos na sessão
   const listaResidentes = JSON.parse(
     sessionStorage.getItem("listaResidentes") || "[]"
   );
   const tabelaBody = document.getElementById("lista-residentes-body");
+
+  // NOVO: Seleciona o elemento h3 do contador pelo novo ID
+  const contadorResidentesEl = document.getElementById("contador-residentes");
 
   function calcularIdade(dataNascimento) {
     if (!dataNascimento) return "?";
@@ -24,7 +29,6 @@ document.addEventListener("DOMContentLoaded", function () {
     return "Idoso";
   }
 
-  // Função que cria e adiciona uma nova linha na tabela
   function adicionarResidenteNaTabela(residente) {
     const tr = document.createElement("tr");
     const idade = calcularIdade(residente.nascimento);
@@ -46,4 +50,9 @@ document.addEventListener("DOMContentLoaded", function () {
       adicionarResidenteNaTabela(residente);
     });
   }
+
+  // NOVO: Atualiza o contador com o número total de linhas na tabela
+  // (Isso conta o residente de exemplo + os que foram cadastrados)
+  const totalResidentes = tabelaBody.getElementsByTagName("tr").length;
+  contadorResidentesEl.textContent = totalResidentes;
 });

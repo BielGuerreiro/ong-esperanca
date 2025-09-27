@@ -1,9 +1,4 @@
-/*
-    VERSÃO FINAL E UNIFICADA DO SCRIPT DE CADASTRO
-    Este código combina todas as funcionalidades em um único bloco para evitar erros.
-*/
-
-// ===== CAMADA DE DADOS (usando sessionStorage, como solicitado) =====
+// carregar dados pra pagina principal _____________________________________________________________________________________
 function carregarResidentes() {
   const dados = sessionStorage.getItem("listaResidentes");
   return JSON.parse(dados || "[]");
@@ -32,9 +27,8 @@ function configurarValidacaoDatas() {
   }
 }
 
-// ===== CÓDIGO PRINCIPAL DA PÁGINA (executado apenas uma vez) =====
+// codigo principal _________________________________________________________________________________
 document.addEventListener("DOMContentLoaded", function () {
-  // --- Seletores de Elementos (feitos uma única vez) ---
   const form = document.getElementById("form-residente");
   const etapas = document.querySelectorAll(".etapa-form");
   const botoesProximo = document.querySelectorAll(".btn-proximo");
@@ -43,10 +37,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const botaoSubmit = document.querySelector(".btn-enviar");
   let etapaAtual = 0;
 
-  // --- Lógica Inicial da Página ---
-  configurarValidacaoDatas(); // Configura as datas assim que a página carrega
+  configurarValidacaoDatas();
 
-  // --- Lógica do modo "Ver Ficha" ---
   const urlParams = new URLSearchParams(window.location.search);
   const residenteId = urlParams.get("id");
   if (residenteId) {
@@ -64,7 +56,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // --- Lógica de Navegação entre Etapas ---
   function mostrarEtapa(indiceEtapa) {
     etapas.forEach((etapa, indice) =>
       etapa.classList.toggle("ativo", indice === indiceEtapa)
@@ -94,22 +85,23 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // --- Lógica de Validação e Envio do Formulário ---
-  form.addEventListener("submit", function (event) {
-    event.preventDefault(); // Sempre previne o comportamento padrão primeiro
-
-    // Validação final antes de salvar
-    if (!form.checkValidity()) {
+  if (botaoSubmit) {
+    botaoSubmit.addEventListener("click", function () {
       form.classList.add("form-foi-validado");
-      alert(
-        "Por favor, preencha todos os campos obrigatórios (*) antes de prosseguir."
-      );
-      return; // Para a execução se o formulário for inválido
-    }
+
+      if (!form.checkValidity()) {
+        alert(
+          "Por favor, preencha todos os campos obrigatórios (*) antes de prosseguir."
+        );
+      }
+    });
+  }
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
 
     const listaResidentes = carregarResidentes();
 
-    // Maneira segura de pegar todos os dados do formulário
     const formData = new FormData(form);
     const novoResidente = Object.fromEntries(formData.entries());
     novoResidente.id = Date.now();
@@ -117,10 +109,9 @@ document.addEventListener("DOMContentLoaded", function () {
     listaResidentes.push(novoResidente);
     salvarResidentes(listaResidentes);
 
-    alert("Residente cadastrado com sucesso!"); // Este alerta agora só aparece uma vez
+    alert("Residente cadastrado com sucesso!");
     window.location.href = "/index.html";
   });
 
-  // Exibe a primeira etapa ao carregar a página
   mostrarEtapa(etapaAtual);
 });
