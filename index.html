@@ -13,6 +13,7 @@
     <link rel="shortcut icon" href="img/logo.png" type="image/x-icon" />
 
     <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
     <header class="header1">
@@ -72,11 +73,34 @@
     <main class="container-geral">
       <div class="paginas-wrapper">
         <!-- comeco sessao dashborad  ______________________________________________________________________________ -->
-        <div id="pagina-dashboard" class="pagina-conteudo ativa">
+        <div id="pagina-dashboard" class="pagina-conteudo">
           <div class="boas-vinda">
-            <h2>Dashboard</h2>
+            <h2>Dashboard de Acompanhamento</h2>
           </div>
-          <p>Bem-vindo ao Dashboard! (Conteúdo de exemplo)</p>
+
+          <div class="ficha-container">
+            <div class="ficha">
+              <div class="ficha-header">
+                <h2>Análise Individual de Residentes</h2>
+              </div>
+              <div class="dashboard-container">
+                <div class="lista-residentes-dashboard">
+                  <ul id="residentes-chart-list"></ul>
+                </div>
+
+                <div class="separador-vertical"></div>
+
+                <div class="grafico-dashboard">
+                  <div id="grafico-placeholder">
+                    <i class="bx bx-line-chart"></i>
+                    <p>
+                      Selecione um residente na lista para ver suas informações.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- final sessao dashborad ______________________________________________________________________________ -->
@@ -85,15 +109,13 @@
         <div id="pagina-residentes" class="pagina-conteudo">
           <div class="boxes-container">
             <div class="box">
-              <h3 id="contador-residentes"></h3>
+              <h3 id="contador-residentes">0</h3>
               <p>Residentes</p>
             </div>
-
             <div class="box">
               <h3>5</h3>
-              <p>Medicamentos Pendetes do Dia</p>
+              <p>Medicamentos Pendentes do Dia</p>
             </div>
-
             <div class="box">
               <h3>3</h3>
               <p>Atividades Programadas Pra Hoje</p>
@@ -104,8 +126,10 @@
             <div class="ficha">
               <div class="ficha-header">
                 <h2>Fichas de Residentes</h2>
-                <a href="/cadastro-residente/index.html" class="btn-nova-ficha"
-                  >Nova Ficha</a
+                <a
+                  href="/cadastro-residente/index.html"
+                  class="btn-nova-ficha item-gerente"
+                  >Nova Ficha +</a
                 >
               </div>
               <div class="lista-residentes-container">
@@ -118,32 +142,23 @@
                       <th>Ações</th>
                     </tr>
                   </thead>
-                  <tbody id="lista-residentes-body">
-                    <tr>
-                      <td>Maria da Silva (Exemplo)</td>
-                      <td>8</td>
-                      <td>Criança</td>
-                      <td><a href="#" class="acao-ver-ficha">Ver ficha</a></td>
-                    </tr>
-                  </tbody>
+                  <tbody id="lista-residentes-body"></tbody>
                 </table>
               </div>
             </div>
           </div>
         </div>
-        <!-- Final sessao responsavel _______________________________________________________________________ -->
+        <!-- Final sessao residente _______________________________________________________________________ -->
 
         <!-- comeco sessao funcionario  ______________________________________________________________________________ -->
         <div id="pagina-funcionarios" class="pagina-conteudo">
-          <div class="boas-vinda">
-            <h2>Ficha de Funcionários</h2>
-          </div>
-
           <div class="ficha-container">
             <div class="ficha">
               <div class="ficha-header">
                 <h2>Quadro de Funcionários</h2>
-                <a href="#" class="btn-nova-ficha item-gerente"
+                <a
+                  href="cadastro-funcionario/index.html"
+                  class="btn-nova-ficha item-gerente"
                   >Novo Funcionário</a
                 >
               </div>
@@ -158,52 +173,7 @@
                       <th>Ações</th>
                     </tr>
                   </thead>
-                  <tbody id="lista-funcionarios-body">
-                    <tr>
-                      <td>08:00 - 17:00</td>
-                      <td>gabriel lindao</td>
-                      <td>1023</td>
-                      <td>
-                        <span class="status status-trabalhando"
-                          >Trabalhando</span
-                        >
-                      </td>
-                      <td class="acoes">
-                        <a
-                          href="#"
-                          class="btn-acao-icone btn-editar"
-                          title="Editar Ficha"
-                          ><i class="bx bx-edit"></i
-                        ></a>
-                        <a
-                          href="#"
-                          class="btn-acao-icone btn-excluir"
-                          title="Excluir Ficha"
-                          ><i class="bx bx-trash-alt"></i>
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>08:00 - 17:00</td>
-                      <td>favela vingaça</td>
-                      <td>1025</td>
-                      <td><span class="status status-falta">Falta</span></td>
-                      <td class="acoes">
-                        <a
-                          href="#"
-                          class="btn-acao-icone btn-editar"
-                          title="Editar Ficha"
-                          ><i class="bx bxs-pencil"></i
-                        ></a>
-                        <a
-                          href="#"
-                          class="btn-acao-icone btn-excluir"
-                          title="Excluir Ficha"
-                          ><i class="bx bxs-trash"></i
-                        ></a>
-                      </td>
-                    </tr>
-                  </tbody>
+                  <tbody id="lista-funcionarios-body"></tbody>
                 </table>
               </div>
             </div>

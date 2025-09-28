@@ -118,6 +118,7 @@ body {
   top: 10vh;
   box-sizing: border-box;
   overflow: hidden;
+  transition: height 0.4s ease-out;
 }
 
 .boas-vinda h2 {
@@ -126,6 +127,65 @@ body {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }
 
+/* dashboard _______________________________________________________________________________________________________________________ */
+/* Container principal do dashboard */
+.dashboard-container {
+  display: flex;
+  gap: 0; /* Removemos o gap para a linha separadora colar nas bordas */
+  margin-top: 20px;
+  align-items: stretch;
+}
+
+/* Lista de residentes (coluna da esquerda) */
+.lista-residentes-dashboard {
+  flex: 0 0 300px;
+  border: none; /* Removemos a borda antiga */
+  padding: 0;
+}
+
+.lista-residentes-dashboard ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Itens da lista com linha separadora embaixo */
+.lista-residentes-dashboard li {
+  padding: 15px 20px;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--cor-texto-label);
+  transition: background-color 0.2s;
+  /* ADICIONADO: Linha separadora */
+  border-bottom: 1px solid #eee;
+}
+
+.lista-residentes-dashboard li:first-child {
+  border-top: 1px solid #eee;
+}
+
+.lista-residentes-dashboard li:hover {
+  background-color: #f0f5fa;
+}
+
+.lista-residentes-dashboard li.ativo {
+  background-color: #eaf2fa;
+  font-weight: bold;
+}
+
+/* NOVO: Estilo para a linha vertical */
+.separador-vertical {
+  width: 1px;
+  background-color: #eee;
+  margin: 0 30px; /* Cria um espaçamento de 30px de cada lado */
+}
+
+/* Coluna da direita (gráfico) */
+.grafico-dashboard {
+  flex-grow: 1;
+}
+
+/* residentes ____________________________________________________________________________________________________________________ */
 .boxes-container {
   display: flex;
   flex-wrap: wrap;
@@ -239,15 +299,6 @@ body {
 }
 
 /* deixa none as paginas nao acessadas ________________________________________________ */
-.container-geral {
-  position: relative;
-  margin-left: 18%;
-  padding: 30px;
-  top: 10vh;
-  box-sizing: border-box;
-  overflow: hidden;
-  transition: height 0.4s ease-out;
-}
 
 .pagina-conteudo {
   position: absolute;

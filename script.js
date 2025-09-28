@@ -90,12 +90,20 @@ document.addEventListener("DOMContentLoaded", function () {
     const categoria = definirCategoria(idade);
     const nomeCompleto = `${residente["primeiro-nome"]} ${residente.sobrenome}`;
 
+    // icones editar e lixeira _______________________________________________________________________
     tr.innerHTML = `
-            <td>${nomeCompleto}</td>
-            <td>${idade}</td>
-            <td>${categoria}</td>
-            <td><a href="/cadastro-residente/index.html?id=${residente.id}" class="acao-ver-ficha">Ver ficha</a></td>
-        `;
+        <td>${nomeCompleto}</td>
+        <td>${idade}</td>
+        <td>${categoria}</td>
+        <td class="acoes">
+            <a href="/cadastro-residente/index.html?id=${residente.id}" class="btn-acao-icone btn-editar" title="Editar Ficha">
+                <i class="bx bxs-pencil"></i>
+            </a>
+            <a href="#" class="btn-acao-icone btn-excluir" title="Excluir Ficha">
+                <i class="bx bx-trash-alt"></i>
+            </a>
+        </td>
+    `;
     tabelaBody.appendChild(tr);
   }
 
@@ -110,3 +118,59 @@ document.addEventListener("DOMContentLoaded", function () {
       contadorResidentesEl.textContent = totalResidentes;
   }
 });
+
+// sessao de funcionario __________________________________________________________________________________________________
+document.addEventListener("DOMContentLoaded", function () {
+  iniciarPaginaFuncionarios();
+});
+
+function iniciarPaginaFuncionarios() {
+  // Carrega a lista de funcionários salvos na sessão
+  const listaFuncionarios = JSON.parse(
+    sessionStorage.getItem("listaFuncionarios") || "[]"
+  );
+  const tabelaBody = document.getElementById("lista-funcionarios-body");
+
+  function adicionarFuncionarioNaTabela(funcionario) {
+    const tr = document.createElement("tr");
+    const nomeCompleto = `${funcionario["primeiro-nome"]} ${funcionario.sobrenome}`;
+
+    // Lógica para o Status (no futuro será automático)
+    // Por enquanto, podemos definir um status padrão ou ler um campo 'status' se existir.
+    const status = funcionario.status || "Pendente";
+    const classeStatus = `status-${status.toLowerCase()}`;
+
+    tr.innerHTML = `
+            <td>${
+              funcionario.horario || "08:00 - 17:00"
+            }</td> <td>${nomeCompleto}</td>
+            <td>${funcionario.id
+              .toString()
+              .slice(
+                -4
+              )}</td> <td><span class="status ${classeStatus}">${status}</span></td>
+            <td class="acoes">
+                <a href="/cadastro-funcionario/index.html?id=${
+                  funcionario.id
+                }" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-edit-alt'></i></a>
+                <a href="#" class="btn-acao-icone btn-excluir" title="Excluir Ficha"><i class='bx bxs-trash'></i></a>
+            </td>
+        `;
+    tabelaBody.appendChild(tr);
+  }
+
+  // Lógica principal para popular a tabela
+  if (tabelaBody) {
+    tabelaBody.innerHTML = ""; // Garante que a tabela esteja limpa
+
+    if (listaFuncionarios.length > 0) {
+      // Se houver funcionários, adiciona cada um na tabela
+      listaFuncionarios.forEach((f) => adicionarFuncionarioNaTabela(f));
+    } else {
+      // Se NÃO houver, mostra uma mensagem amigável
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td colspan="5" style="text-align: center;">Nenhum funcionário cadastrado.</td>`;
+      tabelaBody.appendChild(tr);
+    }
+  }
+}

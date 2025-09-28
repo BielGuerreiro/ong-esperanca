@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro de Funcionário</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="shortcut icon" href="/img/logo.png" type="image/x-icon" />
+  </head>
+  <body>
+    <main>
+      <div class="container-formulario">
+        <form id="form-funcionario" class="formulario-etapas">
+          <div id="etapa-1" class="etapa-form ativo">
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir">
+                <label for="primeiro-nome"
+                  >Primeiro nome <span class="obrigatorio">*</span></label
+                >
+                <input
+                  type="text"
+                  id="primeiro-nome"
+                  name="primeiro-nome"
+                  placeholder="Digite o nome"
+                  required
+                />
+              </div>
+              <div class="grupo-form campo-expandir">
+                <label for="sobrenome"
+                  >Sobrenome <span class="obrigatorio">*</span></label
+                >
+                <input
+                  type="text"
+                  id="sobrenome"
+                  name="sobrenome"
+                  placeholder="Digite o sobrenome"
+                  required
+                />
+              </div>
+            </div>
+            <div class="linha-form">
+              <div class="grupo-form">
+                <label for="cpf">CPF <span class="obrigatorio">*</span></label>
+                <input
+                  type="text"
+                  id="cpf"
+                  name="cpf"
+                  placeholder="000.000.000-00"
+                  inputmode="numeric"
+                  maxlength="11"
+                  required
+                />
+              </div>
+              <div class="grupo-form campo-expandir">
+                <label for="nascimento"
+                  >Data de nascimento <span class="obrigatorio">*</span></label
+                >
+                <input type="date" id="nascimento" name="nascimento" required />
+              </div>
+            </div>
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir">
+                <label for="cargo"
+                  >Cargo <span class="obrigatorio">*</span></label
+                >
+                <input
+                  type="text"
+                  id="cargo"
+                  name="cargo"
+                  placeholder="Ex: Cuidador, Administrador"
+                  required
+                />
+              </div>
+              <div class="grupo-form">
+                <label for="sexo"
+                  >Sexo <span class="obrigatorio">*</span></label
+                >
+                <select id="sexo" name="sexo" required>
+                  <option value="" disabled selected>Selecionar</option>
+                  <option value="masculino">Masculino</option>
+                  <option value="feminino">Feminino</option>
+                </select>
+              </div>
+            </div>
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir">
+                <label for="admissao"
+                  >Data de admissão <span class="obrigatorio">*</span></label
+                >
+                <input type="date" id="admissao" name="admissao" required />
+              </div>
+            </div>
+            <div class="navegacao-form">
+              <button type="button" class="btn-proximo">PRÓXIMO &rarr;</button>
+              <button type="button" class="btn-cancelar">
+                &larr; CANCELAR
+              </button>
+            </div>
+          </div>
+
+          <div id="etapa-2" class="etapa-form">
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir">
+                <label for="cep">CEP <span class="obrigatorio">*</span></label
+                ><input
+                  type="text"
+                  id="cep"
+                  name="cep"
+                  placeholder="00000-000"
+                  inputmode="numeric"
+                  maxlength="8"
+                  required
+                />
+              </div>
+            </div>
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir">
+                <label for="rua">Rua <span class="obrigatorio">*</span></label
+                ><input
+                  type="text"
+                  id="rua"
+                  name="rua"
+                  placeholder="Digite o nome da rua"
+                  required
+                />
+              </div>
+              <div class="grupo-form">
+                <label for="numero">Nº <span class="obrigatorio">*</span></label
+                ><input
+                  type="text"
+                  id="numero"
+                  name="numero"
+                  placeholder="Número"
+                  inputmode="numeric"
+                  required
+                />
+              </div>
+            </div>
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir">
+                <label for="bairro"
+                  >Bairro <span class="obrigatorio">*</span></label
+                ><input
+                  type="text"
+                  id="bairro"
+                  name="bairro"
+                  placeholder="Digite o bairro"
+                  required
+                />
+              </div>
+            </div>
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir">
+                <label for="cidade"
+                  >Cidade <span class="obrigatorio">*</span></label
+                ><input
+                  type="text"
+                  id="cidade"
+                  name="cidade"
+                  placeholder="Digite a cidade"
+                  required
+                />
+              </div>
+              <div class="grupo-form">
+                <label for="uf">UF <span class="obrigatorio">*</span></label
+                ><select id="uf" name="uf" required>
+                  <option value="" disabled selected>UF</option>
+                  <option value="SP">São Paulo</option>
+                </select>
+              </div>
+            </div>
+            <div class="navegacao-form">
+              <button type="button" class="btn-proximo">PRÓXIMO &rarr;</button>
+              <button type="button" class="btn-voltar">&larr; VOLTAR</button>
+            </div>
+          </div>
+
+          <div id="etapa-3" class="etapa-form">
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir">
+                <label for="telefone"
+                  >Telefone <span class="obrigatorio">*</span></label
+                >
+                <input
+                  type="tel"
+                  id="telefone"
+                  name="telefone"
+                  placeholder="(00) 00000-0000"
+                  inputmode="numeric"
+                  required
+                />
+              </div>
+              <div class="grupo-form campo-expandir">
+                <label for="email"
+                  >E-mail <span class="obrigatorio">*</span></label
+                >
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="exemplo@email.com"
+                  required
+                />
+              </div>
+            </div>
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir">
+                <label for="senha"
+                  >Senha <span class="obrigatorio">*</span></label
+                >
+                <input
+                  type="password"
+                  id="senha"
+                  name="senha"
+                  placeholder="Crie uma senha"
+                  required
+                />
+              </div>
+              <div class="grupo-form campo-expandir">
+                <label for="nivel-acesso"
+                  >Nível de Acesso <span class="obrigatorio">*</span></label
+                >
+                <select id="nivel-acesso" name="nivel-acesso" required>
+                  <option value="" disabled selected>Selecionar</option>
+                  <option value="funcionario">Funcionário</option>
+                  <option value="gerente">Gerente</option>
+                </select>
+              </div>
+            </div>
+            <div class="navegacao-form">
+              <button type="submit" class="btn-enviar">CADASTRAR &rarr;</button>
+              <button type="button" class="btn-voltar">&larr; VOLTAR</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
