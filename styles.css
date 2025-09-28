@@ -111,11 +111,6 @@ body {
 
 /* home page _____________________________________________________________________________________________ */
 
-main.container-geral {
-  position: relative;
-  overflow: hidden;
-}
-
 .container-geral {
   position: relative;
   margin-left: 18%;
@@ -244,25 +239,31 @@ main.container-geral {
 }
 
 /* deixa none as paginas nao acessadas ________________________________________________ */
+.container-geral {
+  position: relative;
+  margin-left: 18%;
+  padding: 30px;
+  top: 10vh;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: height 0.4s ease-out;
+}
+
 .pagina-conteudo {
   position: absolute;
-  width: 100%;
-  top: 0;
-  left: 0;
+  top: 30px;
+  left: 30px;
+  right: 30px;
+
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.5s, transform 0.5s;
 }
 
 .pagina-conteudo.ativa {
-  position: relative;
+  position: absolute;
   opacity: 1;
   pointer-events: auto;
-}
-
-.menu-header li.menu-ativo {
-  background-color: #f0f5fa;
-  border-radius: 8px;
 }
 
 /* animacao de troca de sessao do prinicpal _________________________________________________ */
@@ -297,16 +298,53 @@ main.container-geral {
   animation: slideOutToRight 0.5s ease-out forwards;
 }
 
+/* comando geral das sessoes ______________________________________________________________________ */
+.ficha table th,
+.ficha table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.ficha table th {
+  color: #888;
+  font-size: 14px;
+}
+
+.ficha table td.acoes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ficha table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
 /* ESTILOS DA PÁGINA DE FUNCIONÁRIOS ______________________________________________________________________  */
 .tabela-funcionarios {
   width: 100%;
   border-collapse: collapse;
 }
-.tabela-funcionarios th,
-.tabela-funcionarios td {
+
+.ficha table th,
+.ficha table td {
   padding: 15px;
   text-align: left;
   border-bottom: 1px solid #eee;
+}
+
+.ficha table th {
+  color: #888;
+  font-size: 14px;
+}
+
+.ficha table td.acoes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 .tabela-funcionarios th {
   color: #888;

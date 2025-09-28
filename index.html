@@ -70,248 +70,332 @@
     </header>
 
     <main class="container-geral">
-      <!-- comeco sessao dashborad  ______________________________________________________________________________ -->
-
-      <div id="pagina-dashboard" class="pagina-conteudo ativa">
-        <div class="boas-vinda">
-          <h2>Dashboard</h2>
-        </div>
-        <p>Bem-vindo ao Dashboard! (Conteúdo de exemplo)</p>
-      </div>
-
-      <!-- final sessao residente ______________________________________________________________________________ -->
-
-      <!-- comeco sessao residente ______________________________________________________________________________ -->
-      <div id="pagina-residentes" class="pagina-conteudo">
-        <div class="boxes-container">
-          <!-- residentes  ________________________________________________________ -->
-          <div class="box">
-            <h3 id="contador-residentes"></h3>
-            <p>Residentes</p>
+      <div class="paginas-wrapper">
+        <!-- comeco sessao dashborad  ______________________________________________________________________________ -->
+        <div id="pagina-dashboard" class="pagina-conteudo ativa">
+          <div class="boas-vinda">
+            <h2>Dashboard</h2>
           </div>
-
-          <!-- medicamentos   ________________________________________________________ -->
-          <div class="box">
-            <h3>5</h3>
-            <p>Medicamentos Pendetes do Dia</p>
-          </div>
-
-          <!-- programas   ________________________________________________________ -->
-          <div class="box">
-            <h3>3</h3>
-            <p>Atividades Programadas Pra Hoje</p>
-          </div>
+          <p>Bem-vindo ao Dashboard! (Conteúdo de exemplo)</p>
         </div>
 
-        <div class="ficha-container">
-          <div class="ficha">
-            <div class="ficha-header">
-              <h2>Fichas de Residentes</h2>
-              <a href="/cadastro-residente/index.html" class="btn-nova-ficha"
-                >Nova Ficha</a
-              >
+        <!-- final sessao dashborad ______________________________________________________________________________ -->
+
+        <!-- comeco sessao residente ______________________________________________________________________________ -->
+        <div id="pagina-residentes" class="pagina-conteudo">
+          <div class="boxes-container">
+            <div class="box">
+              <h3 id="contador-residentes"></h3>
+              <p>Residentes</p>
             </div>
-            <div class="lista-residentes-container">
-              <table class="tabela-residentes">
-                <thead>
-                  <tr>
-                    <th>Nome</th>
-                    <th>Idade</th>
-                    <th>Categoria</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody id="lista-residentes-body">
-                  <tr>
-                    <td>Maria da Silva (Exemplo)</td>
-                    <td>8</td>
-                    <td>Criança</td>
-                    <td><a href="#" class="acao-ver-ficha">Ver ficha</a></td>
-                  </tr>
-                </tbody>
-              </table>
+
+            <div class="box">
+              <h3>5</h3>
+              <p>Medicamentos Pendetes do Dia</p>
+            </div>
+
+            <div class="box">
+              <h3>3</h3>
+              <p>Atividades Programadas Pra Hoje</p>
+            </div>
+          </div>
+
+          <div class="ficha-container">
+            <div class="ficha">
+              <div class="ficha-header">
+                <h2>Fichas de Residentes</h2>
+                <a href="/cadastro-residente/index.html" class="btn-nova-ficha"
+                  >Nova Ficha</a
+                >
+              </div>
+              <div class="lista-residentes-container">
+                <table class="tabela-residentes">
+                  <thead>
+                    <tr>
+                      <th>Nome</th>
+                      <th>Idade</th>
+                      <th>Categoria</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lista-residentes-body">
+                    <tr>
+                      <td>Maria da Silva (Exemplo)</td>
+                      <td>8</td>
+                      <td>Criança</td>
+                      <td><a href="#" class="acao-ver-ficha">Ver ficha</a></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <!-- Final sessao responsavel _______________________________________________________________________ -->
+        <!-- Final sessao responsavel _______________________________________________________________________ -->
 
-      <!-- comeco sessao funcionario  ______________________________________________________________________________ -->
-      <div id="pagina-funcionarios" class="pagina-conteudo">
-        <div class="boas-vinda">
-          <h2>Ficha de Funcionários</h2>
-        </div>
+        <!-- comeco sessao funcionario  ______________________________________________________________________________ -->
+        <div id="pagina-funcionarios" class="pagina-conteudo">
+          <div class="boas-vinda">
+            <h2>Ficha de Funcionários</h2>
+          </div>
 
-        <div class="ficha-container">
-          <div class="ficha">
-            <div class="ficha-header">
-              <h2>Quadro de Funcionários</h2>
-              <a href="#" class="btn-nova-ficha item-gerente"
-                >Novo Funcionário</a
-              >
-            </div>
-            <div class="lista-residentes-container">
-              <table class="tabela-funcionarios">
-                <thead>
-                  <tr>
-                    <th>Horário</th>
-                    <th>Nome</th>
-                    <th>Nº Registro</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody id="lista-funcionarios-body">
-                  <tr>
-                    <td>08:00 - 17:00</td>
-                    <td>gabriel lindao</td>
-                    <td>1023</td>
-                    <td>
-                      <span class="status status-trabalhando">Trabalhando</span>
-                    </td>
-                    <td class="acoes">
-                      <a
-                        href="#"
-                        class="btn-acao-icone btn-editar"
-                        title="Editar Ficha"
-                        ><i class="bx bx-edit"></i
-                      ></a>
-                      <a
-                        href="#"
-                        class="btn-acao-icone btn-excluir"
-                        title="Excluir Ficha"
-                        ><i class="bx bx-trash-alt"></i>
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>08:00 - 17:00</td>
-                    <td>favela vingaça</td>
-                    <td>1025</td>
-                    <td><span class="status status-falta">Falta</span></td>
-                    <td class="acoes">
-                      <a
-                        href="#"
-                        class="btn-acao-icone btn-editar"
-                        title="Editar Ficha"
-                        ><i class="bx bxs-pencil"></i
-                      ></a>
-                      <a
-                        href="#"
-                        class="btn-acao-icone btn-excluir"
-                        title="Excluir Ficha"
-                        ><i class="bx bxs-trash"></i
-                      ></a>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+          <div class="ficha-container">
+            <div class="ficha">
+              <div class="ficha-header">
+                <h2>Quadro de Funcionários</h2>
+                <a href="#" class="btn-nova-ficha item-gerente"
+                  >Novo Funcionário</a
+                >
+              </div>
+              <div class="lista-residentes-container">
+                <table class="tabela-funcionarios">
+                  <thead>
+                    <tr>
+                      <th>Horário</th>
+                      <th>Nome</th>
+                      <th>Nº Registro</th>
+                      <th>Status</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lista-funcionarios-body">
+                    <tr>
+                      <td>08:00 - 17:00</td>
+                      <td>gabriel lindao</td>
+                      <td>1023</td>
+                      <td>
+                        <span class="status status-trabalhando"
+                          >Trabalhando</span
+                        >
+                      </td>
+                      <td class="acoes">
+                        <a
+                          href="#"
+                          class="btn-acao-icone btn-editar"
+                          title="Editar Ficha"
+                          ><i class="bx bx-edit"></i
+                        ></a>
+                        <a
+                          href="#"
+                          class="btn-acao-icone btn-excluir"
+                          title="Excluir Ficha"
+                          ><i class="bx bx-trash-alt"></i>
+                        </a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>08:00 - 17:00</td>
+                      <td>favela vingaça</td>
+                      <td>1025</td>
+                      <td><span class="status status-falta">Falta</span></td>
+                      <td class="acoes">
+                        <a
+                          href="#"
+                          class="btn-acao-icone btn-editar"
+                          title="Editar Ficha"
+                          ><i class="bx bxs-pencil"></i
+                        ></a>
+                        <a
+                          href="#"
+                          class="btn-acao-icone btn-excluir"
+                          title="Excluir Ficha"
+                          ><i class="bx bxs-trash"></i
+                        ></a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <!-- Final sessao funcionario  _______________________________________________________________________ -->
+        <!-- Final sessao funcionario  _______________________________________________________________________ -->
 
-      <!-- comeco sessao medicamento  ______________________________________________________________________________ -->
+        <!-- comeco sessao responsavel   ______________________________________________________________________________ -->
+        <div id="pagina-responsavel" class="pagina-conteudo">
+          <div class="boas-vinda">
+            <h2>Ficha de Responsáveis</h2>
+          </div>
 
-      <div id="pagina-medicamentos" class="pagina-conteudo">
-        <div class="boas-vinda">
-          <h2>Controle de Medicamentos do Dia</h2>
-        </div>
-
-        <div class="filtros-medicamentos">
-          <button class="filtro-btn ativo">Todos</button>
-          <button class="filtro-btn">Manhã (até 11:59)</button>
-          <button class="filtro-btn">Tarde (12:00 - 17:59)</button>
-          <button class="filtro-btn">Noite (a partir de 18:00)</button>
-        </div>
-
-        <div class="ficha-container">
-          <div class="ficha">
-            <div class="lista-residentes-container">
-              <table class="tabela-medicamentos">
-                <thead>
-                  <tr>
-                    <th>Horário</th>
-                    <th>Residente</th>
-                    <th>Medicamento</th>
-                    <th>Dosagem</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody id="lista-medicamentos-body">
-                  <tr>
-                    <td>08:00</td>
-                    <td>Maria da Silva (Exemplo)</td>
-                    <td>Vitamina C</td>
-                    <td>500mg</td>
-                    <td><span class="status status-ok">Administrado</span></td>
-                    <td><button class="btn-acao" disabled>OK</button></td>
-                  </tr>
-                  <tr>
-                    <td>12:00</td>
-                    <td>João Silva</td>
-                    <td>Amoxicilina</td>
-                    <td>10ml</td>
-                    <td>
-                      <span class="status status-pendente">Pendente</span>
-                    </td>
-                    <td><button class="btn-acao">Registrar</button></td>
-                  </tr>
-                  <tr>
-                    <td>14:00</td>
-                    <td>Pedro Souza</td>
-                    <td>Ritalina</td>
-                    <td>10mg</td>
-                    <td>
-                      <span class="status status-atrasado">Atrasado</span>
-                    </td>
-                    <td>
-                      <button class="btn-acao btn-atrasado">Registrar</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+          <div class="ficha-container">
+            <div class="ficha">
+              <div class="ficha-header">
+                <h2>Lista de Responsáveis</h2>
+                <a href="#" class="btn-nova-ficha item-gerente"
+                  >Novo Responsável</a
+                >
+              </div>
+              <div class="lista-residentes-container">
+                <table class="tabela-responsaveis">
+                  <thead>
+                    <tr>
+                      <th>Responsável</th>
+                      <th>Idade</th>
+                      <th>Categoria</th>
+                      <th>Parentesco</th>
+                      <th>Residente Vinculado</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lista-responsaveis-body">
+                    <tr>
+                      <td>Joana da Silva</td>
+                      <td>32</td>
+                      <td>Adulto</td>
+                      <td>Mãe</td>
+                      <td>Maria da Silva (Exemplo)</td>
+                      <td class="acoes">
+                        <a
+                          href="#"
+                          class="btn-acao-icone btn-editar"
+                          title="Editar Ficha"
+                        >
+                          <i class="bx bx-edit"></i>
+                        </a>
+                        <a
+                          href="#"
+                          class="btn-acao-icone btn-excluir"
+                          title="Excluir Ficha"
+                        >
+                          <i class="bx bx-trash-alt"></i>
+                        </a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Marcos Oliveira</td>
+                      <td>45</td>
+                      <td>Adulto</td>
+                      <td>Pai</td>
+                      <td>João Silva</td>
+                      <td class="acoes">
+                        <a
+                          href="#"
+                          class="btn-acao-icone btn-editar"
+                          title="Editar Ficha"
+                        >
+                          <i class="bx bx-edit"></i>
+                        </a>
+                        <a
+                          href="#"
+                          class="btn-acao-icone btn-excluir"
+                          title="Excluir Ficha"
+                        >
+                          <i class="bx bx-trash-alt"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- final sessao medicamento ______________________________________________________________________________ -->
+        <!-- Final sessao responsavel   _______________________________________________________________________ -->
 
-      <!-- comeco sessao atividade  ______________________________________________________________________________ -->
+        <!-- comeco sessao medicamento  ______________________________________________________________________________ -->
 
-      <div id="pagina-atividades" class="pagina-conteudo">
-        <div class="boas-vinda">
-          <h2>Dashboard</h2>
+        <div id="pagina-medicamentos" class="pagina-conteudo">
+          <div class="boas-vinda">
+            <h2>Controle de Medicamentos do Dia</h2>
+          </div>
+
+          <div class="filtros-medicamentos">
+            <button class="filtro-btn ativo">Todos</button>
+            <button class="filtro-btn">Manhã (até 11:59)</button>
+            <button class="filtro-btn">Tarde (12:00 - 17:59)</button>
+            <button class="filtro-btn">Noite (a partir de 18:00)</button>
+          </div>
+
+          <div class="ficha-container">
+            <div class="ficha">
+              <div class="lista-residentes-container">
+                <table class="tabela-medicamentos">
+                  <thead>
+                    <tr>
+                      <th>Horário</th>
+                      <th>Residente</th>
+                      <th>Medicamento</th>
+                      <th>Dosagem</th>
+                      <th>Status</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lista-medicamentos-body">
+                    <tr>
+                      <td>08:00</td>
+                      <td>Maria da Silva (Exemplo)</td>
+                      <td>Vitamina C</td>
+                      <td>500mg</td>
+                      <td>
+                        <span class="status status-ok">Administrado</span>
+                      </td>
+                      <td><button class="btn-acao" disabled>OK</button></td>
+                    </tr>
+                    <tr>
+                      <td>12:00</td>
+                      <td>João Silva</td>
+                      <td>Amoxicilina</td>
+                      <td>10ml</td>
+                      <td>
+                        <span class="status status-pendente">Pendente</span>
+                      </td>
+                      <td><button class="btn-acao">Registrar</button></td>
+                    </tr>
+                    <tr>
+                      <td>14:00</td>
+                      <td>Pedro Souza</td>
+                      <td>Ritalina</td>
+                      <td>10mg</td>
+                      <td>
+                        <span class="status status-atrasado">Atrasado</span>
+                      </td>
+                      <td>
+                        <button class="btn-acao btn-atrasado">Registrar</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
-        <p>Bem-vindo ao Dashboard! (Conteúdo de exemplo)</p>
-      </div>
 
-      <!-- final sessao atividade ______________________________________________________________________________ -->
+        <!-- final sessao medicamento ______________________________________________________________________________ -->
 
-      <!-- comeco sessao relatorio  ______________________________________________________________________________ -->
+        <!-- comeco sessao atividade  ______________________________________________________________________________ -->
 
-      <div id="pagina-relatorio" class="pagina-conteudo">
-        <div class="boas-vinda">
-          <h2>Dashboard</h2>
+        <div id="pagina-atividades" class="pagina-conteudo">
+          <div class="boas-vinda">
+            <h2>Dashboard</h2>
+          </div>
+          <p>Bem-vindo ao Dashboard! (Conteúdo de exemplo)</p>
         </div>
-        <p>Bem-vindo ao Dashboard! (Conteúdo de exemplo)</p>
-      </div>
 
-      <!-- final sessao relatorio ______________________________________________________________________________ -->
+        <!-- final sessao atividade ______________________________________________________________________________ -->
 
-      <!-- comeco sessao adm  ______________________________________________________________________________ -->
+        <!-- comeco sessao relatorio  ______________________________________________________________________________ -->
 
-      <div id="pagina-adm" class="pagina-conteudo">
-        <div class="boas-vinda">
-          <h2>Dashboard</h2>
+        <div id="pagina-relatorio" class="pagina-conteudo">
+          <div class="boas-vinda">
+            <h2>Dashboard</h2>
+          </div>
+          <p>Bem-vindo ao Dashboard! (Conteúdo de exemplo)</p>
         </div>
-        <p>Bem-vindo ao Dashboard! (Conteúdo de exemplo)</p>
-      </div>
 
-      <!-- final sessao adm ______________________________________________________________________________ -->
+        <!-- final sessao relatorio ______________________________________________________________________________ -->
+
+        <!-- comeco sessao adm  ______________________________________________________________________________ -->
+
+        <div id="pagina-adm" class="pagina-conteudo">
+          <div class="boas-vinda">
+            <h2>Dashboard</h2>
+          </div>
+          <p>Bem-vindo ao Dashboard! (Conteúdo de exemplo)</p>
+        </div>
+
+        <!-- final sessao adm ______________________________________________________________________________ -->
+      </div>
     </main>
 
     <script src="script.js"></script>
