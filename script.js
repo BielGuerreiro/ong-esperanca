@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // --- LÓGICA DE NAVEGAÇÃO COM ANIMAÇÃO ---
   menuItens.forEach((item) => {
     item.addEventListener("click", function () {
       if (isAnimating) {
@@ -54,11 +53,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // --- LÓGICA INICIAL DA PÁGINA ---
   const paginaInicial = document.querySelector(".pagina-conteudo.ativa");
   ajustarAlturaContainer(paginaInicial);
 
-  // --- LÓGICA DA PÁGINA DE RESIDENTES ---
+  // funcionario ______________________________________________________________________________________________
   const listaResidentes = JSON.parse(
     sessionStorage.getItem("listaResidentes") || "[]"
   );
@@ -90,16 +88,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const categoria = definirCategoria(idade);
     const nomeCompleto = `${residente["primeiro-nome"]} ${residente.sobrenome}`;
 
-    // icones editar e lixeira _______________________________________________________________________
     tr.innerHTML = `
         <td>${nomeCompleto}</td>
         <td>${idade}</td>
         <td>${categoria}</td>
         <td class="acoes">
             <a href="/cadastro-residente/index.html?id=${residente.id}" class="btn-acao-icone btn-editar" title="Editar Ficha">
-                <i class="bx bxs-pencil"></i>
+                <i class='bx bx-pencil' ></i>
             </a>
-            <a href="#" class="btn-acao-icone btn-excluir" title="Excluir Ficha">
+            <a href="#" class="btn-acao-icone btn-excluir" data-id="${residente.id}" title="Excluir Ficha">
                 <i class="bx bx-trash-alt"></i>
             </a>
         </td>
@@ -116,6 +113,34 @@ document.addEventListener("DOMContentLoaded", function () {
     const totalResidentes = tabelaBody.getElementsByTagName("tr").length;
     if (contadorResidentesEl)
       contadorResidentesEl.textContent = totalResidentes;
+
+    tabelaBody.addEventListener("click", function (event) {
+      const botaoExcluir = event.target.closest(".btn-excluir");
+
+      if (botaoExcluir) {
+        event.preventDefault();
+
+        const idParaExcluir = botaoExcluir.dataset.id;
+        const nomeDoResidente = botaoExcluir
+          .closest("tr")
+          .querySelector("td").textContent;
+
+        const residentesAtuais = JSON.parse(
+          sessionStorage.getItem("listaResidentes") || "[]"
+        );
+
+        if (
+          confirm(
+            `Tem certeza que deseja excluir o residente "${nomeDoResidente}"? Esta ação não pode ser desfeita.`
+          )
+        ) {
+          const novaLista = residentesAtuais.filter(
+            (residente) => residente.id != idParaExcluir
+          );
+          sessionStorage.setItem("listaResidentes", JSON.stringify(novaLista));
+        }
+      }
+    });
   }
 });
 
@@ -135,42 +160,95 @@ function iniciarPaginaFuncionarios() {
     const tr = document.createElement("tr");
     const nomeCompleto = `${funcionario["primeiro-nome"]} ${funcionario.sobrenome}`;
 
-    // Lógica para o Status (no futuro será automático)
-    // Por enquanto, podemos definir um status padrão ou ler um campo 'status' se existir.
+    // Lógica para definir o horário a partir do turno salvo no cadastro
+    function definirHorario(turno) {
+      switch (turno) {
+        case "manha":
+          return "06:00 - 14:00";
+        case "tarde":
+          return "14:00 - 22:00";
+        case "noite":
+          return "22:00 - 06:00";
+        default:
+          return "N/A";
+      }
+    }
+    const horario = definirHorario(funcionario.turno);
+
     const status = funcionario.status || "Pendente";
     const classeStatus = `status-${status.toLowerCase()}`;
 
     tr.innerHTML = `
-            <td>${
-              funcionario.horario || "08:00 - 17:00"
-            }</td> <td>${nomeCompleto}</td>
-            <td>${funcionario.id
-              .toString()
-              .slice(
-                -4
-              )}</td> <td><span class="status ${classeStatus}">${status}</span></td>
+            <td>${horario}</td>
+            <td>${nomeCompleto}</td>
+            <td>${funcionario.id.toString().slice(-4)}</td>
+            <td><span class="status ${classeStatus}">${status}</span></td>
             <td class="acoes">
                 <a href="/cadastro-funcionario/index.html?id=${
                   funcionario.id
-                }" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-edit-alt'></i></a>
-                <a href="#" class="btn-acao-icone btn-excluir" title="Excluir Ficha"><i class='bx bxs-trash'></i></a>
+                }" class="btn-acao-icone btn-editar" title="Editar Ficha">
+                    <i class='bx bx-pencil' ></i>
+                </a>
+                <a href="#" class="btn-acao-icone btn-excluir" data-id="${
+                  funcionario.id
+                }" title="Excluir Ficha">
+                   <i class="bx bx-trash-alt"></i>
+                </a>
             </td>
         `;
     tabelaBody.appendChild(tr);
   }
 
-  // Lógica principal para popular a tabela
   if (tabelaBody) {
-    tabelaBody.innerHTML = ""; // Garante que a tabela esteja limpa
+    tabelaBody.innerHTML = "";
 
     if (listaFuncionarios.length > 0) {
-      // Se houver funcionários, adiciona cada um na tabela
       listaFuncionarios.forEach((f) => adicionarFuncionarioNaTabela(f));
     } else {
-      // Se NÃO houver, mostra uma mensagem amigável
       const tr = document.createElement("tr");
       tr.innerHTML = `<td colspan="5" style="text-align: center;">Nenhum funcionário cadastrado.</td>`;
       tabelaBody.appendChild(tr);
     }
+
+    tabelaBody.addEventListener("click", function (event) {
+      const botaoExcluir = event.target.closest(".btn-excluir");
+
+      if (botaoExcluir) {
+        event.preventDefault();
+
+        const idParaExcluir = botaoExcluir.dataset.id;
+        const linhaParaRemover = botaoExcluir.closest("tr");
+        const nomeDoFuncionario =
+          linhaParaRemover.querySelectorAll("td")[1].textContent;
+
+        if (
+          confirm(
+            `Tem certeza que deseja excluir o funcionário "${nomeDoFuncionario}"?`
+          )
+        ) {
+          // 1. Remove dos dados salvos
+          let funcionariosAtuais = JSON.parse(
+            sessionStorage.getItem("listaFuncionarios") || "[]"
+          );
+          const novaLista = funcionariosAtuais.filter(
+            (func) => func.id != idParaExcluir
+          );
+          sessionStorage.setItem(
+            "listaFuncionarios",
+            JSON.stringify(novaLista)
+          );
+
+          // 2. Remove a linha da tabela na tela (ATUALIZAÇÃO INSTANTÂNEA)
+          linhaParaRemover.remove();
+
+          // 3. Verifica se a tabela ficou vazia e adiciona a mensagem
+          if (tabelaBody.children.length === 0) {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td colspan="5" style="text-align: center;">Nenhum funcionário cadastrado.</td>`;
+            tabelaBody.appendChild(tr);
+          }
+        }
+      }
+    });
   }
 }

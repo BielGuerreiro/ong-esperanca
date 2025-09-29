@@ -1,8 +1,9 @@
 /*
-    VERSÃO FINAL E UNIFICADA DO SCRIPT DE CADASTRO DE FUNCIONÁRIO
+    VERSÃO COMPLETA E FUNCIONAL DO SCRIPT DE CADASTRO DE FUNCIONÁRIO
+    - Adicionada a lógica de alerta para campos obrigatórios.
 */
 
-// ===== CAMADA DE DADOS (específica para funcionários) =====
+// ===== CAMADA DE DADOS =====
 function carregarFuncionarios() {
   const dados = sessionStorage.getItem("listaFuncionarios");
   return JSON.parse(dados || "[]");
@@ -26,10 +27,9 @@ function configurarValidacaoDatas() {
   }
 }
 
-// ===== CÓDIGO PRINCIPAL DA PÁGINA (executado apenas uma vez) =====
+// ===== CÓDIGO PRINCIPAL DA PÁGINA =====
 document.addEventListener("DOMContentLoaded", function () {
-  // --- Seletores de Elementos ---
-  const form = document.getElementById("form-funcionario"); // MUDOU AQUI
+  const form = document.getElementById("form-funcionario");
   const etapas = document.querySelectorAll(".etapa-form");
   const botoesProximo = document.querySelectorAll(".btn-proximo");
   const botoesVoltar = document.querySelectorAll(".btn-voltar");
@@ -37,15 +37,14 @@ document.addEventListener("DOMContentLoaded", function () {
   const botaoSubmit = document.querySelector(".btn-enviar");
   let etapaAtual = 0;
 
-  // --- Lógica Inicial ---
   configurarValidacaoDatas();
 
-  // --- Lógica do modo "Ver Ficha" ---
+  // Lógica do modo "Ver Ficha"
   const urlParams = new URLSearchParams(window.location.search);
-  const funcionarioId = urlParams.get("id"); // MUDOU AQUI
+  const funcionarioId = urlParams.get("id");
   if (funcionarioId) {
-    const listaFuncionarios = carregarFuncionarios(); // MUDOU AQUI
-    const funcionario = listaFuncionarios.find((f) => f.id == funcionarioId); // MUDOU AQUI
+    const listaFuncionarios = carregarFuncionarios();
+    const funcionario = listaFuncionarios.find((f) => f.id == funcionarioId);
     if (funcionario) {
       Object.keys(funcionario).forEach((key) => {
         const campo = document.getElementById(key);
@@ -58,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // --- Lógica de Navegação entre Etapas (IDÊNTICA) ---
+  // Lógica de Navegação entre Etapas
   function mostrarEtapa(indiceEtapa) {
     etapas.forEach((etapa, indice) =>
       etapa.classList.toggle("ativo", indice === indiceEtapa)
@@ -88,10 +87,17 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // --- Lógica de Validação e Envio do Formulário ---
+  // =================================================================
+  // LÓGICA DE VALIDAÇÃO E ENVIO (PARTE ADICIONADA)
+  // =================================================================
+
+  // 1. OUVINTE DE CLIQUE: Mostra o alerta de erro se o formulário for inválido.
   if (botaoSubmit) {
     botaoSubmit.addEventListener("click", function () {
+      // Ao clicar, marcamos o formulário para mostrar os erros de CSS
       form.classList.add("form-foi-validado");
+
+      // Se for inválido, mostramos o alerta de erro.
       if (!form.checkValidity()) {
         alert(
           "Por favor, preencha todos os campos obrigatórios (*) antes de prosseguir."
@@ -100,23 +106,21 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // 2. OUVINTE DE SUBMIT: Este evento só será disparado se o formulário for VÁLIDO.
   form.addEventListener("submit", function (event) {
     event.preventDefault();
-    if (!form.checkValidity()) return; // Garantia extra
 
-    const listaFuncionarios = carregarFuncionarios(); // MUDOU AQUI
-
+    const listaFuncionarios = carregarFuncionarios();
     const formData = new FormData(form);
-    const novoFuncionario = Object.fromEntries(formData.entries()); // MUDOU AQUI
+    const novoFuncionario = Object.fromEntries(formData.entries());
     novoFuncionario.id = Date.now();
 
-    listaFuncionarios.push(novoFuncionario); // MUDOU AQUI
-    salvarFuncionarios(listaFuncionarios); // MUDOU AQUI
+    listaFuncionarios.push(novoFuncionario);
+    salvarFuncionarios(listaFuncionarios);
 
-    alert("Funcionário cadastrado com sucesso!"); // MUDOU AQUI
+    alert("Funcionário cadastrado com sucesso!");
     window.location.href = "/index.html";
   });
 
-  // Mostra a primeira etapa ao carregar
   mostrarEtapa(etapaAtual);
 });

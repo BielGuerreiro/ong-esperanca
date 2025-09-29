@@ -24,16 +24,30 @@ body {
   background: rgba(241, 241, 241, 0.74);
 }
 
+.logo-header {
+  margin-top: 1vh;
+  margin-left: 5vh;
+}
+
+.logo-header img {
+  width: 18%;
+  height: auto;
+  object-fit: cover;
+}
+
 /* header horizontal _____________________________________________________________________________________ */
 .header1 {
   position: fixed;
   width: 100%;
-  height: 10%;
+  height: 10vh;
   background-color: white;
   left: 0;
   top: 0;
-  z-index: 1;
-  border: 1px solid rgba(78, 78, 78, 0.247);
+  z-index: 10;
+  border-bottom: 1px solid rgba(78, 78, 78, 0.247);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
 }
 
 .header1 h1 {
@@ -55,17 +69,6 @@ body {
   z-index: 1;
 }
 
-.logo-header {
-  position: absolute;
-  left: 10%;
-  top: 50%;
-}
-
-.logo-header img {
-  width: 100%;
-  height: auto;
-}
-
 .menu-header {
   position: relative;
   top: 8vh;
@@ -75,31 +78,29 @@ body {
 .menu-header ul {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Reduzimos o espaço de 70px para 10px */
-  padding: 0 10px; /* Adiciona um pequeno respiro nas laterais */
+  gap: 10px;
+  padding: 0 10px;
   box-sizing: border-box;
 }
 
 .menu-header li {
   color: var(--tertiary-color);
-  font-size: 20px; /* Um pouco menor para melhor encaixe */
+  font-size: 20px;
   display: flex;
   align-items: center;
-  padding: 12px 20px; /* Aumenta a área do "quadrado" */
+  padding: 12px 20px;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
 }
 
-/* Efeito suave ao passar o mouse */
 .menu-header li:hover {
   background-color: #f5f9fd;
 }
 
-/* Estilo para o item de menu selecionado */
 .menu-header li.menu-ativo {
-  background-color: #eaf2fa; /* Cor de fundo para destacar */
-  font-weight: bold; /* Opcional: deixa o texto em negrito */
+  background-color: #eaf2fa;
+  font-weight: bold;
 }
 
 .menu-header span {
@@ -128,18 +129,16 @@ body {
 }
 
 /* dashboard _______________________________________________________________________________________________________________________ */
-/* Container principal do dashboard */
 .dashboard-container {
   display: flex;
-  gap: 0; /* Removemos o gap para a linha separadora colar nas bordas */
+  gap: 0;
   margin-top: 20px;
   align-items: stretch;
 }
 
-/* Lista de residentes (coluna da esquerda) */
 .lista-residentes-dashboard {
   flex: 0 0 300px;
-  border: none; /* Removemos a borda antiga */
+  border: none;
   padding: 0;
 }
 
@@ -149,14 +148,12 @@ body {
   margin: 0;
 }
 
-/* Itens da lista com linha separadora embaixo */
 .lista-residentes-dashboard li {
   padding: 15px 20px;
   cursor: pointer;
   font-weight: 500;
   color: var(--cor-texto-label);
   transition: background-color 0.2s;
-  /* ADICIONADO: Linha separadora */
   border-bottom: 1px solid #eee;
 }
 
@@ -173,14 +170,12 @@ body {
   font-weight: bold;
 }
 
-/* NOVO: Estilo para a linha vertical */
 .separador-vertical {
   width: 1px;
   background-color: #eee;
-  margin: 0 30px; /* Cria um espaçamento de 30px de cada lado */
+  margin: 0 30px;
 }
 
-/* Coluna da direita (gráfico) */
 .grafico-dashboard {
   flex-grow: 1;
 }
@@ -473,7 +468,7 @@ body {
 
 .filtro-btn.ativo {
   background-color: var(--cor-principal);
-  color: white;
+  color: var(--tertiary-color);
   border-color: var(--cor-principal);
 }
 
