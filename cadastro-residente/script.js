@@ -109,8 +109,17 @@ document.addEventListener("DOMContentLoaded", function () {
     listaResidentes.push(novoResidente);
     salvarResidentes(listaResidentes);
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const origem = urlParams.get("origem");
+
+    // 2. Constrói a nova URL de redirecionamento
+    let redirectUrl = "/index.html"; // URL padrão
+    if (origem) {
+      redirectUrl += `?pagina=${origem}`; // Adiciona o destino, ex: /index.html?pagina=pagina-residentes
+    }
+
     alert("Residente cadastrado com sucesso!");
-    window.location.href = "/index.html";
+    window.location.href = redirectUrl;
   });
 
   mostrarEtapa(etapaAtual);

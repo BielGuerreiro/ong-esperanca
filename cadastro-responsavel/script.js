@@ -1,18 +1,17 @@
 /*
-    VERSÃO COMPLETA E FUNCIONAL DO SCRIPT DE CADASTRO DE FUNCIONÁRIO
-    - Adicionada a lógica de alerta para campos obrigatórios.
+    VERSÃO COMPLETA E FUNCIONAL DO SCRIPT DE CADASTRO DE RESPONSÁVEL
 */
 
 // ===== CAMADA DE DADOS =====
-function carregarFuncionarios() {
-  const dados = sessionStorage.getItem("listaFuncionarios");
-  return JSON.parse(dados || "[]");
+function carregarResponsaveis() {
+  return JSON.parse(sessionStorage.getItem("listaResponsaveis") || "[]");
 }
-
-function salvarFuncionarios(lista) {
-  sessionStorage.setItem("listaFuncionarios", JSON.stringify(lista));
+function salvarResponsaveis(lista) {
+  sessionStorage.setItem("listaResponsaveis", JSON.stringify(lista));
 }
-
+function carregarResidentes() {
+  return JSON.parse(sessionStorage.getItem("listaResidentes") || "[]");
+}
 function configurarValidacaoDatas() {
   const hoje = new Date().toISOString().split("T")[0];
   const inputNascimento = document.getElementById("nascimento");
@@ -20,36 +19,43 @@ function configurarValidacaoDatas() {
     inputNascimento.max = hoje;
     inputNascimento.min = "1900-01-01";
   }
-  const inputAdmissao = document.getElementById("admissao");
-  if (inputAdmissao) {
-    inputAdmissao.max = "2100-12-31";
-    inputAdmissao.min = "1900-01-01";
-  }
 }
 
 // ===== CÓDIGO PRINCIPAL DA PÁGINA =====
 document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("form-funcionario");
+  const form = document.getElementById("form-responsavel");
   const etapas = document.querySelectorAll(".etapa-form");
   const botoesProximo = document.querySelectorAll(".btn-proximo");
   const botoesVoltar = document.querySelectorAll(".btn-voltar");
   const botoesCancelar = document.querySelectorAll(".btn-cancelar");
   const botaoSubmit = document.querySelector(".btn-enviar");
+  const selectResidente = document.getElementById("residenteId");
   let etapaAtual = 0;
 
   configurarValidacaoDatas();
 
-  // Lógica do modo "Ver Ficha"
+  // Popula o campo de seleção com os residentes existentes
+  const listaResidentes = carregarResidentes();
+  if (selectResidente) {
+    listaResidentes.forEach((residente) => {
+      const option = document.createElement("option");
+      option.value = residente.id;
+      option.textContent = `${residente["primeiro-nome"]} ${residente.sobrenome}`;
+      selectResidente.appendChild(option);
+    });
+  }
+
+  // Lógica do modo "Ver Ficha" (para o futuro)
   const urlParams = new URLSearchParams(window.location.search);
-  const funcionarioId = urlParams.get("id");
-  if (funcionarioId) {
-    const listaFuncionarios = carregarFuncionarios();
-    const funcionario = listaFuncionarios.find((f) => f.id == funcionarioId);
-    if (funcionario) {
-      Object.keys(funcionario).forEach((key) => {
+  const responsavelId = urlParams.get("id");
+  if (responsavelId) {
+    const listaResponsaveis = carregarResponsaveis();
+    const responsavel = listaResponsaveis.find((r) => r.id == responsavelId);
+    if (responsavel) {
+      Object.keys(responsavel).forEach((key) => {
         const campo = document.getElementById(key);
         if (campo) {
-          campo.value = funcionario[key];
+          campo.value = responsavel[key];
           campo.disabled = true;
         }
       });
@@ -87,17 +93,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // =================================================================
-  // LÓGICA DE VALIDAÇÃO E ENVIO (PARTE ADICIONADA)
-  // =================================================================
-
-  // 1. OUVINTE DE CLIQUE: Mostra o alerta de erro se o formulário for inválido.
+  // Lógica de Validação e Envio do Formulário
   if (botaoSubmit) {
     botaoSubmit.addEventListener("click", function () {
-      // Ao clicar, marcamos o formulário para mostrar os erros de CSS
       form.classList.add("form-foi-validado");
-
-      // Se for inválido, mostramos o alerta de erro.
       if (!form.checkValidity()) {
         alert(
           "Por favor, preencha todos os campos obrigatórios (*) antes de prosseguir."
@@ -106,28 +105,28 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // 2. OUVINTE DE SUBMIT: Este evento só será disparado se o formulário for VÁLIDO.
   form.addEventListener("submit", function (event) {
     event.preventDefault();
+    if (!form.checkValidity()) return;
 
-    const listaFuncionarios = carregarFuncionarios();
+    const listaResponsaveis = carregarResponsaveis();
     const formData = new FormData(form);
-    const novoFuncionario = Object.fromEntries(formData.entries());
-    novoFuncionario.id = Date.now();
+    const novoResponsavel = Object.fromEntries(formData.entries());
+    novoResponsavel.id = Date.now();
+    novoResponsavel.nivel = "responsavel";
 
-    listaFuncionarios.push(novoFuncionario);
-    salvarFuncionarios(listaFuncionarios);
+    listaResponsaveis.push(novoResponsavel);
+    salvarResponsaveis(listaResponsaveis);
 
     const urlParams = new URLSearchParams(window.location.search);
     const origem = urlParams.get("origem");
 
-    // 2. Constrói a nova URL de redirecionamento
-    let redirectUrl = "/index.html"; // URL padrão
+    let redirectUrl = "/index.html";
     if (origem) {
-      redirectUrl += `?pagina=${origem}`; // Adiciona o destino, ex: /index.html?pagina=pagina-residentes
+      redirectUrl += `?pagina=${origem}`;
     }
 
-    alert("Funcionário cadastrado com sucesso!");
+    alert("Responsavel cadastrado com sucesso!");
     window.location.href = redirectUrl;
   });
 
