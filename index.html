@@ -222,18 +222,19 @@
 
         <div id="pagina-medicamentos" class="pagina-conteudo">
           <div class="boas-vinda">
-            <h2>Controle de Medicamentos do Dia</h2>
-          </div>
-
-          <div class="filtros-medicamentos">
-            <button class="filtro-btn ativo">Todos</button>
-            <button class="filtro-btn">Manhã (até 11:59)</button>
-            <button class="filtro-btn">Tarde (12:00 - 17:59)</button>
-            <button class="filtro-btn">Noite (a partir de 18:00)</button>
+            <h2>Controle de Medicação Diária</h2>
           </div>
 
           <div class="ficha-container">
             <div class="ficha">
+              <div class="ficha-header">
+                <h2>Agendamentos de Hoje</h2>
+                <a
+                  href="/cadastro-medicamento/index.html?origem=pagina-medicamentos"
+                  class="btn-nova-ficha item-gerente"
+                  >Novo Medicamento +</a
+                >
+              </div>
               <div class="lista-residentes-container">
                 <table class="tabela-medicamentos">
                   <thead>
@@ -246,40 +247,7 @@
                       <th>Ações</th>
                     </tr>
                   </thead>
-                  <tbody id="lista-medicamentos-body">
-                    <tr>
-                      <td>08:00</td>
-                      <td>Maria da Silva (Exemplo)</td>
-                      <td>Vitamina C</td>
-                      <td>500mg</td>
-                      <td>
-                        <span class="status status-ok">Administrado</span>
-                      </td>
-                      <td><button class="btn-acao" disabled>OK</button></td>
-                    </tr>
-                    <tr>
-                      <td>12:00</td>
-                      <td>João Silva</td>
-                      <td>Amoxicilina</td>
-                      <td>10ml</td>
-                      <td>
-                        <span class="status status-pendente">Pendente</span>
-                      </td>
-                      <td><button class="btn-acao">Registrar</button></td>
-                    </tr>
-                    <tr>
-                      <td>14:00</td>
-                      <td>Pedro Souza</td>
-                      <td>Ritalina</td>
-                      <td>10mg</td>
-                      <td>
-                        <span class="status status-atrasado">Atrasado</span>
-                      </td>
-                      <td>
-                        <button class="btn-acao btn-atrasado">Registrar</button>
-                      </td>
-                    </tr>
-                  </tbody>
+                  <tbody id="lista-medicamentos-body"></tbody>
                 </table>
               </div>
             </div>

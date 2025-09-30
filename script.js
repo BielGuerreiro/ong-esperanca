@@ -182,7 +182,6 @@ function iniciarPaginaFuncionarios() {
 // tabela responsavel  ______________________________________________________________________________________________________________
 
 function iniciarPaginaResponsaveis() {
-  // Carrega AMBAS as listas para fazer a conexão
   const listaResponsaveis = JSON.parse(
     sessionStorage.getItem("listaResponsaveis") || "[]"
   );
@@ -194,7 +193,6 @@ function iniciarPaginaResponsaveis() {
   function adicionarResponsavelNaTabela(responsavel) {
     const tr = document.createElement("tr");
 
-    // Encontra o residente vinculado pelo ID salvo
     const residenteVinculado = listaResidentes.find(
       (r) => r.id == responsavel.residenteId
     );
@@ -263,6 +261,68 @@ function iniciarPaginaResponsaveis() {
   }
 }
 
+// sessao medicamento -_____________________________________________________________________________________________________
+function iniciarPaginaMedicamentos() {
+  const listaResidentes = JSON.parse(
+    sessionStorage.getItem("listaResidentes") || "[]"
+  );
+  const listaTratamentos = JSON.parse(
+    sessionStorage.getItem("listaTratamentos") || "[]"
+  );
+  const tabelaBody = document.getElementById("lista-medicamentos-body");
+
+  function adicionarTratamentoNaTabela(tratamento) {
+    const tr = document.createElement("tr");
+    const residente = listaResidentes.find(
+      (r) => r.id == tratamento.residenteId
+    );
+    const nomeResidente = residente
+      ? `${residente["primeiro-nome"]} ${residente.sobrenome}`
+      : "Não encontrado";
+    const classeStatus = `status-${tratamento.status.toLowerCase()}`;
+
+    let acoesHtml = "";
+    if (tratamento.status === "Pendente") {
+      acoesHtml += `<button class="btn-acao btn-confirmar" data-id="${tratamento.id}">Registrar Dose</button>`;
+    } else {
+      acoesHtml += `<button class="btn-acao" disabled>${tratamento.status}</button>`;
+    }
+
+    tr.innerHTML = `
+            <td>${tratamento.horario}</td>
+            <td>${nomeResidente}</td>
+            <td>${tratamento.medicamento}</td>
+            <td>${tratamento.dosagem}</td>
+            <td><span class="status ${classeStatus}">${tratamento.status}</span></td>
+            <td class="acoes"> ${acoesHtml}
+                <a href="#" class="btn-acao-icone btn-editar" title="Editar Agendamento"><i class='bx bx-edit'></i></a>
+                <a href="#" class="btn-acao-icone btn-excluir" data-id="${tratamento.id}" title="Excluir Agendamento"><i class='bx bx-trash-alt'></i></a>
+            </td>
+        `;
+    tabelaBody.appendChild(tr);
+  }
+
+  if (tabelaBody) {
+    tabelaBody.innerHTML = "";
+    if (listaTratamentos.length > 0) {
+      listaTratamentos.forEach((t) => adicionarTratamentoNaTabela(t));
+    } else {
+      tabelaBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Nenhum tratamento agendado.</td></tr>`;
+    }
+
+    tabelaBody.addEventListener("click", function (event) {
+      const botaoConfirmar = event.target.closest(".btn-confirmar");
+      const botaoExcluir = event.target.closest(".btn-excluir");
+
+      if (botaoConfirmar) {
+      }
+
+      if (botaoExcluir) {
+      }
+    });
+  }
+}
+
 // ===================================================================
 // PONTO DE ENTRADA PRINCIPAL (O ÚNICO DOMContentLoaded)
 // ===================================================================
@@ -311,10 +371,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // --- INICIALIZAÇÃO DE TODAS AS PÁGINAS ---
+  // iniciacao __________________________________________________________________________________________________
   iniciarPaginaResidentes();
   iniciarPaginaFuncionarios();
   iniciarPaginaResponsaveis();
+  iniciarPaginaMedicamentos();
 
   const urlParams = new URLSearchParams(window.location.search);
   const paginaDestino = urlParams.get("pagina");
@@ -322,22 +383,18 @@ document.addEventListener("DOMContentLoaded", function () {
   let itemInicial = null;
 
   if (paginaDestino) {
-    // Tenta encontrar o item de menu que corresponde ao destino da URL
     itemInicial = document.querySelector(
       `.menu-header li[data-pagina="${paginaDestino}"]`
     );
   }
 
-  // Se não encontrou um destino na URL, usa o primeiro item do menu (Dashboard) como padrão
   if (!itemInicial) {
     itemInicial = menuItens[0];
   }
 
-  // Simula um clique no item de menu correto para abrir a página certa
   if (itemInicial) {
     itemInicial.click();
   } else {
-    // Caso de segurança se não houver nenhum item de menu
     ajustarAlturaContainer(document.querySelector(".pagina-conteudo.ativa"));
   }
 

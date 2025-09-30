@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastrar Tratamento</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="shortcut icon" href="/img/logo.png" type="image/x-icon" />
+  </head>
+  <body>
+    <main>
+      <div class="container-formulario">
+        <form id="form-medicamento" class="formulario-etapas">
+          <div class="etapa-form ativo">
+            <h2>Cadastrar Tratamento para Residente</h2>
+
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir">
+                <label for="residenteId"
+                  >Para qual Residente?
+                  <span class="obrigatorio">*</span></label
+                >
+                <select id="residenteId" name="residenteId" required>
+                  <option value="" disabled selected>
+                    Selecione um residente
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir">
+                <label for="medicamento"
+                  >Nome do Medicamento <span class="obrigatorio">*</span></label
+                >
+                <input
+                  type="text"
+                  id="medicamento"
+                  name="medicamento"
+                  placeholder="Ex: Paracetamol Gotas"
+                  required
+                />
+              </div>
+              <div class="grupo-form">
+                <label for="dosagem"
+                  >Dosagem <span class="obrigatorio">*</span></label
+                >
+                <input
+                  type="text"
+                  id="dosagem"
+                  name="dosagem"
+                  placeholder="Ex: 15 gotas"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir">
+                <label for="horario"
+                  >Horário de Administração
+                  <span class="obrigatorio">*</span></label
+                >
+                <input type="time" id="horario" name="horario" required />
+              </div>
+              <div class="grupo-form campo-expandir">
+                <label for="frequencia">Frequência</label>
+                <input
+                  type="text"
+                  id="frequencia"
+                  name="frequencia"
+                  placeholder="Ex: De 8 em 8 horas"
+                />
+              </div>
+            </div>
+
+            <div class="grupo-form">
+              <label for="observacoes">Instruções Adicionais</label>
+              <textarea
+                id="observacoes"
+                name="observacoes"
+                rows="4"
+                placeholder="Ex: Tomar com alimentos..."
+              ></textarea>
+            </div>
+
+            <div class="navegacao-form">
+              <button type="submit" class="btn-enviar">
+                CADASTRAR TRATAMENTO
+              </button>
+              <button type="button" class="btn-cancelar">
+                &larr; CANCELAR
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>

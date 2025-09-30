@@ -361,6 +361,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  justify-content: flex-start;
 }
 
 .ficha table {
@@ -375,23 +376,6 @@ body {
   border-collapse: collapse;
 }
 
-.ficha table th,
-.ficha table td {
-  padding: 15px;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-}
-
-.ficha table th {
-  color: #888;
-  font-size: 14px;
-}
-
-.ficha table td.acoes {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
 .tabela-funcionarios th {
   color: #888;
   font-size: 14px;
@@ -521,4 +505,31 @@ body {
 }
 .btn-acao.btn-atrasado {
   background-color: #dc3545;
+}
+
+/* medicamento _________________________________________________________________________ */
+
+.status-administrado {
+  background-color: #28a745;
+}
+.status-pendente {
+  background-color: #ffc107;
+}
+.status-nao-tomado {
+  background-color: #dc3545;
+}
+
+.btn-acao-icone.btn-confirmar {
+  background-color: #28a745;
+}
+
+.ficha table td.acoes-medicamentos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.grupo-icones {
+  display: flex;
+  gap: 10px;
 }
