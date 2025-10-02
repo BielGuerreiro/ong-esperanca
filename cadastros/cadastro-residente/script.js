@@ -35,6 +35,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const botoesVoltar = document.querySelectorAll(".btn-voltar");
   const botoesCancelar = document.querySelectorAll(".btn-cancelar");
   const botaoSubmit = document.querySelector(".btn-enviar");
+  const selectFrequentaEscola = document.getElementById("frequenta-escola");
+  const containerDadosEscola = document.getElementById(
+    "dados-escola-container"
+  );
   let etapaAtual = 0;
 
   configurarValidacaoDatas();
@@ -112,15 +116,24 @@ document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search);
     const origem = urlParams.get("origem");
 
-    // 2. Constrói a nova URL de redirecionamento
-    let redirectUrl = "/index.html"; // URL padrão
+    let redirectUrl = "/index.html";
     if (origem) {
-      redirectUrl += `?pagina=${origem}`; // Adiciona o destino, ex: /index.html?pagina=pagina-residentes
+      redirectUrl += `?pagina=${origem}`;
     }
 
     alert("Residente cadastrado com sucesso!");
     window.location.href = redirectUrl;
   });
+
+  if (selectFrequentaEscola && containerDadosEscola) {
+    selectFrequentaEscola.addEventListener("change", function () {
+      if (this.value === "sim") {
+        containerDadosEscola.style.display = "block";
+      } else {
+        containerDadosEscola.style.display = "none";
+      }
+    });
+  }
 
   mostrarEtapa(etapaAtual);
 });

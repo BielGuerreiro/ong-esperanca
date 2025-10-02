@@ -1,4 +1,8 @@
-/* Estilos Gerais */
+/* =================================================================== */
+/* ARQUIVO CSS UNIFICADO PARA TODOS OS FORMULÁRIOS DE CADASTRO */
+/* =================================================================== */
+
+/* --- Estilos Gerais e Variáveis --- */
 :root {
   --cor-principal: #6fa9e4;
   --cor-fundo-input: #f5f5f57c;
@@ -12,23 +16,18 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
 main {
   width: 100%;
   max-width: 900px;
+  padding: 20px; /* Adicionado para telas muito pequenas */
+  box-sizing: border-box;
 }
 
-.logo-header {
-  position: absolute;
-  left: 10%;
-}
-
-.logo-header img {
-  height: 10%;
-  width: 10%;
-}
-
+/* --- Estrutura do Formulário --- */
 .container-formulario {
   background-color: white;
   padding: 30px;
@@ -43,10 +42,12 @@ main {
 .etapa-form {
   display: none;
 }
+
 .etapa-form.ativo {
   display: block;
 }
 
+/* --- Grupos de Campos e Layout --- */
 .grupo-form {
   margin-bottom: 20px;
 }
@@ -59,28 +60,6 @@ main {
   font-size: 16px;
 }
 
-/* inpuits s ____________________________________________________________________________________________ */
-.grupo-form input,
-.grupo-form select {
-  width: 100%;
-  padding: 15px;
-  border: 1px solid var(--cor-borda);
-  border-radius: 20px;
-  background-color: var(--cor-fundo-input);
-  font-size: 16px;
-  box-sizing: border-box;
-  color: var(--cor-principal);
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  box-shadow: 0 4px 6px -2px #0000005e;
-  transition: all 0.2s ease-in-out;
-}
-
-.grupo-form input::placeholder {
-  color: var(--cor-texto-label);
-}
-
 .linha-form {
   display: flex;
   gap: 20px;
@@ -91,7 +70,47 @@ main {
   flex-grow: 1;
 }
 
-/* icones do calendarios nas datas _____________________________________________________________________________________ */
+/* ÚNICO: Estilo de título que só existia no CSS do Residente */
+#etapa-3 h3 {
+  color: var(--cor-texto-label);
+}
+
+/* --- Estilo Unificado para Inputs, Selects e Textareas --- */
+.grupo-form input,
+.grupo-form select,
+.grupo-form textarea {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 12px; /* Padronizado para 12px, que era o mais comum */
+  background-color: var(--cor-fundo-input);
+  font-size: 16px;
+  box-sizing: border-box;
+  color: var(--cor-texto-label);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-shadow: 0 4px 6px -2px #0000005e;
+  transition: all 0.2s ease-in-out;
+}
+
+.grupo-form input::placeholder {
+  color: #a9c5e3; /* Padronizado a cor do placeholder */
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* --- Estilos Específicos de Inputs --- */
+select {
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%23a9c5e3" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 24px;
+  padding-right: 50px;
+}
+
 input[type="date"] {
   background-image: url('data:image/svg+xml;utf8,<svg fill="%23a9c5e3" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
   background-repeat: no-repeat;
@@ -105,6 +124,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
 }
 
+/* --- Navegação e Botões --- */
 .navegacao-form {
   margin-top: 30px;
   display: flex;
@@ -117,6 +137,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border: none;
   height: 6vh;
   width: 40vh;
+  max-width: 300px; /* Adicionado um max-width para segurança */
   align-self: center;
   font-size: 16px;
   font-weight: bold;
@@ -137,31 +158,16 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
 }
 
-.grupo-form input,
-.grupo-form select,
-.grupo-form textarea {
-  width: 100%;
-  padding: 15px;
-  border: 1px solid var(--cor-borda);
-  border-radius: 12px;
-  background-color: var(--cor-fundo-input);
-  font-size: 16px;
-  box-sizing: border-box;
-  color: var(--cor-texto-label);
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  box-shadow: 0 4px 6px -2px #0000005e;
-  transition: all 0.2s ease-in-out;
-}
-
-textarea {
-  resize: vertical;
-}
-
-/* preencher todas as colunas _)_______________________________________________________________________________ */
+/* --- Validação --- */
 .form-foi-validado input:invalid,
 .form-foi-validado select:invalid,
 .form-foi-validado textarea:invalid {
   border-color: #c23b36;
+}
+
+/* --- OBRIGATÓRIO ASTERISCO --- */
+.obrigatorio {
+  color: #c23b36;
+  margin-left: 2px;
+  font-weight: bold;
 }

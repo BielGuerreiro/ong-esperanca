@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cadastro de Residente</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../styles.css" />
     <link rel="shortcut icon" href="/img/logo.png" type="image/x-icon" />
   </head>
   <body>
@@ -330,18 +330,51 @@
 
           <!-- terceira parte  _________________________________________________________________________________ -->
           <div id="etapa-3" class="etapa-form">
-            <!-- escola _________________________________________________________________________________ -->
+            <h3>Informações Escolares e de Saúde</h3>
+
             <div class="grupo-form">
-              <label for="escola">Escola (Opcional)</label>
-              <input
-                type="text"
-                id="escola"
-                name="escola"
-                placeholder="Nome da instituição de ensino"
-              />
+              <label for="frequenta-escola"
+                >Frequenta alguma escola?
+                <span class="obrigatorio">*</span></label
+              >
+              <select id="frequenta-escola" name="frequenta-escola" required>
+                <option value="" disabled selected>Selecionar</option>
+                <option value="nao">Não</option>
+                <option value="sim">Sim</option>
+              </select>
             </div>
 
-            <!-- doencas? _________________________________________________________________________________ -->
+            <div id="dados-escola-container" style="display: none">
+              <div class="linha-form">
+                <div class="grupo-form campo-expandir">
+                  <label for="escola-nome">Nome da Escola</label>
+                  <input type="text" id="escola-nome" name="escola-nome" />
+                </div>
+              </div>
+              <div class="linha-form">
+                <div class="grupo-form campo-expandir">
+                  <label for="escola-rua">Rua da Escola</label>
+                  <input type="text" id="escola-rua" name="escola-rua" />
+                </div>
+                <div class="grupo-form">
+                  <label for="escola-numero">Número</label>
+                  <input
+                    type="text"
+                    id="escola-numero"
+                    name="escola-numero"
+                    inputmode="numeric"
+                  />
+                </div>
+              </div>
+              <div class="grupo-form">
+                <label for="escola-bairro">Bairro da Escola</label>
+                <input type="text" id="escola-bairro" name="escola-bairro" />
+              </div>
+            </div>
+
+            <hr
+              style="margin: 30px 0; border: none; border-top: 1px solid #eee"
+            />
 
             <div class="grupo-form">
               <label for="doencas"
@@ -355,30 +388,47 @@
               ></textarea>
             </div>
 
-            <!-- vacinas _________________________________________________________________________________ -->
+            <div class="navegacao-form">
+              <button type="button" class="btn-proximo">PRÓXIMO &rarr;</button>
+              <button type="button" class="btn-voltar">&larr; VOLTAR</button>
+            </div>
+          </div>
+
+          <div id="etapa-4" class="etapa-form">
+            <h3>Informações Adicionais</h3>
+
             <div class="grupo-form">
               <label for="vacinas">Vacinas (Opcional)</label>
-              <select id="vacinas" name="vacinas">
-                <option value="" disabled selected>Selecionar status</option>
-                <option value="em_dia">Em dia</option>
-                <option value="pendente">Pendente</option>
-                <option value="nao_se_aplica">Não se aplica</option>
-              </select>
+              <textarea
+                id="vacinas"
+                name="vacinas"
+                rows="4"
+                placeholder="Digite aqui todas as vacinas que o residente tomou..."
+              ></textarea>
             </div>
 
-            <!-- descricao _________________________________________________________________________________ -->
+            <div class="grupo-form">
+              <label for="alergias"
+                >Possui alergia? Se sim, quais? (Opcional)</label
+              >
+              <textarea
+                id="alergias"
+                name="alergias"
+                rows="3"
+                placeholder="Especifique as alergias aqui..."
+              ></textarea>
+            </div>
 
             <div class="grupo-form">
-              <label for="descricao">Descrição (Opcional)</label>
+              <label for="descricao">Descrição Geral (Opcional)</label>
               <textarea
                 id="descricao"
                 name="descricao"
                 rows="6"
-                placeholder="Adicione observações importantes..."
+                placeholder="Adicione observações importantes, histórico ou outras informações relevantes..."
               ></textarea>
             </div>
 
-            <!-- bottoes _________________________________________________________________________________ -->
             <div class="navegacao-form">
               <button type="submit" class="btn-enviar">CADASTRAR &rarr;</button>
               <button type="button" class="btn-voltar">&larr; VOLTAR</button>
