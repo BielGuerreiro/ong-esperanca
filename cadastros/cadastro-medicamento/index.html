@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cadastrar Tratamento</title>
+    <title>Cadastrar Medicamento</title>
     <link rel="stylesheet" href="../styles.css" />
     <link rel="shortcut icon" href="/img/logo.png" type="image/x-icon" />
   </head>
@@ -37,11 +37,31 @@
                   type="text"
                   id="medicamento"
                   name="medicamento"
-                  placeholder="Ex: Paracetamol Gotas"
                   required
                 />
               </div>
+              <div class="grupo-form campo-expandir">
+                <label for="tipo"
+                  >Tipo / Forma <span class="obrigatorio">*</span></label
+                >
+                <select id="tipo" name="tipo" required>
+                  <option value="" disabled selected>Selecionar</option>
+                  <option value="Comprimido">Comprimido</option>
+                  <option value="Gotas">Gotas</option>
+                  <option value="Líquido">Líquido</option>
+                  <option value="Injetável">Injetável</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="linha-form">
               <div class="grupo-form">
+                <label for="horario"
+                  >Horário Inicial <span class="obrigatorio">*</span></label
+                >
+                <input type="time" id="horario" name="horario" required />
+              </div>
+              <div class="grupo-form campo-expandir">
                 <label for="dosagem"
                   >Dosagem <span class="obrigatorio">*</span></label
                 >
@@ -49,19 +69,9 @@
                   type="text"
                   id="dosagem"
                   name="dosagem"
-                  placeholder="Ex: 15 gotas"
+                  placeholder="Ex: 1 comprimido, 15 gotas"
                   required
                 />
-              </div>
-            </div>
-
-            <div class="linha-form">
-              <div class="grupo-form campo-expandir">
-                <label for="horario"
-                  >Horário de Administração
-                  <span class="obrigatorio">*</span></label
-                >
-                <input type="time" id="horario" name="horario" required />
               </div>
               <div class="grupo-form campo-expandir">
                 <label for="frequencia">Frequência</label>
@@ -74,14 +84,20 @@
               </div>
             </div>
 
-            <div class="grupo-form">
-              <label for="observacoes">Instruções Adicionais</label>
-              <textarea
-                id="observacoes"
-                name="observacoes"
-                rows="4"
-                placeholder="Ex: Tomar com alimentos..."
-              ></textarea>
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir">
+                <label for="duracao">Duração do Tratamento</label>
+                <input
+                  type="text"
+                  id="duracao"
+                  name="duracao"
+                  placeholder="Ex: 7 dias, Contínuo"
+                />
+              </div>
+              <div class="grupo-form campo-expandir">
+                <label for="validade">Data de Vencimento do Lote</label>
+                <input type="date" id="validade" name="validade" />
+              </div>
             </div>
 
             <div class="navegacao-form">

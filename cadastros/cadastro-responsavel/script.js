@@ -21,6 +21,25 @@ function configurarValidacaoDatas() {
   }
 }
 
+// Esta função será usada nos scripts dos formulários
+function iniciarToggleSenha(inputId, toggleId) {
+  const inputSenha = document.getElementById(inputId);
+  const toggleIcon = document.getElementById(toggleId);
+
+  if (inputSenha && toggleIcon) {
+    toggleIcon.addEventListener("click", function () {
+      // Verifica o tipo atual do input
+      const type =
+        inputSenha.getAttribute("type") === "password" ? "text" : "password";
+      inputSenha.setAttribute("type", type);
+
+      // Troca o ícone
+      this.classList.toggle("bx-show");
+      this.classList.toggle("bx-hide");
+    });
+  }
+}
+
 // ===== CÓDIGO PRINCIPAL DA PÁGINA =====
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("form-responsavel");
@@ -33,6 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let etapaAtual = 0;
 
   configurarValidacaoDatas();
+  iniciarToggleSenha("senha", "toggle-senha-responsavel");
 
   // Popula o campo de seleção com os residentes existentes
   const listaResidentes = carregarResidentes();

@@ -16,8 +16,7 @@
               <div class="grupo-form campo-expandir">
                 <label for="primeiro-nome"
                   >Primeiro nome <span class="obrigatorio">*</span></label
-                >
-                <input
+                ><input
                   type="text"
                   id="primeiro-nome"
                   name="primeiro-nome"
@@ -27,22 +26,23 @@
               <div class="grupo-form campo-expandir">
                 <label for="sobrenome"
                   >Sobrenome <span class="obrigatorio">*</span></label
-                >
-                <input type="text" id="sobrenome" name="sobrenome" required />
+                ><input type="text" id="sobrenome" name="sobrenome" required />
               </div>
             </div>
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="nascimento"
                   >Data de Nascimento <span class="obrigatorio">*</span></label
-                >
-                <input type="date" id="nascimento" name="nascimento" required />
+                ><input
+                  type="date"
+                  id="nascimento"
+                  name="nascimento"
+                  required
+                />
               </div>
               <div class="grupo-form">
-                <label for="sexo"
-                  >Sexo <span class="obrigatorio">*</span></label
-                >
-                <select id="sexo" name="sexo" required>
+                <label for="sexo">Sexo <span class="obrigatorio">*</span></label
+                ><select id="sexo" name="sexo" required>
                   <option value="" disabled selected>Selecionar</option>
                   <option value="masculino">Masculino</option>
                   <option value="feminino">Feminino</option>
@@ -51,8 +51,8 @@
             </div>
             <div class="linha-form">
               <div class="grupo-form">
-                <label for="cpf">CPF <span class="obrigatorio">*</span></label>
-                <input
+                <label for="cpf">CPF <span class="obrigatorio">*</span></label
+                ><input
                   type="text"
                   id="cpf"
                   name="cpf"
@@ -62,8 +62,8 @@
                 />
               </div>
               <div class="grupo-form campo-expandir">
-                <label for="estado-civil">Estado Civil</label>
-                <select id="estado-civil" name="estado-civil">
+                <label for="estado-civil">Estado Civil</label
+                ><select id="estado-civil" name="estado-civil">
                   <option value="" disabled selected>Selecionar</option>
                   <option value="solteiro">Solteiro(a)</option>
                   <option value="casado">Casado(a)</option>
@@ -74,20 +74,36 @@
             </div>
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
-                <label for="email">E-mail</label>
-                <input type="email" id="email" name="email" />
+                <label for="email">E-mail</label
+                ><input type="email" id="email" name="email" />
               </div>
               <div class="grupo-form campo-expandir">
                 <label for="telefone"
                   >Telefone <span class="obrigatorio">*</span></label
-                >
-                <input
+                ><input
                   type="tel"
                   id="telefone"
                   name="telefone"
                   inputmode="numeric"
                   required
                 />
+              </div>
+            </div>
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir senha-container">
+                <label for="senha">Crie uma Senha (para futuro portal)</label>
+                <input
+                  type="password"
+                  id="senha"
+                  name="senha"
+                  placeholder="Crie uma senha forte"
+                  pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                  title="Mínimo 8 caracteres, com maiúscula, minúscula, número e caractere especial."
+                />
+                <i
+                  class="bx bx-hide toggle-senha"
+                  id="toggle-senha-responsavel"
+                ></i>
               </div>
             </div>
             <div class="navegacao-form">
@@ -103,18 +119,14 @@
               <div class="grupo-form campo-expandir">
                 <label for="residenteId"
                   >Residente Vinculado <span class="obrigatorio">*</span></label
-                >
-                <select id="residenteId" name="residenteId" required>
-                  <option value="" disabled selected>
-                    Selecione o residente
-                  </option>
+                ><select id="residenteId" name="residenteId" required>
+                  <option value="" disabled selected>Selecione</option>
                 </select>
               </div>
               <div class="grupo-form campo-expandir">
                 <label for="parentesco"
                   >Parentesco <span class="obrigatorio">*</span></label
-                >
-                <input
+                ><input
                   type="text"
                   id="parentesco"
                   name="parentesco"

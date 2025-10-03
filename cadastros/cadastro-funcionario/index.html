@@ -243,7 +243,6 @@
 
           <!-- terceira parte ________________________________________________________________________ -->
           <div id="etapa-3" class="etapa-form">
-            <!-- telefone ________________________________________________________________________ -->
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="telefone"
@@ -258,8 +257,6 @@
                   required
                 />
               </div>
-
-              <!-- email ________________________________________________________________________ -->
               <div class="grupo-form campo-expandir">
                 <label for="email"
                   >E-mail <span class="obrigatorio">*</span></label
@@ -273,10 +270,8 @@
                 />
               </div>
             </div>
-
-            <!-- senha ________________________________________________________________________ -->
             <div class="linha-form">
-              <div class="grupo-form campo-expandir">
+              <div class="grupo-form campo-expandir senha-container">
                 <label for="senha"
                   >Senha <span class="obrigatorio">*</span></label
                 >
@@ -287,40 +282,56 @@
                   placeholder="Crie uma senha forte"
                   required
                   pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
-                  title="A senha deve conter no mínimo 8 caracteres, incluindo uma letra maiúscula, uma minúscula, um número e um caractere especial (@$!%*?&)."
+                  title="Mínimo 8 caracteres, com maiúscula, minúscula, número e caractere especial."
                 />
+                <i
+                  class="bx bx-hide toggle-senha"
+                  id="toggle-senha-funcionario"
+                ></i>
               </div>
-
-              <!-- nivel ________________________________________________________________________ -->
               <div class="grupo-form campo-expandir">
                 <label for="nivel-acesso"
                   >Nível de Acesso <span class="obrigatorio">*</span></label
                 >
                 <select id="nivel-acesso" name="nivel-acesso" required>
                   <option value="" disabled selected>Selecionar</option>
-                  <option value="gerente">Gerente</option>
+                  <option value="funcionario">Responsável</option>
                   <option value="funcionario">Funcionário</option>
-                  <option value="responsavel">Responsavel</option>
+                  <option value="gerente">Gerente</option>
                 </select>
               </div>
             </div>
 
-            <!-- turno ________________________________________________________________________ -->
             <div class="linha-form">
-              <div class="grupo-form campo-expandir">
-                <label for="turno"
-                  >Turno de Trabalho <span class="obrigatorio">*</span></label
+              <div class="grupo-form">
+                <label for="residente-select"
+                  >Residentes sob cuidados (Opcional)</label
                 >
-                <select id="turno" name="turno">
-                  <option value="" disabled selected>Selecionar turno</option>
-                  <option value="manha">Manhã (06:00 - 14:00)</option>
-                  <option value="tarde">Tarde (14:00 - 22:00)</option>
-                  <option value="noite">Noite (22:00 - 06:00)</option>
+                <select id="residente-select">
+                  <option value="" disabled selected>
+                    Adicionar um residente...
+                  </option>
                 </select>
+                <div
+                  id="residentes-selecionados-container"
+                  class="tags-container"
+                ></div>
+                <input
+                  type="hidden"
+                  name="residentes_vinculados_ids"
+                  id="residentes_vinculados_ids"
+                />
               </div>
             </div>
-
-            <!-- botao ________________________________________________________________________ -->
+            <div class="grupo-form">
+              <label for="descricao">Descrição (Opcional)</label>
+              <textarea
+                id="descricao"
+                name="descricao"
+                rows="4"
+                placeholder="Adicione observações sobre o funcionário..."
+              ></textarea>
+            </div>
             <div class="navegacao-form">
               <button type="submit" class="btn-enviar">CADASTRAR &rarr;</button>
               <button type="button" class="btn-voltar">&larr; VOLTAR</button>

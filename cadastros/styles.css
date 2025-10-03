@@ -171,3 +171,54 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   margin-left: 2px;
   font-weight: bold;
 }
+
+.grupo-form.senha-container {
+  position: relative;
+}
+
+/* Estilo e posição do ícone de olho */
+.toggle-senha {
+  position: absolute;
+  top: 45px; /* Ajuste fino para alinhar verticalmente com o input */
+  right: 15px;
+  cursor: pointer;
+  color: var(--cor-texto-label);
+  font-size: 24px;
+}
+
+/* --- ESTILOS PARA SELEÇÃO MÚLTIPLA COM TAGS --- */
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 12px;
+  background-color: var(--cor-fundo-input);
+  min-height: 40px; /* Garante uma altura mínima mesmo vazio */
+}
+
+.tag {
+  display: flex;
+  align-items: center;
+  background-color: var(--cor-principal);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.tag i {
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.tag i:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}

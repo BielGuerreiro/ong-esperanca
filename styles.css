@@ -523,13 +523,17 @@ body {
   background-color: #28a745;
 }
 
+/* Garante que a célula de ações alinhe tudo ao centro verticalmente */
 .ficha table td.acoes-medicamentos {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-start; /* Alinha tudo à esquerda */
+  align-items: center; /* Alinha tudo ao centro vertical */
+  gap: 10px;
 }
 
+/* Garante que os ícones dentro do grupo também fiquem alinhados */
 .grupo-icones {
   display: flex;
+  align-items: center;
   gap: 10px;
 }

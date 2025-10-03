@@ -1,9 +1,3 @@
-/*
-    VERSÃO COMPLETA E FUNCIONAL DO SCRIPT DE CADASTRO DE FUNCIONÁRIO
-    - Adicionada a lógica de alerta para campos obrigatórios.
-*/
-
-// ===== CAMADA DE DADOS =====
 function carregarFuncionarios() {
   const dados = sessionStorage.getItem("listaFuncionarios");
   return JSON.parse(dados || "[]");
@@ -11,6 +5,10 @@ function carregarFuncionarios() {
 
 function salvarFuncionarios(lista) {
   sessionStorage.setItem("listaFuncionarios", JSON.stringify(lista));
+}
+
+function carregarResidentes() {
+  return JSON.parse(sessionStorage.getItem("listaResidentes") || "[]");
 }
 
 function configurarValidacaoDatas() {
@@ -27,6 +25,20 @@ function configurarValidacaoDatas() {
   }
 }
 
+function iniciarToggleSenha(inputId, toggleId) {
+  const inputSenha = document.getElementById(inputId);
+  const toggleIcon = document.getElementById(toggleId);
+  if (inputSenha && toggleIcon) {
+    toggleIcon.addEventListener("click", function () {
+      const type =
+        inputSenha.getAttribute("type") === "password" ? "text" : "password";
+      inputSenha.setAttribute("type", type);
+      this.classList.toggle("bx-show");
+      this.classList.toggle("bx-hide");
+    });
+  }
+}
+
 // ===== CÓDIGO PRINCIPAL DA PÁGINA =====
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("form-funcionario");
@@ -38,8 +50,8 @@ document.addEventListener("DOMContentLoaded", function () {
   let etapaAtual = 0;
 
   configurarValidacaoDatas();
+  iniciarToggleSenha("senha", "toggle-senha-funcionario");
 
-  // Lógica do modo "Ver Ficha"
   const urlParams = new URLSearchParams(window.location.search);
   const funcionarioId = urlParams.get("id");
   if (funcionarioId) {
@@ -57,7 +69,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Lógica de Navegação entre Etapas
   function mostrarEtapa(indiceEtapa) {
     etapas.forEach((etapa, indice) =>
       etapa.classList.toggle("ativo", indice === indiceEtapa)
@@ -82,22 +93,64 @@ document.addEventListener("DOMContentLoaded", function () {
   botoesCancelar.forEach((botao) => {
     botao.addEventListener("click", function () {
       if (confirm("Tem certeza que deseja cancelar?")) {
-        window.location.href = "/index.html";
+        window.location.href = "../../index.html";
       }
     });
   });
 
-  // =================================================================
-  // LÓGICA DE VALIDAÇÃO E ENVIO (PARTE ADICIONADA)
-  // =================================================================
+  const selectResidenteMultiplo = document.getElementById("residente-select");
+  const tagsContainer = document.getElementById(
+    "residentes-selecionados-container"
+  );
+  const hiddenInputIds = document.getElementById("residentes_vinculados_ids");
+  let idsSelecionados = [];
 
-  // 1. OUVINTE DE CLIQUE: Mostra o alerta de erro se o formulário for inválido.
+  const listaResidentes = carregarResidentes();
+  if (selectResidenteMultiplo) {
+    listaResidentes.forEach((residente) => {
+      const option = document.createElement("option");
+      option.value = residente.id;
+      option.textContent = `${residente["primeiro-nome"]} ${residente.sobrenome}`;
+      selectResidenteMultiplo.appendChild(option);
+    });
+  }
+  function atualizarTags() {
+    if (!tagsContainer || !hiddenInputIds) return;
+    tagsContainer.innerHTML = "";
+    idsSelecionados.forEach((id) => {
+      const residente = listaResidentes.find((r) => r.id == id);
+      if (residente) {
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = `${residente["primeiro-nome"]} ${residente.sobrenome}`;
+        const removeIcon = document.createElement("i");
+        removeIcon.className = "bx bx-x";
+        removeIcon.onclick = () => {
+          idsSelecionados = idsSelecionados.filter(
+            (selectedId) => selectedId != id
+          );
+          atualizarTags();
+        };
+        tag.appendChild(removeIcon);
+        tagsContainer.appendChild(tag);
+      }
+    });
+    hiddenInputIds.value = idsSelecionados.join(",");
+  }
+  if (selectResidenteMultiplo) {
+    selectResidenteMultiplo.addEventListener("change", function () {
+      const id = this.value;
+      if (id && !idsSelecionados.includes(id)) {
+        idsSelecionados.push(id);
+        atualizarTags();
+      }
+      this.value = "";
+    });
+  }
+
   if (botaoSubmit) {
     botaoSubmit.addEventListener("click", function () {
-      // Ao clicar, marcamos o formulário para mostrar os erros de CSS
       form.classList.add("form-foi-validado");
-
-      // Se for inválido, mostramos o alerta de erro.
       if (!form.checkValidity()) {
         alert(
           "Por favor, preencha todos os campos obrigatórios (*) antes de prosseguir."
@@ -106,9 +159,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // 2. OUVINTE DE SUBMIT: Este evento só será disparado se o formulário for VÁLIDO.
   form.addEventListener("submit", function (event) {
     event.preventDefault();
+    if (!form.checkValidity()) return;
 
     const listaFuncionarios = carregarFuncionarios();
     const formData = new FormData(form);
@@ -120,11 +173,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const urlParams = new URLSearchParams(window.location.search);
     const origem = urlParams.get("origem");
-
-    // 2. Constrói a nova URL de redirecionamento
-    let redirectUrl = "/index.html"; // URL padrão
+    let redirectUrl = "../../index.html";
     if (origem) {
-      redirectUrl += `?pagina=${origem}`; // Adiciona o destino, ex: /index.html?pagina=pagina-residentes
+      redirectUrl += `?pagina=${origem}`;
     }
 
     alert("Funcionário cadastrado com sucesso!");

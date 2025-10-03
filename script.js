@@ -1,14 +1,3 @@
-/*
-    VERSÃO FINAL E UNIFICADA DO SCRIPT PRINCIPAL
-    - Contém um único DOMContentLoaded para evitar conflitos.
-    - Inclui TODA a lógica: Navegação, Animação, Residentes e Funcionários.
-*/
-
-// ===================================================================
-// FUNÇÕES GLOBAIS E LÓGICA DE CADA PÁGINA
-// (As funções ficam fora para melhor organização)
-// ===================================================================
-
 function calcularIdade(dataNascimento) {
   if (!dataNascimento) return "?";
   const hoje = new Date();
@@ -48,7 +37,7 @@ function iniciarPaginaResidentes() {
         <td>${idade}</td>
         <td>${categoria}</td>
         <td class="acoes">
-            <a href="/cadastro-residente/index.html?id=${residente.id}&origem=pagina-residentes" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class="bx bx-edit"></i></a>
+            <a href="cadastro/cadastro-residente/index.html?id=${residente.id}&origem=pagina-residentes" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class="bx bx-edit"></i></a>
             <a href="#" class="btn-acao-icone btn-excluir" data-id="${residente.id}" title="Excluir Ficha"><i class="bx bx-trash-alt"></i></a>
         </td>
     `;
@@ -128,7 +117,7 @@ function iniciarPaginaFuncionarios() {
         <td>${funcionario.id.toString().slice(-4)}</td>
         <td><span class="status ${classeStatus}">${status}</span></td>
         <td class="acoes">
-            <a href="/cadastro-funcionario/index.html?id=${
+            <a href="cadastro/cadastro-funcionario/index.html?id=${
               funcionario.id
             }&origem=pagina-funcionarios" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-edit-alt'></i></a>
             <a href="#" class="btn-acao-icone btn-excluir" data-id="${
@@ -211,7 +200,7 @@ function iniciarPaginaResponsaveis() {
         <td>${responsavel.parentesco}</td>
         <td>${nomeResidente}</td>
         <td class="acoes">
-            <a href="/cadastro-responsavel/index.html?id=${responsavel.id}&origem=pagina-responsavel" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bx-edit'></i></a>
+            <a href="cadastro/cadastro-responsavel/index.html?id=${responsavel.id}&origem=pagina-responsavel" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bx-edit'></i></a>
             <a href="#" class="btn-acao-icone btn-excluir" data-id="${responsavel.id}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
         </td>
     `;
@@ -283,20 +272,31 @@ function iniciarPaginaMedicamentos() {
 
     let acoesHtml = "";
     if (tratamento.status === "Pendente") {
-      acoesHtml += `<button class="btn-acao btn-confirmar" data-id="${tratamento.id}">Registrar Dose</button>`;
+      acoesHtml = `<button class="btn-acao btn-confirmar" data-id="${tratamento.id}">Registrar Dose</button>`;
     } else {
-      acoesHtml += `<button class="btn-acao" disabled>${tratamento.status}</button>`;
+      acoesHtml = `<button class="btn-acao" disabled>${tratamento.status}</button>`;
     }
 
+    // --- CÓDIGO ATUALIZADO ---
     tr.innerHTML = `
             <td>${tratamento.horario}</td>
             <td>${nomeResidente}</td>
             <td>${tratamento.medicamento}</td>
             <td>${tratamento.dosagem}</td>
-            <td><span class="status ${classeStatus}">${tratamento.status}</span></td>
-            <td class="acoes"> ${acoesHtml}
-                <a href="#" class="btn-acao-icone btn-editar" title="Editar Agendamento"><i class='bx bx-edit'></i></a>
-                <a href="#" class="btn-acao-icone btn-excluir" data-id="${tratamento.id}" title="Excluir Agendamento"><i class='bx bx-trash-alt'></i></a>
+            <td>${
+              tratamento.tipo || "N/A"
+            }</td> <td><span class="status ${classeStatus}">${
+      tratamento.status
+    }</span></td> <td class="acoes-medicamentos">
+                ${acoesHtml}
+                <div class="grupo-icones">
+                    <a href="cadastros/cadastro-medicamento/index.html?id=${
+                      tratamento.id
+                    }&origem=pagina-medicamentos" class="btn-acao-icone btn-editar" title="Editar Agendamento"><i class='bx bx-edit'></i></a>
+                    <a href="#" class="btn-acao-icone btn-excluir" data-id="${
+                      tratamento.id
+                    }" title="Excluir Agendamento"><i class='bx bx-trash-alt'></i></a>
+                </div>
             </td>
         `;
     tabelaBody.appendChild(tr);
@@ -307,17 +307,104 @@ function iniciarPaginaMedicamentos() {
     if (listaTratamentos.length > 0) {
       listaTratamentos.forEach((t) => adicionarTratamentoNaTabela(t));
     } else {
-      tabelaBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Nenhum tratamento agendado.</td></tr>`;
+      tabelaBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Nenhum tratamento agendado.</td></tr>`; // Colspan atualizado para 7
     }
 
     tabelaBody.addEventListener("click", function (event) {
-      const botaoConfirmar = event.target.closest(".btn-confirmar");
       const botaoExcluir = event.target.closest(".btn-excluir");
-
-      if (botaoConfirmar) {
-      }
-
       if (botaoExcluir) {
+        event.preventDefault();
+        const idParaExcluir = botaoExcluir.dataset.id;
+        const nomeDoResponsavel = botaoExcluir
+          .closest("tr")
+          .querySelectorAll("td")[0].textContent;
+
+        if (
+          confirm(
+            `Tem certeza que deseja excluir o responsável "${nomeDoResponsavel}"?`
+          )
+        ) {
+          const responsaveisAtuais = JSON.parse(
+            sessionStorage.getItem("listaResponsaveis") || "[]"
+          );
+          const novaLista = responsaveisAtuais.filter(
+            (resp) => resp.id != idParaExcluir
+          );
+          sessionStorage.setItem(
+            "listaResponsaveis",
+            JSON.stringify(novaLista)
+          );
+          alert("Responsável excluído com sucesso!");
+          window.location.reload();
+        }
+      }
+    });
+  }
+}
+
+// sessao atividades  -_____________________________________________________________________________________________________
+
+function iniciarPaginaAtividades() {
+  const listaAgendamentos = JSON.parse(
+    sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
+  );
+  const tabelaBody = document.getElementById("lista-atividades-body");
+
+  function adicionarAtividadeNaTabela(agendamento) {
+    const tr = document.createElement("tr");
+    const classeStatus = `status-${agendamento.status.toLowerCase()}`;
+
+    tr.innerHTML = `
+            <td>${agendamento.horario}</td>
+            <td>${agendamento["nome-atividade"]}</td>
+            <td>${agendamento["categoria-atividade"]}</td>
+            <td>${agendamento.local || "N/A"}</td>
+            <td>${agendamento.duracao || "N/A"}</td>
+            <td><span class="status ${classeStatus}">${
+      agendamento.status
+    }</span></td>
+            <td class="acoes">
+                <button class="btn-acao">Participação</button> 
+            </td>
+        `;
+    tabelaBody.appendChild(tr);
+  }
+
+  if (tabelaBody) {
+    tabelaBody.innerHTML = "";
+    if (listaAgendamentos.length > 0) {
+      listaAgendamentos.forEach((ag) => adicionarAtividadeNaTabela(ag));
+    } else {
+      tabelaBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Nenhuma atividade agendada.</td></tr>`;
+    }
+
+    tabelaBody.addEventListener("click", function (event) {
+      const botaoExcluir = event.target.closest(".btn-excluir");
+      if (botaoExcluir) {
+        event.preventDefault();
+        const idParaExcluir = botaoExcluir.dataset.id;
+        const nomeDoResponsavel = botaoExcluir
+          .closest("tr")
+          .querySelectorAll("td")[0].textContent;
+
+        if (
+          confirm(
+            `Tem certeza que deseja excluir o responsável "${nomeDoResponsavel}"?`
+          )
+        ) {
+          const responsaveisAtuais = JSON.parse(
+            sessionStorage.getItem("listaResponsaveis") || "[]"
+          );
+          const novaLista = responsaveisAtuais.filter(
+            (resp) => resp.id != idParaExcluir
+          );
+          sessionStorage.setItem(
+            "listaResponsaveis",
+            JSON.stringify(novaLista)
+          );
+          alert("Responsável excluído com sucesso!");
+          window.location.reload();
+        }
       }
     });
   }
@@ -376,6 +463,7 @@ document.addEventListener("DOMContentLoaded", function () {
   iniciarPaginaFuncionarios();
   iniciarPaginaResponsaveis();
   iniciarPaginaMedicamentos();
+  iniciarPaginaAtividades();
 
   const urlParams = new URLSearchParams(window.location.search);
   const paginaDestino = urlParams.get("pagina");

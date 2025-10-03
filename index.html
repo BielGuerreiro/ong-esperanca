@@ -243,6 +243,7 @@
                       <th>Residente</th>
                       <th>Medicamento</th>
                       <th>Dosagem</th>
+                      <th>Tipo/Forma</th>
                       <th>Status</th>
                       <th>Ações</th>
                     </tr>
@@ -260,9 +261,36 @@
 
         <div id="pagina-atividades" class="pagina-conteudo">
           <div class="boas-vinda">
-            <h2>Dashboard</h2>
+            <h2>Agenda de Atividades</h2>
           </div>
-          <p>Bem-vindo ao Dashboard! (Conteúdo de exemplo)</p>
+          <div class="ficha-container">
+            <div class="ficha">
+              <div class="ficha-header">
+                <h2>Próximas Atividades</h2>
+                <a
+                  href="/cadastros/cadastro-atividade/index.html?origem=pagina-atividades"
+                  class="btn-nova-ficha item-gerente"
+                  >Nova Atividade</a
+                >
+              </div>
+              <div class="lista-residentes-container">
+                <table class="tabela-atividades">
+                  <thead>
+                    <tr>
+                      <th>Horário</th>
+                      <th>Atividade</th>
+                      <th>Categoria</th>
+                      <th>Local</th>
+                      <th>Duração</th>
+                      <th>Status</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lista-atividades-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- final sessao atividade ______________________________________________________________________________ -->

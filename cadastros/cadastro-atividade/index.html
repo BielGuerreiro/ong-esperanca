@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Agendar Atividade</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="shortcut icon" href="/img/logo.png" type="image/x-icon" />
+  </head>
+  <body>
+    <main>
+      <div class="container-formulario">
+        <form id="form-atividade" class="formulario-etapas">
+          <div class="etapa-form ativo">
+            <h2>Agendar Nova Atividade</h2>
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir">
+                <label for="nome-atividade"
+                  >Nome da Atividade <span class="obrigatorio">*</span></label
+                >
+                <input
+                  type="text"
+                  id="nome-atividade"
+                  name="nome-atividade"
+                  required
+                />
+              </div>
+              <div class="grupo-form campo-expandir">
+                <label for="categoria-atividade"
+                  >Categoria <span class="obrigatorio">*</span></label
+                >
+                <select
+                  id="categoria-atividade"
+                  name="categoria-atividade"
+                  required
+                >
+                  <option value="" disabled selected>Selecionar</option>
+                  <option value="Educacional">Educacional</option>
+                  <option value="Terapêutica">Terapêutica</option>
+                  <option value="Recreativa">Recreativa</option>
+                  <option value="Esportiva">Esportiva</option>
+                  <option value="Cultural">Cultural</option>
+                </select>
+              </div>
+            </div>
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir">
+                <label for="local">Local</label>
+                <input type="text" id="local" name="local" />
+              </div>
+              <div class="grupo-form">
+                <label for="data"
+                  >Data <span class="obrigatorio">*</span></label
+                >
+                <input type="date" id="data" name="data" required />
+              </div>
+            </div>
+            <div class="linha-form">
+              <div class="grupo-form">
+                <label for="horario"
+                  >Horário <span class="obrigatorio">*</span></label
+                >
+                <input type="time" id="horario" name="horario" required />
+              </div>
+              <div class="grupo-form campo-expandir">
+                <label for="duracao">Duração</label>
+                <input
+                  type="text"
+                  id="duracao"
+                  name="duracao"
+                  placeholder="Ex: 1 hora, 45 minutos"
+                />
+              </div>
+            </div>
+
+            <div class="grupo-form">
+              <label for="residente-select">Participantes</label>
+              <select id="residente-select">
+                <option value="" disabled selected>
+                  Adicionar um residente...
+                </option>
+              </select>
+              <div
+                id="residentes-selecionados-container"
+                class="tags-container"
+              ></div>
+              <input
+                type="hidden"
+                name="participantes_ids"
+                id="participantes_ids"
+              />
+            </div>
+
+            <div class="navegacao-form">
+              <button type="submit" class="btn-enviar">AGENDAR</button>
+              <button type="button" class="btn-cancelar">
+                &larr; CANCELAR
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>

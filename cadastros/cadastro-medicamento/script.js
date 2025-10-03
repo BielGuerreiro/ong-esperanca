@@ -1,3 +1,8 @@
+/*
+    VERSÃO COMPLETA E FUNCIONAL DO SCRIPT DE CADASTRO DE MEDICAMENTO
+    - Inclui a lógica completa dos botões e validação.
+*/
+
 // Funções de dados
 function carregarTratamentos() {
   return JSON.parse(sessionStorage.getItem("listaTratamentos") || "[]");
@@ -12,6 +17,8 @@ function carregarResidentes() {
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("form-medicamento");
   const selectResidente = document.getElementById("residenteId");
+  const botaoSubmit = document.querySelector(".btn-enviar");
+  const botaoCancelar = document.querySelector(".btn-cancelar");
 
   // Popula a seleção de RESIDENTES
   const listaResidentes = carregarResidentes();
@@ -24,11 +31,37 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Lógica de envio do formulário
+  // --- LÓGICA DOS BOTÕES E VALIDAÇÃO ---
+
+  // Lógica do botão Cancelar
+  if (botaoCancelar) {
+    botaoCancelar.addEventListener("click", function () {
+      if (confirm("Tem certeza que deseja cancelar?")) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const origem = urlParams.get("origem");
+        let redirectUrl = "../../index.html"; // Caminho relativo para a raiz
+        if (origem) {
+          redirectUrl += `?pagina=${origem}`;
+        }
+        window.location.href = redirectUrl;
+      }
+    });
+  }
+
+  // Lógica de Validação (roda no clique)
+  if (botaoSubmit) {
+    botaoSubmit.addEventListener("click", function () {
+      form.classList.add("form-foi-validado");
+      if (!form.checkValidity()) {
+        alert("Por favor, preencha todos os campos obrigatórios (*).");
+      }
+    });
+  }
+
+  // Lógica de Envio do formulário (só roda se for válido)
   form.addEventListener("submit", function (event) {
     event.preventDefault();
-
-    // ... (cole aqui a lógica de validação com checkValidity() e o alerta de erro)
+    if (!form.checkValidity()) return;
 
     const listaTratamentos = carregarTratamentos();
     const formData = new FormData(form);
@@ -40,8 +73,14 @@ document.addEventListener("DOMContentLoaded", function () {
     salvarTratamentos(listaTratamentos);
 
     alert("Tratamento cadastrado com sucesso!");
-    window.location.href = "/index.html?pagina=pagina-medicamentos";
-  });
 
-  // ... (cole aqui a lógica dos botões cancelar e validação, dos outros formulários)
+    // Redireciona de volta para a página de medicamentos
+    const urlParams = new URLSearchParams(window.location.search);
+    const origem = urlParams.get("origem");
+    let redirectUrl = "../../index.html";
+    if (origem) {
+      redirectUrl += `?pagina=${origem}`;
+    }
+    window.location.href = redirectUrl;
+  });
 });
