@@ -244,3 +244,18 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   color: white;
   border-color: var(--cor-principal);
 }
+
+.grupo-form-checkbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.grupo-form-checkbox input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+.grupo-form-checkbox label {
+  margin-bottom: 0;
+  font-weight: normal;
+}

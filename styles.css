@@ -8,9 +8,24 @@
 }
 
 :root {
+  /* Suas cores antigas */
   --main-color: white;
   --secundary-color: #c0bbbb;
   --tertiary-color: #6fa9e4;
+
+  /* --- NOVAS CORES ADICIONADAS --- */
+
+  /* Azuis */
+  --cor-azul-claro: #92c0e3; /* Azul céu para fundos e detalhes suaves */
+  --cor-azul-medio: #75afdc; /* Azul principal para botões e links */
+
+  /* Neutras */
+  --cor-cinza-texto: #7e7e7e; /* Cinza para textos secundários */
+  --cor-fundo-claro: #f6f6f6; /* Um branco levemente acinzentado para fundos */
+
+  /* Vermelhos/Rosas (Ótimo para alertas ou exclusão) */
+  --cor-vermelho-claro: #ffd2d2; /* Fundo para mensagens de erro/alerta suaves */
+  --cor-vermelho-escuro: #e39293; /* Cor principal para botões de excluir ou alertas importantes */
 }
 
 html {
@@ -129,17 +144,25 @@ body {
 }
 
 /* dashboard _______________________________________________________________________________________________________________________ */
+.ficha-container .ficha {
+  height: 600px;
+  max-height: 80vh;
+}
+
 .dashboard-container {
   display: flex;
   gap: 0;
   margin-top: 20px;
   align-items: stretch;
+  flex-grow: 1;
+  overflow: hidden;
 }
 
 .lista-residentes-dashboard {
   flex: 0 0 300px;
   border: none;
   padding: 0;
+  overflow-y: auto;
 }
 
 .lista-residentes-dashboard ul {
@@ -152,7 +175,7 @@ body {
   padding: 15px 20px;
   cursor: pointer;
   font-weight: 500;
-  color: var(--cor-texto-label);
+  color: #555;
   transition: background-color 0.2s;
   border-bottom: 1px solid #eee;
 }
@@ -162,12 +185,13 @@ body {
 }
 
 .lista-residentes-dashboard li:hover {
-  background-color: #f0f5fa;
+  background-color: #f5f9fd;
 }
 
 .lista-residentes-dashboard li.ativo {
   background-color: #eaf2fa;
   font-weight: bold;
+  color: var(--tertiary-color);
 }
 
 .separador-vertical {
@@ -176,8 +200,49 @@ body {
   margin: 0 30px;
 }
 
+/* --- graficos do power bi falso --- */
 .grafico-dashboard {
   flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#grafico-placeholder {
+  text-align: center;
+  color: #aaa;
+}
+
+#grafico-placeholder i {
+  font-size: 60px;
+  margin-bottom: 15px;
+}
+
+.grafico-dashboard iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.grafico-dashboard {
+  flex-direction: row;
+  gap: 30px;
+  padding: 20px;
+  align-items: stretch;
+}
+
+.chart-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.chart-wrapper h2 {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 15px;
 }
 
 /* residentes ____________________________________________________________________________________________________________________ */

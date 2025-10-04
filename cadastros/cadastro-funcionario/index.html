@@ -14,7 +14,7 @@
           <!-- primeira parte ________________________________________________________________________ -->
 
           <div id="etapa-1" class="etapa-form ativo">
-            <!-- nome ________________________________________________________________________ -->
+            <h2>Dados Pessoais</h2>
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="primeiro-nome"
@@ -28,8 +28,6 @@
                   required
                 />
               </div>
-
-              <!-- sobrenome ________________________________________________________________________ -->
               <div class="grupo-form campo-expandir">
                 <label for="sobrenome"
                   >Sobrenome <span class="obrigatorio">*</span></label
@@ -43,8 +41,6 @@
                 />
               </div>
             </div>
-
-            <!-- cpf ________________________________________________________________________ -->
             <div class="linha-form">
               <div class="grupo-form">
                 <label for="cpf">CPF <span class="obrigatorio">*</span></label>
@@ -58,9 +54,6 @@
                   required
                 />
               </div>
-
-              <!-- data ________________________________________________________________________ -->
-
               <div class="grupo-form campo-expandir">
                 <label for="nascimento"
                   >Data de nascimento <span class="obrigatorio">*</span></label
@@ -68,24 +61,7 @@
                 <input type="date" id="nascimento" name="nascimento" required />
               </div>
             </div>
-
-            <!-- carhgo  ________________________________________________________________________ -->
             <div class="linha-form">
-              <div class="grupo-form campo-expandir">
-                <label for="cargo"
-                  >Cargo <span class="obrigatorio">*</span></label
-                >
-                <input
-                  type="text"
-                  id="cargo"
-                  name="cargo"
-                  placeholder="Ex: Cuidador, Administrador"
-                  required
-                />
-              </div>
-
-              <!-- genero ________________________________________________________________________ -->
-
               <div class="grupo-form">
                 <label for="sexo"
                   >Sexo <span class="obrigatorio">*</span></label
@@ -96,21 +72,34 @@
                   <option value="feminino">Feminino</option>
                 </select>
               </div>
-            </div>
-
-            <!-- adimicao ________________________________________________________________________ -->
-
-            <div class="linha-form">
               <div class="grupo-form campo-expandir">
-                <label for="admissao"
-                  >Data de admissão <span class="obrigatorio">*</span></label
+                <label for="telefone"
+                  >Telefone <span class="obrigatorio">*</span></label
                 >
-                <input type="date" id="admissao" name="admissao" required />
+                <input
+                  type="tel"
+                  id="telefone"
+                  name="telefone"
+                  placeholder="(00) 00000-0000"
+                  inputmode="numeric"
+                  required
+                />
               </div>
             </div>
-
-            <!-- botao ________________________________________________________________________ -->
-
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir">
+                <label for="email"
+                  >E-mail <span class="obrigatorio">*</span></label
+                >
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="exemplo@email.com"
+                  required
+                />
+              </div>
+            </div>
             <div class="navegacao-form">
               <button type="button" class="btn-proximo">PRÓXIMO &rarr;</button>
               <button type="button" class="btn-cancelar">
@@ -243,31 +232,25 @@
 
           <!-- terceira parte ________________________________________________________________________ -->
           <div id="etapa-3" class="etapa-form">
+            <h2>Dados Profissionais e de Acesso</h2>
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
-                <label for="telefone"
-                  >Telefone <span class="obrigatorio">*</span></label
+                <label for="cargo"
+                  >Cargo <span class="obrigatorio">*</span></label
                 >
                 <input
-                  type="tel"
-                  id="telefone"
-                  name="telefone"
-                  placeholder="(00) 00000-0000"
-                  inputmode="numeric"
+                  type="text"
+                  id="cargo"
+                  name="cargo"
+                  placeholder="Ex: Cuidador, Administrador"
                   required
                 />
               </div>
               <div class="grupo-form campo-expandir">
-                <label for="email"
-                  >E-mail <span class="obrigatorio">*</span></label
+                <label for="admissao"
+                  >Data de admissão <span class="obrigatorio">*</span></label
                 >
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  placeholder="exemplo@email.com"
-                  required
-                />
+                <input type="date" id="admissao" name="admissao" required />
               </div>
             </div>
             <div class="linha-form">
@@ -295,15 +278,27 @@
                 >
                 <select id="nivel-acesso" name="nivel-acesso" required>
                   <option value="" disabled selected>Selecionar</option>
-                  <option value="funcionario">Responsável</option>
                   <option value="funcionario">Funcionário</option>
                   <option value="gerente">Gerente</option>
                 </select>
               </div>
             </div>
-
             <div class="linha-form">
-              <div class="grupo-form">
+              <div class="grupo-form campo-expandir">
+                <label for="turno"
+                  >Horário de Trabalho (Turno)
+                  <span class="obrigatorio">*</span></label
+                >
+                <select id="turno" name="turno" required>
+                  <option value="" disabled selected>Selecionar turno</option>
+                  <option value="manha">Manhã (06:00 - 14:00)</option>
+                  <option value="tarde">Tarde (14:00 - 22:00)</option>
+                  <option value="noite">Noite (22:00 - 06:00)</option>
+                </select>
+              </div>
+            </div>
+            <div class="linha-form">
+              <div class="grupo-form campo-expandir">
                 <label for="residente-select"
                   >Residentes sob cuidados (Opcional)</label
                 >

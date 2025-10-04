@@ -77,6 +77,22 @@
           <div class="boas-vinda">
             <h2>Dashboard de Acompanhamento</h2>
           </div>
+          <div class="boxes-container">
+            <div class="box">
+              <h3 id="contador-residentes">0</h3>
+              <p>Residentes</p>
+            </div>
+
+            <div class="box">
+              <h3 id="contador-medicamentos-pendentes">0</h3>
+              <p>Medicamentos Pendentes do Dia</p>
+            </div>
+
+            <div class="box">
+              <h3 id="contador-atividades-hoje">0</h3>
+              <p>Atividades Programadas Pra Hoje</p>
+            </div>
+          </div>
 
           <div class="ficha-container">
             <div class="ficha">
@@ -107,21 +123,6 @@
 
         <!-- comeco sessao residente ______________________________________________________________________________ -->
         <div id="pagina-residentes" class="pagina-conteudo">
-          <div class="boxes-container">
-            <div class="box">
-              <h3 id="contador-residentes">0</h3>
-              <p>Residentes</p>
-            </div>
-            <div class="box">
-              <h3>5</h3>
-              <p>Medicamentos Pendentes do Dia</p>
-            </div>
-            <div class="box">
-              <h3>3</h3>
-              <p>Atividades Programadas Pra Hoje</p>
-            </div>
-          </div>
-
           <div class="ficha-container">
             <div class="ficha">
               <div class="ficha-header">
@@ -138,6 +139,7 @@
                     <tr>
                       <th>Nome</th>
                       <th>Idade</th>
+                      <th>Sexo</th>
                       <th>Categoria</th>
                       <th>Ações</th>
                     </tr>
@@ -277,10 +279,9 @@
                 <table class="tabela-atividades">
                   <thead>
                     <tr>
+                      <th>Data</th>
                       <th>Horário</th>
                       <th>Atividade</th>
-                      <th>Categoria</th>
-                      <th>Local</th>
                       <th>Duração</th>
                       <th>Status</th>
                       <th>Ações</th>
@@ -318,6 +319,7 @@
                     <tr>
                       <th>Data</th>
                       <th>Residente</th>
+                      <th>Medicamento</th>
                       <th>Responsável pelo Registro</th>
                       <th>Status Medicação</th>
                       <th>Ações</th>

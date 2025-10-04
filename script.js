@@ -17,27 +17,188 @@ function definirCategoria(idade) {
   return "Idoso";
 }
 
-// tabela residentes ______________________________________________________________________________________________________________
+// tabela dashboard ______________________________________________________________________________________________________________
+// ===================================================================
+// LÓGICA DA PÁGINA DE DASHBOARD (VERSÃO COM GRÁFICOS Chart.js)
+// ===================================================================
 
+// Variáveis para guardar as instâncias dos gráficos e poder destruí-las depois
+let graficoAtividades = null;
+let graficoMedicamentos = null;
+
+function iniciarPaginaDashboard() {
+  // --- 1. CARREGA OS DADOS NECESSÁRIOS ---
+  const listaResidentes = JSON.parse(
+    sessionStorage.getItem("listaResidentes") || "[]"
+  );
+  const listaTratamentos = JSON.parse(
+    sessionStorage.getItem("listaTratamentos") || "[]"
+  );
+  const listaAtividades = JSON.parse(
+    sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
+  );
+
+  // --- 2. PEGA OS ELEMENTOS DO HTML ---
+  const contadorResidentesEl = document.getElementById("contador-residentes");
+  const contadorMedicamentosEl = document.getElementById(
+    "contador-medicamentos-pendentes"
+  );
+  const contadorAtividadesEl = document.getElementById(
+    "contador-atividades-hoje"
+  );
+  const listaResidentesDashboard = document.getElementById(
+    "residentes-chart-list"
+  );
+  const graficoContainer = document.querySelector(".grafico-dashboard");
+
+  // --- 3. ATUALIZA OS VALORES DOS CONTADORES ---
+  if (contadorResidentesEl) {
+    contadorResidentesEl.textContent = listaResidentes.length;
+  }
+  if (contadorMedicamentosEl) {
+    const pendentes = listaTratamentos.filter(
+      (t) => t.status === "Pendente"
+    ).length;
+    contadorMedicamentosEl.textContent = pendentes;
+  }
+  if (contadorAtividadesEl) {
+    const hoje = new Date().toISOString().split("T")[0];
+    const deHoje = listaAtividades.filter(
+      (a) => a.data === hoje && a.status === "Agendada"
+    ).length;
+    contadorAtividadesEl.textContent = deHoje;
+  }
+
+  // --- 4. CRIA A LISTA DE RESIDENTES PARA O GRÁFICO ---
+  if (listaResidentesDashboard) {
+    listaResidentesDashboard.innerHTML = "";
+    listaResidentes.forEach((residente) => {
+      const li = document.createElement("li");
+      li.textContent = `${residente["primeiro-nome"]} ${residente.sobrenome}`;
+      li.dataset.id = residente.id;
+      listaResidentesDashboard.appendChild(li);
+    });
+  }
+
+  // --- 5. ADICIONA O EVENTO DE CLIQUE NA LISTA PARA MOSTRAR OS GRÁFICOS ---
+  if (listaResidentesDashboard && graficoContainer) {
+    listaResidentesDashboard.addEventListener("click", function (event) {
+      if (event.target && event.target.nodeName === "LI") {
+        const liClicado = event.target;
+        const residenteId = liClicado.dataset.id;
+
+        // Efeito de seleção na lista
+        listaResidentesDashboard
+          .querySelectorAll("li")
+          .forEach((item) => item.classList.remove("ativo"));
+        liClicado.classList.add("ativo");
+
+        // --- LÓGICA PARA CRIAR OS GRÁFICOS ---
+
+        // Antes de criar novos gráficos, destrói os antigos se eles existirem
+        if (graficoAtividades) {
+          graficoAtividades.destroy();
+        }
+        if (graficoMedicamentos) {
+          graficoMedicamentos.destroy();
+        }
+
+        // Limpa o container e cria os novos elementos para os gráficos
+        graficoContainer.innerHTML = `
+          <div class="chart-wrapper">
+            <h2>Frequência em Atividades (últimos 6 meses)</h2>
+            <canvas id="grafico-atividades-residente"></canvas>
+          </div>
+          <div class="chart-wrapper">
+            <h2>Status dos Medicamentos de Hoje</h2>
+            <canvas id="grafico-medicamentos-residente"></canvas>
+          </div>
+        `;
+
+        // --- Gráfico 1: Atividades (Barras com dados fictícios) ---
+        const ctxAtividades = document
+          .getElementById("grafico-atividades-residente")
+          .getContext("2d");
+        const dadosFicticios = Array.from({ length: 6 }, () =>
+          Math.floor(Math.random() * 15)
+        ); // Gera 6 números aleatórios
+
+        graficoAtividades = new Chart(ctxAtividades, {
+          type: "bar",
+          data: {
+            labels: ["Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro"], // Exemplo de meses
+            datasets: [
+              {
+                label: "Nº de Atividades",
+                data: dadosFicticios,
+                backgroundColor: "rgba(111, 169, 228, 0.6)",
+                borderColor: "rgba(111, 169, 228, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: { responsive: true, maintainAspectRatio: false },
+        });
+
+        // --- Gráfico 2: Medicamentos (Rosca com dados reais) ---
+        const ctxMedicamentos = document
+          .getElementById("grafico-medicamentos-residente")
+          .getContext("2d");
+        const tratamentosDoResidente = listaTratamentos.filter(
+          (t) => t.residenteId == residenteId
+        );
+        const administrados = tratamentosDoResidente.filter(
+          (t) => t.status !== "Pendente"
+        ).length;
+        const pendentes = tratamentosDoResidente.length - administrados;
+
+        graficoMedicamentos = new Chart(ctxMedicamentos, {
+          type: "doughnut",
+          data: {
+            labels: ["Administrados", "Pendentes"],
+            datasets: [
+              {
+                label: "Status de Medicamentos",
+                data: [administrados, pendentes],
+                backgroundColor: [
+                  "rgba(40, 167, 69, 0.7)",
+                  "rgba(255, 193, 7, 0.7)",
+                ],
+                borderColor: ["rgba(40, 167, 69, 1)", "rgba(255, 193, 7, 1)"],
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: { responsive: true, maintainAspectRatio: false },
+        });
+      }
+    });
+  }
+}
+
+// tabela residentes ______________________________________________________________________________________________________________
 function iniciarPaginaResidentes() {
   const listaResidentes = JSON.parse(
     sessionStorage.getItem("listaResidentes") || "[]"
   );
   const tabelaBody = document.getElementById("lista-residentes-body");
-  const contadorResidentesEl = document.getElementById("contador-residentes");
 
   function adicionarResidenteNaTabela(residente) {
     const tr = document.createElement("tr");
     const idade = calcularIdade(residente.nascimento);
     const categoria = definirCategoria(idade);
     const nomeCompleto = `${residente["primeiro-nome"]} ${residente.sobrenome}`;
+    const sexoFormatado = residente.sexo
+      ? residente.sexo.charAt(0).toUpperCase() + residente.sexo.slice(1)
+      : "N/A";
 
     tr.innerHTML = `
         <td>${nomeCompleto}</td>
         <td>${idade}</td>
+        <td>${sexoFormatado}</td>
         <td>${categoria}</td>
         <td class="acoes">
-            <a href="cadastro/cadastro-residente/index.html?id=${residente.id}&origem=pagina-residentes" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class="bx bx-edit"></i></a>
+            <a href="cadastros/cadastro-residente/index.html?id=${residente.id}&origem=pagina-residentes" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
             <a href="#" class="btn-acao-icone btn-excluir" data-id="${residente.id}" title="Excluir Ficha"><i class="bx bx-trash-alt"></i></a>
         </td>
     `;
@@ -52,12 +213,10 @@ function iniciarPaginaResidentes() {
       );
     } else {
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="4" style="text-align: center;">Nenhum residente cadastrado.</td>`;
+      tr.innerHTML = `<td colspan="5" style="text-align: center;">Nenhum residente cadastrado.</td>`;
       tabelaBody.appendChild(tr);
     }
-    if (contadorResidentesEl) {
-      contadorResidentesEl.textContent = listaResidentes.length;
-    }
+
     tabelaBody.addEventListener("click", function (event) {
       const botaoExcluir = event.target.closest(".btn-excluir");
       if (botaoExcluir) {
@@ -66,17 +225,14 @@ function iniciarPaginaResidentes() {
         const nomeDoResidente = botaoExcluir
           .closest("tr")
           .querySelector("td").textContent;
-        const residentesAtuais = JSON.parse(
-          sessionStorage.getItem("listaResidentes") || "[]"
-        );
         if (
           confirm(
             `Tem certeza que deseja excluir o residente "${nomeDoResidente}"?`
           )
         ) {
-          const novaLista = residentesAtuais.filter(
-            (residente) => residente.id != idParaExcluir
-          );
+          const novaLista = JSON.parse(
+            sessionStorage.getItem("listaResidentes") || "[]"
+          ).filter((residente) => residente.id != idParaExcluir);
           sessionStorage.setItem("listaResidentes", JSON.stringify(novaLista));
           alert("Residente excluído com sucesso!");
           window.location.reload();
@@ -119,7 +275,7 @@ function iniciarPaginaFuncionarios() {
         <td class="acoes">
             <a href="cadastro/cadastro-funcionario/index.html?id=${
               funcionario.id
-            }&origem=pagina-funcionarios" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-edit-alt'></i></a>
+            }&origem=pagina-funcionarios" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
             <a href="#" class="btn-acao-icone btn-excluir" data-id="${
               funcionario.id
             }" title="Excluir Ficha"><i class='bx bxs-trash'></i></a>
@@ -200,7 +356,7 @@ function iniciarPaginaResponsaveis() {
         <td>${responsavel.parentesco}</td>
         <td>${nomeResidente}</td>
         <td class="acoes">
-            <a href="cadastro/cadastro-responsavel/index.html?id=${responsavel.id}&origem=pagina-responsavel" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bx-edit'></i></a>
+            <a href="cadastro/cadastro-responsavel/index.html?id=${responsavel.id}&origem=pagina-responsavel" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
             <a href="#" class="btn-acao-icone btn-excluir" data-id="${responsavel.id}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
         </td>
     `;
@@ -293,7 +449,7 @@ function iniciarPaginaMedicamentos() {
                 <div class="grupo-icones">
                     <a href="cadastros/cadastro-medicamento/index.html?id=${
                       tratamento.id
-                    }&origem=pagina-medicamentos" class="btn-acao-icone btn-editar" title="Editar Agendamento"><i class='bx bx-edit'></i></a>
+                    }&origem=pagina-medicamentos" class="btn-acao-icone btn-editar" title="Editar Agendamento"><i class='bx bxs-pencil'></i></a>
                     <a href="#" class="btn-acao-icone btn-excluir" data-id="${
                       tratamento.id
                     }" title="Excluir Agendamento"><i class='bx bx-trash-alt'></i></a>
@@ -350,7 +506,6 @@ function iniciarPaginaAtividades() {
 
   // A função principal que desenha a tabela inteira na tela
   function renderizarTabela() {
-    // Carrega os dados mais recentes do sessionStorage
     let listaAgendamentos = JSON.parse(
       sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
     );
@@ -372,43 +527,47 @@ function iniciarPaginaAtividades() {
           acaoPrincipalHtml = `<button class="btn-acao" disabled>${status}</button>`;
         }
 
+        // Formata a data para o padrão brasileiro (dd/mm/aaaa)
+        const dataFormatada = new Date(
+          agendamento.data + "T00:00:00"
+        ).toLocaleDateString("pt-BR");
+
+        // --- HTML DA LINHA ATUALIZADO PARA AS NOVAS COLUNAS ---
         tr.innerHTML = `
-                    <td>${agendamento.horario}</td>
-                    <td>${agendamento["nome-atividade"]}</td>
-                    <td>${agendamento["categoria-atividade"]}</td>
-                    <td>${agendamento.local || "N/A"}</td>
-                    <td>${agendamento.duracao || "N/A"}</td>
-                    <td><span class="status ${classeStatus}">${status}</span></td>
-                    <td class="acoes">
-                        <div> 
-                            ${acaoPrincipalHtml}
-                            <div class="grupo-icones">
-                                <a href="cadastros/cadastro-atividade/index.html?id=${
-                                  agendamento.id
-                                }&origem=pagina-atividades" class="btn-acao-icone btn-editar" title="Editar Atividade"><i class='bx bx-edit'></i></a>
-                                <a href="#" class="btn-acao-icone btn-excluir" data-id="${
-                                  agendamento.id
-                                }" title="Excluir Atividade"><i class='bx bx-trash-alt'></i></a>
-                            </div>
-                        </div>
-                    </td>
-                `;
+            <td>${dataFormatada}</td>
+            <td>${agendamento.horario}</td>
+            <td>${agendamento["nome-atividade"]}</td>
+            <td>${agendamento.duracao || "N/A"}</td>
+            <td><span class="status ${classeStatus}">${status}</span></td>
+            <td class="acoes">
+                <div> 
+                    ${acaoPrincipalHtml}
+                    <div class="grupo-icones">
+                        <a href="cadastros/cadastro-atividade/index.html?id=${
+                          agendamento.id
+                        }&origem=pagina-atividades" class="btn-acao-icone btn-editar" title="Editar Atividade"><i class='bx bxs-pencil'></i></a>
+                        <a href="#" class="btn-acao-icone btn-excluir" data-id="${
+                          agendamento.id
+                        }" title="Excluir Atividade"><i class='bx bx-trash-alt'></i></a>
+                    </div>
+                </div>
+            </td>
+        `;
         tabelaBody.appendChild(tr);
       });
     } else {
-      tabelaBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Nenhuma atividade agendada.</td></tr>`;
+      // Colspan atualizado para 6 colunas
+      tabelaBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Nenhuma atividade agendada.</td></tr>`;
     }
   }
 
   if (tabelaBody) {
-    renderizarTabela(); // Desenha a tabela assim que a página carrega
+    renderizarTabela();
 
-    // Adiciona a lógica de clique para os botões de ação
     tabelaBody.addEventListener("click", function (event) {
       const botaoRegistrar = event.target.closest(".btn-registrar-presenca");
       const botaoExcluir = event.target.closest(".btn-excluir");
 
-      // --- Lógica para registrar presença ---
       if (botaoRegistrar) {
         const idParaAtualizar = botaoRegistrar.dataset.id;
         let listaAgendamentos = JSON.parse(
@@ -429,11 +588,10 @@ function iniciarPaginaAtividades() {
             "listaAgendamentosAtividade",
             JSON.stringify(listaAgendamentos)
           );
-          renderizarTabela(); // Redesenha a tabela para mostrar a mudança instantaneamente
+          renderizarTabela();
         }
       }
 
-      // --- Lógica completa para excluir ---
       if (botaoExcluir) {
         event.preventDefault();
         const idParaExcluir = botaoExcluir.dataset.id;
@@ -457,7 +615,7 @@ function iniciarPaginaAtividades() {
             "listaAgendamentosAtividade",
             JSON.stringify(novaLista)
           );
-          renderizarTabela(); // Redesenha a tabela para mostrar a mudança instantaneamente
+          renderizarTabela();
         }
       }
     });
@@ -465,9 +623,6 @@ function iniciarPaginaAtividades() {
 }
 
 // sessao relatorio   -_____________________________________________________________________________________________________
-// ===================================================================
-// LÓGICA ESPECÍFICA DA PÁGINA DE RELATÓRIOS (CORRIGIDA)
-// ===================================================================
 function iniciarPaginaRelatorios() {
   const tabelaBody = document.getElementById("lista-relatorios-body");
   if (!tabelaBody) return;
@@ -478,64 +633,85 @@ function iniciarPaginaRelatorios() {
   const listaResidentes = JSON.parse(
     sessionStorage.getItem("listaResidentes") || "[]"
   );
-  const listaFuncionarios = JSON.parse(
-    sessionStorage.getItem("listaFuncionarios") || "[]"
-  );
 
   tabelaBody.innerHTML = "";
 
   if (listaRelatorios.length === 0) {
-    // Colspan atualizado para 5 colunas
-    tabelaBody.innerHTML =
-      '<tr><td colspan="5" style="text-align:center;">Nenhum relatório diário salvo.</td></tr>';
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="6" style="text-align: center;">Nenhum relatório cadastrado.</td>`;
+    tabelaBody.appendChild(tr);
     return;
   }
 
-  // A função para adicionar cada linha na tabela
-  function adicionarRelatorioNaTabela(relatorio) {
-    const tr = document.createElement("tr");
+  listaRelatorios
+    .slice()
+    .reverse()
+    .forEach((relatorio) => {
+      const tr = document.createElement("tr");
 
-    const residente = listaResidentes.find(
-      (r) => r.id == relatorio.residenteId
-    );
-    const funcionario = listaFuncionarios.find(
-      (f) => f.id == relatorio.responsavelId
-    );
-    const nomeResidente = residente
-      ? `${residente["primeiro-nome"]} ${residente.sobrenome}`
-      : "N/A";
-    // No cadastro de relatório, o nome do responsável é um campo de texto
-    const nomeResponsavel =
-      relatorio.responsavelNome ||
-      (funcionario
-        ? `${funcionario["primeiro-nome"]} ${funcionario.sobrenome}`
-        : "N/A");
+      const residente = listaResidentes.find(
+        (r) => r.id == relatorio.residenteId
+      );
+      const nomeResidente = residente
+        ? `${residente["primeiro-nome"]} ${residente.sobrenome}`
+        : "Residente não encontrado";
 
-    // Pega o status da medicação salvo no relatório
-    const statusMedicacao = relatorio.statusMedicacao || "N/A";
+      const dataFormatada = new Date(
+        relatorio.data + "T00:00:00"
+      ).toLocaleDateString("pt-BR");
 
-    tr.innerHTML = `
-            <td>${new Date(
-              relatorio.data + "T00:00:00"
-            ).toLocaleDateString()}</td>
-            <td>${nomeResidente}</td>
-            <td>${nomeResponsavel}</td>
-            <td>${statusMedicacao}</td>
-            <td class="acoes">
-                <div>
-                    <a href="#" class="btn-acao-icone btn-editar" title="Ver/Editar Relatório"><i class="bx bx-edit"></i></a>
-                    <a href="#" class="btn-acao-icone btn-excluir" data-id="${
-                      relatorio.id
-                    }" title="Excluir Relatório"><i class="bx bx-trash-alt"></i></a>
-                </div>
-            </td>
-        `;
-    tabelaBody.appendChild(tr);
-  }
+      const nomeMedicamento = relatorio.medicamento || "Nenhum";
 
-  // Mostra os mais novos primeiro
-  listaRelatorios.reverse().forEach((relatorio) => {
-    adicionarRelatorioNaTabela(relatorio);
+      let statusHtml = relatorio.statusMedicacao || "N/A";
+      let classeStatus = "";
+      if (relatorio.statusMedicacao === "Medicado") {
+        classeStatus = "status-administrado";
+      } else if (relatorio.statusMedicacao === "Não Medicado") {
+        classeStatus = "status-nao-tomado";
+      }
+      if (classeStatus) {
+        statusHtml = `<span class="status ${classeStatus}">${relatorio.statusMedicacao}</span>`;
+      }
+
+      // CORREÇÃO: Alterada a classe "btn-excluir-relatorio" para "btn-excluir" para aplicar a cor vermelha
+      tr.innerHTML = `
+        <td>${dataFormatada}</td>
+        <td>${nomeResidente}</td>
+        <td>${nomeMedicamento}</td>
+        <td>${relatorio.responsavelNome}</td>
+        <td>${statusHtml}</td>
+        <td class="acoes">
+            <a href="cadastros/cadastro-relatorio/index.html?id=${relatorio.id}&origem=pagina-relatorios" class="btn-acao-icone btn-editar" title="Editar Relatório"><i class='bx bxs-pencil'></i></a>
+            <a href="#" class="btn-acao-icone btn-excluir" data-id="${relatorio.id}" title="Excluir Relatório"><i class='bx bx-trash-alt'></i></a>
+        </td>
+      `;
+
+      tabelaBody.appendChild(tr);
+    });
+
+  // CORREÇÃO: O seletor do listener também foi atualizado para ".btn-excluir"
+  tabelaBody.addEventListener("click", function (event) {
+    const botaoExcluir = event.target.closest(".btn-excluir");
+    if (botaoExcluir) {
+      event.preventDefault();
+      const idParaExcluir = botaoExcluir.dataset.id;
+
+      if (
+        confirm(
+          "Tem certeza que deseja excluir este relatório? A ação não pode ser desfeita."
+        )
+      ) {
+        let relatoriosAtuais = JSON.parse(
+          sessionStorage.getItem("listaRelatoriosDiarios") || "[]"
+        );
+        const novaLista = relatoriosAtuais.filter((r) => r.id != idParaExcluir);
+        sessionStorage.setItem(
+          "listaRelatoriosDiarios",
+          JSON.stringify(novaLista)
+        );
+        iniciarPaginaRelatorios();
+      }
+    }
   });
 }
 
@@ -588,6 +764,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // iniciacao __________________________________________________________________________________________________
+  iniciarPaginaDashboard();
   iniciarPaginaResidentes();
   iniciarPaginaFuncionarios();
   iniciarPaginaResponsaveis();
