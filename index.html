@@ -57,7 +57,7 @@
             ><span class="texto-lado">Atividades</span>
           </li>
 
-          <li data-pagina="pagina-relatorio">
+          <li data-pagina="pagina-relatorios">
             <i class="bx bx-clipboard"></i
             ><span class="texto-lado">Relatórios</span>
           </li>
@@ -270,7 +270,7 @@
                 <a
                   href="/cadastros/cadastro-atividade/index.html?origem=pagina-atividades"
                   class="btn-nova-ficha item-gerente"
-                  >Nova Atividade</a
+                  >Nova Atividade +</a
                 >
               </div>
               <div class="lista-residentes-container">
@@ -297,13 +297,38 @@
 
         <!-- comeco sessao relatorio  ______________________________________________________________________________ -->
 
-        <div id="pagina-relatorio" class="pagina-conteudo">
+        <div id="pagina-relatorios" class="pagina-conteudo">
           <div class="boas-vinda">
-            <h2>Dashboard</h2>
+            <h2>Relatórios Diários</h2>
           </div>
-          <p>Bem-vindo ao Dashboard! (Conteúdo de exemplo)</p>
-        </div>
 
+          <div class="ficha-container">
+            <div class="ficha">
+              <div class="ficha-header">
+                <h2>Registros Salvos</h2>
+                <a
+                  href="cadastros/cadastro-relatorio/index.html?origem=pagina-relatorios"
+                  class="btn-nova-ficha item-gerente"
+                  >Novo Relatório</a
+                >
+              </div>
+              <div class="lista-residentes-container">
+                <table class="tabela-relatorios">
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Residente</th>
+                      <th>Responsável pelo Registro</th>
+                      <th>Status Medicação</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lista-relatorios-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
         <!-- final sessao relatorio ______________________________________________________________________________ -->
 
         <!-- comeco sessao adm  ______________________________________________________________________________ -->

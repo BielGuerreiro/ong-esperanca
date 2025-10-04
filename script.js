@@ -280,14 +280,15 @@ function iniciarPaginaMedicamentos() {
     // --- CÓDIGO ATUALIZADO ---
     tr.innerHTML = `
             <td>${tratamento.horario}</td>
-            <td>${nomeResidente}</td>
-            <td>${tratamento.medicamento}</td>
-            <td>${tratamento.dosagem}</td>
-            <td>${
-              tratamento.tipo || "N/A"
-            }</td> <td><span class="status ${classeStatus}">${
+        <td>${nomeResidente}</td>
+        <td>${tratamento.medicamento}</td>
+        <td>${tratamento.dosagem}</td>
+        <td>${tratamento.tipo || "N/A"}</td>
+        <td><span class="status ${classeStatus}">${
       tratamento.status
-    }</span></td> <td class="acoes-medicamentos">
+    }</span></td>
+        <td class="acoes">
+            <div>
                 ${acoesHtml}
                 <div class="grupo-icones">
                     <a href="cadastros/cadastro-medicamento/index.html?id=${
@@ -297,11 +298,12 @@ function iniciarPaginaMedicamentos() {
                       tratamento.id
                     }" title="Excluir Agendamento"><i class='bx bx-trash-alt'></i></a>
                 </div>
-            </td>
+            </div>
+        </td>
         `;
     tabelaBody.appendChild(tr);
   }
-
+  3;
   if (tabelaBody) {
     tabelaBody.innerHTML = "";
     if (listaTratamentos.length > 0) {
@@ -343,71 +345,198 @@ function iniciarPaginaMedicamentos() {
 }
 
 // sessao atividades  -_____________________________________________________________________________________________________
-
 function iniciarPaginaAtividades() {
-  const listaAgendamentos = JSON.parse(
-    sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
-  );
   const tabelaBody = document.getElementById("lista-atividades-body");
 
-  function adicionarAtividadeNaTabela(agendamento) {
+  // A função principal que desenha a tabela inteira na tela
+  function renderizarTabela() {
+    // Carrega os dados mais recentes do sessionStorage
+    let listaAgendamentos = JSON.parse(
+      sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
+    );
+
+    if (!tabelaBody) return;
+
+    tabelaBody.innerHTML = ""; // Limpa a tabela antes de redesenhar
+
+    if (listaAgendamentos.length > 0) {
+      listaAgendamentos.forEach((agendamento) => {
+        const tr = document.createElement("tr");
+        const status = agendamento.status || "Agendada";
+        const classeStatus = `status-${status.toLowerCase()}`;
+
+        let acaoPrincipalHtml = "";
+        if (status === "Agendada") {
+          acaoPrincipalHtml = `<button class="btn-acao btn-confirmar btn-registrar-presenca" data-id="${agendamento.id}">Registrar Presença</button>`;
+        } else {
+          acaoPrincipalHtml = `<button class="btn-acao" disabled>${status}</button>`;
+        }
+
+        tr.innerHTML = `
+                    <td>${agendamento.horario}</td>
+                    <td>${agendamento["nome-atividade"]}</td>
+                    <td>${agendamento["categoria-atividade"]}</td>
+                    <td>${agendamento.local || "N/A"}</td>
+                    <td>${agendamento.duracao || "N/A"}</td>
+                    <td><span class="status ${classeStatus}">${status}</span></td>
+                    <td class="acoes">
+                        <div> 
+                            ${acaoPrincipalHtml}
+                            <div class="grupo-icones">
+                                <a href="cadastros/cadastro-atividade/index.html?id=${
+                                  agendamento.id
+                                }&origem=pagina-atividades" class="btn-acao-icone btn-editar" title="Editar Atividade"><i class='bx bx-edit'></i></a>
+                                <a href="#" class="btn-acao-icone btn-excluir" data-id="${
+                                  agendamento.id
+                                }" title="Excluir Atividade"><i class='bx bx-trash-alt'></i></a>
+                            </div>
+                        </div>
+                    </td>
+                `;
+        tabelaBody.appendChild(tr);
+      });
+    } else {
+      tabelaBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Nenhuma atividade agendada.</td></tr>`;
+    }
+  }
+
+  if (tabelaBody) {
+    renderizarTabela(); // Desenha a tabela assim que a página carrega
+
+    // Adiciona a lógica de clique para os botões de ação
+    tabelaBody.addEventListener("click", function (event) {
+      const botaoRegistrar = event.target.closest(".btn-registrar-presenca");
+      const botaoExcluir = event.target.closest(".btn-excluir");
+
+      // --- Lógica para registrar presença ---
+      if (botaoRegistrar) {
+        const idParaAtualizar = botaoRegistrar.dataset.id;
+        let listaAgendamentos = JSON.parse(
+          sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
+        );
+        const agendamento = listaAgendamentos.find(
+          (ag) => ag.id == idParaAtualizar
+        );
+
+        if (
+          agendamento &&
+          confirm(
+            `Confirmar a realização da atividade "${agendamento["nome-atividade"]}"?`
+          )
+        ) {
+          agendamento.status = "Realizada";
+          sessionStorage.setItem(
+            "listaAgendamentosAtividade",
+            JSON.stringify(listaAgendamentos)
+          );
+          renderizarTabela(); // Redesenha a tabela para mostrar a mudança instantaneamente
+        }
+      }
+
+      // --- Lógica completa para excluir ---
+      if (botaoExcluir) {
+        event.preventDefault();
+        const idParaExcluir = botaoExcluir.dataset.id;
+        let listaAgendamentos = JSON.parse(
+          sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
+        );
+        const agendamento = listaAgendamentos.find(
+          (ag) => ag.id == idParaExcluir
+        );
+
+        if (
+          agendamento &&
+          confirm(
+            `Tem certeza que deseja excluir a atividade "${agendamento["nome-atividade"]}"?`
+          )
+        ) {
+          const novaLista = listaAgendamentos.filter(
+            (ag) => ag.id != idParaExcluir
+          );
+          sessionStorage.setItem(
+            "listaAgendamentosAtividade",
+            JSON.stringify(novaLista)
+          );
+          renderizarTabela(); // Redesenha a tabela para mostrar a mudança instantaneamente
+        }
+      }
+    });
+  }
+}
+
+// sessao relatorio   -_____________________________________________________________________________________________________
+// ===================================================================
+// LÓGICA ESPECÍFICA DA PÁGINA DE RELATÓRIOS (CORRIGIDA)
+// ===================================================================
+function iniciarPaginaRelatorios() {
+  const tabelaBody = document.getElementById("lista-relatorios-body");
+  if (!tabelaBody) return;
+
+  const listaRelatorios = JSON.parse(
+    sessionStorage.getItem("listaRelatoriosDiarios") || "[]"
+  );
+  const listaResidentes = JSON.parse(
+    sessionStorage.getItem("listaResidentes") || "[]"
+  );
+  const listaFuncionarios = JSON.parse(
+    sessionStorage.getItem("listaFuncionarios") || "[]"
+  );
+
+  tabelaBody.innerHTML = "";
+
+  if (listaRelatorios.length === 0) {
+    // Colspan atualizado para 5 colunas
+    tabelaBody.innerHTML =
+      '<tr><td colspan="5" style="text-align:center;">Nenhum relatório diário salvo.</td></tr>';
+    return;
+  }
+
+  // A função para adicionar cada linha na tabela
+  function adicionarRelatorioNaTabela(relatorio) {
     const tr = document.createElement("tr");
-    const classeStatus = `status-${agendamento.status.toLowerCase()}`;
+
+    const residente = listaResidentes.find(
+      (r) => r.id == relatorio.residenteId
+    );
+    const funcionario = listaFuncionarios.find(
+      (f) => f.id == relatorio.responsavelId
+    );
+    const nomeResidente = residente
+      ? `${residente["primeiro-nome"]} ${residente.sobrenome}`
+      : "N/A";
+    // No cadastro de relatório, o nome do responsável é um campo de texto
+    const nomeResponsavel =
+      relatorio.responsavelNome ||
+      (funcionario
+        ? `${funcionario["primeiro-nome"]} ${funcionario.sobrenome}`
+        : "N/A");
+
+    // Pega o status da medicação salvo no relatório
+    const statusMedicacao = relatorio.statusMedicacao || "N/A";
 
     tr.innerHTML = `
-            <td>${agendamento.horario}</td>
-            <td>${agendamento["nome-atividade"]}</td>
-            <td>${agendamento["categoria-atividade"]}</td>
-            <td>${agendamento.local || "N/A"}</td>
-            <td>${agendamento.duracao || "N/A"}</td>
-            <td><span class="status ${classeStatus}">${
-      agendamento.status
-    }</span></td>
+            <td>${new Date(
+              relatorio.data + "T00:00:00"
+            ).toLocaleDateString()}</td>
+            <td>${nomeResidente}</td>
+            <td>${nomeResponsavel}</td>
+            <td>${statusMedicacao}</td>
             <td class="acoes">
-                <button class="btn-acao">Participação</button> 
+                <div>
+                    <a href="#" class="btn-acao-icone btn-editar" title="Ver/Editar Relatório"><i class="bx bx-edit"></i></a>
+                    <a href="#" class="btn-acao-icone btn-excluir" data-id="${
+                      relatorio.id
+                    }" title="Excluir Relatório"><i class="bx bx-trash-alt"></i></a>
+                </div>
             </td>
         `;
     tabelaBody.appendChild(tr);
   }
 
-  if (tabelaBody) {
-    tabelaBody.innerHTML = "";
-    if (listaAgendamentos.length > 0) {
-      listaAgendamentos.forEach((ag) => adicionarAtividadeNaTabela(ag));
-    } else {
-      tabelaBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Nenhuma atividade agendada.</td></tr>`;
-    }
-
-    tabelaBody.addEventListener("click", function (event) {
-      const botaoExcluir = event.target.closest(".btn-excluir");
-      if (botaoExcluir) {
-        event.preventDefault();
-        const idParaExcluir = botaoExcluir.dataset.id;
-        const nomeDoResponsavel = botaoExcluir
-          .closest("tr")
-          .querySelectorAll("td")[0].textContent;
-
-        if (
-          confirm(
-            `Tem certeza que deseja excluir o responsável "${nomeDoResponsavel}"?`
-          )
-        ) {
-          const responsaveisAtuais = JSON.parse(
-            sessionStorage.getItem("listaResponsaveis") || "[]"
-          );
-          const novaLista = responsaveisAtuais.filter(
-            (resp) => resp.id != idParaExcluir
-          );
-          sessionStorage.setItem(
-            "listaResponsaveis",
-            JSON.stringify(novaLista)
-          );
-          alert("Responsável excluído com sucesso!");
-          window.location.reload();
-        }
-      }
-    });
-  }
+  // Mostra os mais novos primeiro
+  listaRelatorios.reverse().forEach((relatorio) => {
+    adicionarRelatorioNaTabela(relatorio);
+  });
 }
 
 // ===================================================================
@@ -464,6 +593,7 @@ document.addEventListener("DOMContentLoaded", function () {
   iniciarPaginaResponsaveis();
   iniciarPaginaMedicamentos();
   iniciarPaginaAtividades();
+  iniciarPaginaRelatorios();
 
   const urlParams = new URLSearchParams(window.location.search);
   const paginaDestino = urlParams.get("pagina");

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Criar Relatório Diário</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="shortcut icon" href="/img/logo.png" type="image/x-icon" />
+  </head>
+  <body>
+    <main>
+      <div class="container-formulario">
+        <form id="form-relatorio" class="formulario-etapas">
+          <div class="etapa-form ativo">
+            <h2>Criar Novo Registro Diário</h2>
+
+            <div class="grupo-form">
+              <label for="data"
+                >Data do Relatório <span class="obrigatorio">*</span></label
+              >
+              <input type="date" id="data" name="data" required />
+            </div>
+
+            <div class="grupo-form">
+              <label for="residenteId"
+                >Para qual Residente? <span class="obrigatorio">*</span></label
+              >
+              <select id="residenteId" name="residenteId" required></select>
+            </div>
+
+            <div class="grupo-form">
+              <label for="medicamento">Medicação Administrada (Opcional)</label>
+              <select id="medicamento" name="medicamento">
+                <option value="">Nenhuma</option>
+              </select>
+            </div>
+
+            <div class="linha-form">
+              <div class="grupo-form">
+                <label>Status da Medicação</label>
+                <div class="botoes-status">
+                  <button
+                    type="button"
+                    class="btn-status"
+                    data-status="Medicado"
+                  >
+                    Foi Medicado
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-status"
+                    data-status="Não Medicado"
+                  >
+                    Não Foi Medicado
+                  </button>
+                </div>
+                <input
+                  type="hidden"
+                  name="statusMedicacao"
+                  id="statusMedicacaoInput"
+                />
+              </div>
+
+              <div class="grupo-form campo-expandir">
+                <label for="horaMedicacao">Hora da Medicação</label>
+                <input type="time" id="horaMedicacao" name="horaMedicacao" />
+              </div>
+            </div>
+
+            <div class="grupo-form">
+              <label for="descricao"
+                >Descrição sobre o dia <span class="obrigatorio">*</span></label
+              >
+              <textarea
+                id="descricao"
+                name="descricao"
+                rows="5"
+                placeholder="Descreva o humor, alimentação, interações, etc."
+                required
+              ></textarea>
+            </div>
+
+            <div class="grupo-form">
+              <label for="responsavelNome"
+                >Responsável pelo Registro
+                <span class="obrigatorio">*</span></label
+              >
+              <input
+                type="text"
+                id="responsavelNome"
+                name="responsavelNome"
+                placeholder="Digite seu nome"
+                required
+              />
+            </div>
+
+            <div class="navegacao-form">
+              <button type="submit" class="btn-enviar">SALVAR REGISTRO</button>
+              <button type="button" class="btn-cancelar">
+                &larr; CANCELAR
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>

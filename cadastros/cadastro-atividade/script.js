@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const formData = new FormData(form);
     const novoAgendamento = Object.fromEntries(formData.entries());
     novoAgendamento.id = Date.now();
-    novoAgendamento.status = "Agendada"; // Status inicial
+    novoAgendamento.status = "Agendada";
 
     listaAgendamentos.push(novoAgendamento);
     salvarAgendamentos(listaAgendamentos);

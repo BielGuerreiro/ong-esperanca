@@ -222,3 +222,25 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .tag i:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }
+
+/* realatorio ________________________________________________________________ */
+.botoes-status {
+  display: flex;
+  gap: 10px;
+}
+.btn-status {
+  flex-grow: 1;
+  padding: 15px;
+  border: 1px solid var(--cor-borda);
+  background-color: var(--cor-fundo-input);
+  color: var(--cor-texto-label);
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-status.selecionado {
+  background-color: var(--cor-principal);
+  color: white;
+  border-color: var(--cor-principal);
+}
