@@ -10,6 +10,14 @@
       rel="stylesheet"
     />
 
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
     <link rel="shortcut icon" href="img/logo.png" type="image/x-icon" />
 
     <link rel="stylesheet" href="styles.css" />
@@ -48,13 +56,13 @@
           </li>
 
           <li data-pagina="pagina-medicamentos">
-            <i class="bx bx-copy"></i
-            ><span class="texto-lado">Medicamentos</span>
+            <i class="bx bx-alarm"></i>
+            <span class="texto-lado">Medicamentos</span>
           </li>
 
           <li data-pagina="pagina-atividades">
-            <i class="bx bx-folder-open"></i
-            ><span class="texto-lado">Atividades</span>
+            <i class="bx bx-walking"></i>
+            <span class="texto-lado">Atividades</span>
           </li>
 
           <li data-pagina="pagina-relatorios">
@@ -74,8 +82,8 @@
       <div class="paginas-wrapper">
         <!-- comeco sessao dashborad  ______________________________________________________________________________ -->
         <div id="pagina-dashboard" class="pagina-conteudo">
-          <div class="boas-vinda">
-            <h2>Dashboard de Acompanhamento</h2>
+          <div class="titulo">
+            <h2>Olá, nome do usuario</h2>
           </div>
           <div class="boxes-container">
             <div class="box">
@@ -123,10 +131,13 @@
 
         <!-- comeco sessao residente ______________________________________________________________________________ -->
         <div id="pagina-residentes" class="pagina-conteudo">
+          <div class="titulo">
+            <h2>Ficha de Residentes</h2>
+          </div>
           <div class="ficha-container">
             <div class="ficha">
               <div class="ficha-header">
-                <h2>Fichas de Residentes</h2>
+                <h2>Lista de Residentes</h2>
                 <a
                   href="cadastros/cadastro-residente/index.html?origem=pagina-residentes"
                   class="btn-nova-ficha item-gerente"
@@ -185,7 +196,7 @@
 
         <!-- comeco sessao responsavel   ______________________________________________________________________________ -->
         <div id="pagina-responsavel" class="pagina-conteudo">
-          <div class="boas-vinda">
+          <div class="titulo">
             <h2>Ficha de Responsáveis</h2>
           </div>
 
@@ -223,7 +234,7 @@
         <!-- comeco sessao medicamento  ______________________________________________________________________________ -->
 
         <div id="pagina-medicamentos" class="pagina-conteudo">
-          <div class="boas-vinda">
+          <div class="titulo">
             <h2>Controle de Medicação Diária</h2>
           </div>
 
@@ -262,7 +273,7 @@
         <!-- comeco sessao atividade  ______________________________________________________________________________ -->
 
         <div id="pagina-atividades" class="pagina-conteudo">
-          <div class="boas-vinda">
+          <div class="titulo">
             <h2>Agenda de Atividades</h2>
           </div>
           <div class="ficha-container">
@@ -299,7 +310,7 @@
         <!-- comeco sessao relatorio  ______________________________________________________________________________ -->
 
         <div id="pagina-relatorios" class="pagina-conteudo">
-          <div class="boas-vinda">
+          <div class="titulo">
             <h2>Relatórios Diários</h2>
           </div>
 
@@ -336,10 +347,21 @@
         <!-- comeco sessao adm  ______________________________________________________________________________ -->
 
         <div id="pagina-adm" class="pagina-conteudo">
-          <div class="boas-vinda">
-            <h2>Dashboard</h2>
+          <div class="configuracoes-container">
+            <h2>Configurações</h2>
+
+            <div class="configuracoes-opcoes">
+              <a href="#" class="opcao-config">
+                <i class="bx bx-lock"></i>
+                <span>Alterar Senha</span>
+              </a>
+
+              <a href="#" id="btn-logout" class="opcao-config opcao-perigo">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Sair da conta</span>
+              </a>
+            </div>
           </div>
-          <p>Bem-vindo ao Dashboard! (Conteúdo de exemplo)</p>
         </div>
 
         <!-- final sessao adm ______________________________________________________________________________ -->

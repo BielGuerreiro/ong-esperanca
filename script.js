@@ -18,16 +18,10 @@ function definirCategoria(idade) {
 }
 
 // tabela dashboard ______________________________________________________________________________________________________________
-// ===================================================================
-// LÓGICA DA PÁGINA DE DASHBOARD (VERSÃO COM GRÁFICOS Chart.js)
-// ===================================================================
-
-// Variáveis para guardar as instâncias dos gráficos e poder destruí-las depois
 let graficoAtividades = null;
 let graficoMedicamentos = null;
 
 function iniciarPaginaDashboard() {
-  // --- 1. CARREGA OS DADOS NECESSÁRIOS ---
   const listaResidentes = JSON.parse(
     sessionStorage.getItem("listaResidentes") || "[]"
   );
@@ -38,7 +32,6 @@ function iniciarPaginaDashboard() {
     sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
   );
 
-  // --- 2. PEGA OS ELEMENTOS DO HTML ---
   const contadorResidentesEl = document.getElementById("contador-residentes");
   const contadorMedicamentosEl = document.getElementById(
     "contador-medicamentos-pendentes"
@@ -51,7 +44,6 @@ function iniciarPaginaDashboard() {
   );
   const graficoContainer = document.querySelector(".grafico-dashboard");
 
-  // --- 3. ATUALIZA OS VALORES DOS CONTADORES ---
   if (contadorResidentesEl) {
     contadorResidentesEl.textContent = listaResidentes.length;
   }
@@ -69,7 +61,6 @@ function iniciarPaginaDashboard() {
     contadorAtividadesEl.textContent = deHoje;
   }
 
-  // --- 4. CRIA A LISTA DE RESIDENTES PARA O GRÁFICO ---
   if (listaResidentesDashboard) {
     listaResidentesDashboard.innerHTML = "";
     listaResidentes.forEach((residente) => {
@@ -80,22 +71,17 @@ function iniciarPaginaDashboard() {
     });
   }
 
-  // --- 5. ADICIONA O EVENTO DE CLIQUE NA LISTA PARA MOSTRAR OS GRÁFICOS ---
   if (listaResidentesDashboard && graficoContainer) {
     listaResidentesDashboard.addEventListener("click", function (event) {
       if (event.target && event.target.nodeName === "LI") {
         const liClicado = event.target;
         const residenteId = liClicado.dataset.id;
 
-        // Efeito de seleção na lista
         listaResidentesDashboard
           .querySelectorAll("li")
           .forEach((item) => item.classList.remove("ativo"));
         liClicado.classList.add("ativo");
 
-        // --- LÓGICA PARA CRIAR OS GRÁFICOS ---
-
-        // Antes de criar novos gráficos, destrói os antigos se eles existirem
         if (graficoAtividades) {
           graficoAtividades.destroy();
         }
@@ -103,7 +89,6 @@ function iniciarPaginaDashboard() {
           graficoMedicamentos.destroy();
         }
 
-        // Limpa o container e cria os novos elementos para os gráficos
         graficoContainer.innerHTML = `
           <div class="chart-wrapper">
             <h2>Frequência em Atividades (últimos 6 meses)</h2>
@@ -115,18 +100,17 @@ function iniciarPaginaDashboard() {
           </div>
         `;
 
-        // --- Gráfico 1: Atividades (Barras com dados fictícios) ---
         const ctxAtividades = document
           .getElementById("grafico-atividades-residente")
           .getContext("2d");
         const dadosFicticios = Array.from({ length: 6 }, () =>
           Math.floor(Math.random() * 15)
-        ); // Gera 6 números aleatórios
+        );
 
         graficoAtividades = new Chart(ctxAtividades, {
           type: "bar",
           data: {
-            labels: ["Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro"], // Exemplo de meses
+            labels: ["Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro"],
             datasets: [
               {
                 label: "Nº de Atividades",
@@ -140,7 +124,6 @@ function iniciarPaginaDashboard() {
           options: { responsive: true, maintainAspectRatio: false },
         });
 
-        // --- Gráfico 2: Medicamentos (Rosca com dados reais) ---
         const ctxMedicamentos = document
           .getElementById("grafico-medicamentos-residente")
           .getContext("2d");
@@ -426,16 +409,8 @@ function iniciarPaginaMedicamentos() {
       : "Não encontrado";
     const classeStatus = `status-${tratamento.status.toLowerCase()}`;
 
-    let acoesHtml = "";
-    if (tratamento.status === "Pendente") {
-      acoesHtml = `<button class="btn-acao btn-confirmar" data-id="${tratamento.id}">Registrar Dose</button>`;
-    } else {
-      acoesHtml = `<button class="btn-acao" disabled>${tratamento.status}</button>`;
-    }
-
-    // --- CÓDIGO ATUALIZADO ---
     tr.innerHTML = `
-            <td>${tratamento.horario}</td>
+        <td>${tratamento.horario}</td>
         <td>${nomeResidente}</td>
         <td>${tratamento.medicamento}</td>
         <td>${tratamento.dosagem}</td>
@@ -444,28 +419,23 @@ function iniciarPaginaMedicamentos() {
       tratamento.status
     }</span></td>
         <td class="acoes">
-            <div>
-                ${acoesHtml}
-                <div class="grupo-icones">
-                    <a href="cadastros/cadastro-medicamento/index.html?id=${
-                      tratamento.id
-                    }&origem=pagina-medicamentos" class="btn-acao-icone btn-editar" title="Editar Agendamento"><i class='bx bxs-pencil'></i></a>
-                    <a href="#" class="btn-acao-icone btn-excluir" data-id="${
-                      tratamento.id
-                    }" title="Excluir Agendamento"><i class='bx bx-trash-alt'></i></a>
-                </div>
-            </div>
+            <a href="cadastros/cadastro-medicamento/index.html?id=${
+              tratamento.id
+            }&origem=pagina-medicamentos" class="btn-acao-icone btn-editar" title="Editar Agendamento"><i class='bx bxs-pencil'></i></a>
+            <a href="#" class="btn-acao-icone btn-excluir" data-id="${
+              tratamento.id
+            }" title="Excluir Agendamento"><i class='bx bx-trash-alt'></i></a>
         </td>
-        `;
+      `;
     tabelaBody.appendChild(tr);
   }
-  3;
+
   if (tabelaBody) {
     tabelaBody.innerHTML = "";
     if (listaTratamentos.length > 0) {
       listaTratamentos.forEach((t) => adicionarTratamentoNaTabela(t));
     } else {
-      tabelaBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Nenhum tratamento agendado.</td></tr>`; // Colspan atualizado para 7
+      tabelaBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Nenhum tratamento agendado.</td></tr>`;
     }
 
     tabelaBody.addEventListener("click", function (event) {
@@ -473,26 +443,25 @@ function iniciarPaginaMedicamentos() {
       if (botaoExcluir) {
         event.preventDefault();
         const idParaExcluir = botaoExcluir.dataset.id;
-        const nomeDoResponsavel = botaoExcluir
+
+        const nomeDoMedicamento = botaoExcluir
           .closest("tr")
-          .querySelectorAll("td")[0].textContent;
+          .querySelectorAll("td")[2].textContent;
 
         if (
           confirm(
-            `Tem certeza que deseja excluir o responsável "${nomeDoResponsavel}"?`
+            `Tem certeza que deseja excluir o agendamento do medicamento "${nomeDoMedicamento}"?`
           )
         ) {
-          const responsaveisAtuais = JSON.parse(
-            sessionStorage.getItem("listaResponsaveis") || "[]"
+          const tratamentosAtuais = JSON.parse(
+            sessionStorage.getItem("listaTratamentos") || "[]"
           );
-          const novaLista = responsaveisAtuais.filter(
-            (resp) => resp.id != idParaExcluir
+          const novaLista = tratamentosAtuais.filter(
+            (t) => t.id != idParaExcluir
           );
-          sessionStorage.setItem(
-            "listaResponsaveis",
-            JSON.stringify(novaLista)
-          );
-          alert("Responsável excluído com sucesso!");
+          sessionStorage.setItem("listaTratamentos", JSON.stringify(novaLista));
+
+          alert("Agendamento excluído com sucesso!");
           window.location.reload();
         }
       }
@@ -504,7 +473,6 @@ function iniciarPaginaMedicamentos() {
 function iniciarPaginaAtividades() {
   const tabelaBody = document.getElementById("lista-atividades-body");
 
-  // A função principal que desenha a tabela inteira na tela
   function renderizarTabela() {
     let listaAgendamentos = JSON.parse(
       sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
@@ -512,7 +480,7 @@ function iniciarPaginaAtividades() {
 
     if (!tabelaBody) return;
 
-    tabelaBody.innerHTML = ""; // Limpa a tabela antes de redesenhar
+    tabelaBody.innerHTML = "";
 
     if (listaAgendamentos.length > 0) {
       listaAgendamentos.forEach((agendamento) => {
@@ -520,19 +488,10 @@ function iniciarPaginaAtividades() {
         const status = agendamento.status || "Agendada";
         const classeStatus = `status-${status.toLowerCase()}`;
 
-        let acaoPrincipalHtml = "";
-        if (status === "Agendada") {
-          acaoPrincipalHtml = `<button class="btn-acao btn-confirmar btn-registrar-presenca" data-id="${agendamento.id}">Registrar Presença</button>`;
-        } else {
-          acaoPrincipalHtml = `<button class="btn-acao" disabled>${status}</button>`;
-        }
-
-        // Formata a data para o padrão brasileiro (dd/mm/aaaa)
         const dataFormatada = new Date(
           agendamento.data + "T00:00:00"
         ).toLocaleDateString("pt-BR");
 
-        // --- HTML DA LINHA ATUALIZADO PARA AS NOVAS COLUNAS ---
         tr.innerHTML = `
             <td>${dataFormatada}</td>
             <td>${agendamento.horario}</td>
@@ -540,23 +499,17 @@ function iniciarPaginaAtividades() {
             <td>${agendamento.duracao || "N/A"}</td>
             <td><span class="status ${classeStatus}">${status}</span></td>
             <td class="acoes">
-                <div> 
-                    ${acaoPrincipalHtml}
-                    <div class="grupo-icones">
-                        <a href="cadastros/cadastro-atividade/index.html?id=${
-                          agendamento.id
-                        }&origem=pagina-atividades" class="btn-acao-icone btn-editar" title="Editar Atividade"><i class='bx bxs-pencil'></i></a>
-                        <a href="#" class="btn-acao-icone btn-excluir" data-id="${
-                          agendamento.id
-                        }" title="Excluir Atividade"><i class='bx bx-trash-alt'></i></a>
-                    </div>
-                </div>
+                <a href="cadastros/cadastro-atividade/index.html?id=${
+                  agendamento.id
+                }&origem=pagina-atividades" class="btn-acao-icone btn-editar" title="Editar Atividade"><i class='bx bxs-pencil'></i></a>
+                <a href="#" class="btn-acao-icone btn-excluir" data-id="${
+                  agendamento.id
+                }" title="Excluir Atividade"><i class='bx bx-trash-alt'></i></a>
             </td>
         `;
         tabelaBody.appendChild(tr);
       });
     } else {
-      // Colspan atualizado para 6 colunas
       tabelaBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Nenhuma atividade agendada.</td></tr>`;
     }
   }
@@ -565,32 +518,7 @@ function iniciarPaginaAtividades() {
     renderizarTabela();
 
     tabelaBody.addEventListener("click", function (event) {
-      const botaoRegistrar = event.target.closest(".btn-registrar-presenca");
       const botaoExcluir = event.target.closest(".btn-excluir");
-
-      if (botaoRegistrar) {
-        const idParaAtualizar = botaoRegistrar.dataset.id;
-        let listaAgendamentos = JSON.parse(
-          sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
-        );
-        const agendamento = listaAgendamentos.find(
-          (ag) => ag.id == idParaAtualizar
-        );
-
-        if (
-          agendamento &&
-          confirm(
-            `Confirmar a realização da atividade "${agendamento["nome-atividade"]}"?`
-          )
-        ) {
-          agendamento.status = "Realizada";
-          sessionStorage.setItem(
-            "listaAgendamentosAtividade",
-            JSON.stringify(listaAgendamentos)
-          );
-          renderizarTabela();
-        }
-      }
 
       if (botaoExcluir) {
         event.preventDefault();
@@ -673,7 +601,6 @@ function iniciarPaginaRelatorios() {
         statusHtml = `<span class="status ${classeStatus}">${relatorio.statusMedicacao}</span>`;
       }
 
-      // CORREÇÃO: Alterada a classe "btn-excluir-relatorio" para "btn-excluir" para aplicar a cor vermelha
       tr.innerHTML = `
         <td>${dataFormatada}</td>
         <td>${nomeResidente}</td>
@@ -689,7 +616,6 @@ function iniciarPaginaRelatorios() {
       tabelaBody.appendChild(tr);
     });
 
-  // CORREÇÃO: O seletor do listener também foi atualizado para ".btn-excluir"
   tabelaBody.addEventListener("click", function (event) {
     const botaoExcluir = event.target.closest(".btn-excluir");
     if (botaoExcluir) {
@@ -715,15 +641,33 @@ function iniciarPaginaRelatorios() {
   });
 }
 
-// ===================================================================
-// PONTO DE ENTRADA PRINCIPAL (O ÚNICO DOMContentLoaded)
-// ===================================================================
+// sessao adm  -_____________________________________________________________________________________________________
+function iniciarPaginaAdm() {
+  const botaoLogout = document.getElementById("btn-logout");
+
+  if (botaoLogout) {
+    botaoLogout.addEventListener("click", function (event) {
+      event.preventDefault(); // Impede o comportamento padrão do link
+
+      if (confirm("Tem certeza que deseja sair da sua conta?")) {
+        // Limpa todos os dados salvos na sessão
+        sessionStorage.clear();
+
+        // Redireciona para a página de login
+        alert("Você foi desconectado com sucesso.");
+        // ATENÇÃO: Coloque aqui o nome correto da sua página de login
+        window.location.href = "login.html";
+      }
+    });
+  }
+}
+
+// document da pagina principal ___________________________________________________________________________________
 document.addEventListener("DOMContentLoaded", function () {
   const containerGeral = document.querySelector(".container-geral");
   const menuItens = document.querySelectorAll(".menu-header li");
   let isAnimating = false;
 
-  // --- LÓGICA DE NAVEGAÇÃO (A PARTE QUE VOCÊ MANDOU) ---
   function ajustarAlturaContainer(paginaAtiva) {
     if (paginaAtiva && containerGeral) {
       containerGeral.style.height = `${paginaAtiva.scrollHeight + 60}px`;
@@ -771,6 +715,7 @@ document.addEventListener("DOMContentLoaded", function () {
   iniciarPaginaMedicamentos();
   iniciarPaginaAtividades();
   iniciarPaginaRelatorios();
+  iniciarPaginaAdm();
 
   const urlParams = new URLSearchParams(window.location.search);
   const paginaDestino = urlParams.get("pagina");

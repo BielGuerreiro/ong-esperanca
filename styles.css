@@ -5,27 +5,17 @@
   list-style: none;
   box-sizing: border-box;
   font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }
 
 :root {
   /* Suas cores antigas */
-  --main-color: white;
-  --secundary-color: #c0bbbb;
-  --tertiary-color: #6fa9e4;
-
-  /* --- NOVAS CORES ADICIONADAS --- */
-
-  /* Azuis */
-  --cor-azul-claro: #92c0e3; /* Azul céu para fundos e detalhes suaves */
-  --cor-azul-medio: #75afdc; /* Azul principal para botões e links */
-
-  /* Neutras */
-  --cor-cinza-texto: #7e7e7e; /* Cinza para textos secundários */
-  --cor-fundo-claro: #f6f6f6; /* Um branco levemente acinzentado para fundos */
-
-  /* Vermelhos/Rosas (Ótimo para alertas ou exclusão) */
+  --main-color: #75afdc;
+  --secondary-color: #7e7e7e;
+  --cor-azul-claro: #92c0e3;
+  --cor-cinza-fundo: rgba(241, 241, 241, 0.74);
   --cor-vermelho-claro: #ffd2d2; /* Fundo para mensagens de erro/alerta suaves */
-  --cor-vermelho-escuro: #e39293; /* Cor principal para botões de excluir ou alertas importantes */
+  --cor-vermelho-escuro: #dc3546c0; /* Cor principal para botões de excluir ou alertas importantes */
 }
 
 html {
@@ -36,7 +26,7 @@ html {
 
 body {
   height: auto;
-  background: rgba(241, 241, 241, 0.74);
+  background: var(--cor-cinza-fundo);
 }
 
 .logo-header {
@@ -66,7 +56,7 @@ body {
 }
 
 .header1 h1 {
-  color: var(--tertiary-color);
+  color: var(--main-color);
   position: absolute;
   left: 10%;
   top: 30%;
@@ -99,7 +89,7 @@ body {
 }
 
 .menu-header li {
-  color: var(--tertiary-color);
+  color: var(--main-color);
   font-size: 20px;
   display: flex;
   align-items: center;
@@ -119,14 +109,172 @@ body {
 }
 
 .menu-header span {
-  color: var(--tertiary-color);
+  color: var(--cor-azul-claro);
   font-size: 25px;
   white-space: nowrap;
   margin-left: 20px;
 }
 
-/* home page _____________________________________________________________________________________________ */
+/* comando geral das sessoes ______________________________________________________________________ */
+.ficha table th,
+.ficha table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  color: var(--secondary-color);
+}
 
+.ficha table th {
+  color: var(--secondary-color);
+  font-size: 14px;
+}
+
+.ficha table td.acoes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.ficha table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* deixa none as paginas nao acessadas ________________________________________________ */
+.pagina-conteudo {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  right: 30px;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+.pagina-conteudo.ativa {
+  position: absolute;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* animacao de troca de sessao do prinicpal _________________________________________________ */
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.pagina-entrando {
+  animation: slideInFromLeft 0.5s ease-out forwards;
+}
+
+.pagina-saindo {
+  animation: slideOutToRight 0.5s ease-out forwards;
+}
+
+/* status funcionario ___________________________________________________________________________________________ */
+.status-trabalhando {
+  background-color: #28a745;
+}
+.status-folga {
+  background-color: #6c757d;
+}
+.status-falta {
+  background-color: #dc3545;
+}
+
+.status-pendente {
+  background-color: #ffc107;
+}
+
+/* status medicamento ___________________________________________________________________________________________ */
+.status-ok {
+  background-color: #28a745;
+}
+.status-pendente {
+  background-color: #ffc107;
+}
+.status-atrasado {
+  background-color: #dc3545;
+}
+
+.btn-acao:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+.btn-acao.btn-atrasado {
+  background-color: #dc3545;
+}
+
+/* status atividade ___________________________________________________________________________________________ */
+
+.status-agendada {
+  background-color: #ffc107;
+}
+
+/* status relatorio ___________________________________________________________________________________________ */
+
+.status-administrado {
+  background-color: #28a745;
+}
+.status-pendente {
+  background-color: #d1a00e;
+}
+.status-nao-tomado {
+  background-color: #dc3545;
+}
+
+.btn-acao-icone.btn-confirmar {
+  background-color: #28a745;
+}
+
+.btn-acao-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  text-decoration: none;
+  color: white;
+  font-size: 18px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-acao-icone:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-editar {
+  background-color: var(--main-color);
+}
+
+.btn-excluir {
+  background-color: var(--cor-vermelho-escuro);
+}
+
+/* home page _____________________________________________________________________________________________ */
 .container-geral {
   position: relative;
   margin-left: 18%;
@@ -137,16 +285,55 @@ body {
   transition: height 0.4s ease-out;
 }
 
-.boas-vinda h2 {
-  color: var(--tertiary-color);
+.titulo h2 {
+  color: var(--main-color);
   font-size: 40px;
-  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }
 
 /* dashboard _______________________________________________________________________________________________________________________ */
 .ficha-container .ficha {
   height: 600px;
   max-height: 80vh;
+}
+
+.boxes-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.box {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 250px;
+  flex: 1 1 250px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  min-height: 190px;
+  max-width: 480px;
+  border-left: 5px solid var(--cor-azul-claro);
+}
+
+.box h3 {
+  color: var(--main-color);
+  margin-bottom: 15px;
+  font-size: 50px;
+}
+
+.box p {
+  font-size: 28px;
+  font-weight: bold;
+  max-width: 400px;
+  color: var(--main-color);
+}
+
+.ficha-header h2 {
+  color: var(--main-color);
+  font-size: 24px;
+  margin: 0;
 }
 
 .dashboard-container {
@@ -175,7 +362,7 @@ body {
   padding: 15px 20px;
   cursor: pointer;
   font-weight: 500;
-  color: #555;
+  color: var(--secondary-color);
   transition: background-color 0.2s;
   border-bottom: 1px solid #eee;
 }
@@ -191,7 +378,6 @@ body {
 .lista-residentes-dashboard li.ativo {
   background-color: #eaf2fa;
   font-weight: bold;
-  color: var(--tertiary-color);
 }
 
 .separador-vertical {
@@ -246,40 +432,6 @@ body {
 }
 
 /* residentes ____________________________________________________________________________________________________________________ */
-.boxes-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-top: 30px;
-}
-
-.box {
-  flex-grow: 1;
-  flex-shrink: 1;
-  flex-basis: 250px;
-  flex: 1 1 250px;
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  min-height: 190px;
-  max-width: 480px;
-  border-left: 5px solid var(--tertiary-color);
-}
-
-.box h3 {
-  color: var(--tertiary-color);
-  margin-bottom: 15px;
-  font-size: 50px;
-}
-
-.box p {
-  font-size: 28px;
-  font-weight: bold;
-  max-width: 400px;
-  color: var(--tertiary-color);
-}
-
 .ficha-container {
   display: flex;
   margin-top: 30px;
@@ -290,7 +442,7 @@ body {
   background-color: white;
   height: 500px;
   border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   flex-grow: 1;
 
   display: flex;
@@ -305,14 +457,8 @@ body {
   border-bottom: 1px solid #eee;
 }
 
-.ficha-header h2 {
-  color: var(--tertiary-color);
-  font-size: 24px;
-  margin: 0;
-}
-
 .btn-nova-ficha {
-  background-color: var(--tertiary-color);
+  background-color: var(--main-color);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -334,287 +480,33 @@ body {
   margin-top: 20px;
 }
 
-.tabela-residentes th,
-.tabela-residentes td {
-  padding: 15px 5px;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-}
-
-.tabela-residentes th {
-  color: #888;
-  font-size: 14px;
-  text-transform: uppercase;
-}
-
-.tabela-residentes td {
-  color: #555;
-  font-size: 16px;
-}
-
 .acao-ver-ficha {
-  color: var(--tertiary-color);
+  color: var(--main-color);
   text-decoration: none;
   font-weight: bold;
-}
-
-/* deixa none as paginas nao acessadas ________________________________________________ */
-
-.pagina-conteudo {
-  position: absolute;
-  top: 30px;
-  left: 30px;
-  right: 30px;
-
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.5s, transform 0.5s;
-}
-
-.pagina-conteudo.ativa {
-  position: absolute;
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* animacao de troca de sessao do prinicpal _________________________________________________ */
-
-@keyframes slideInFromLeft {
-  from {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideOutToRight {
-  from {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-}
-
-.pagina-entrando {
-  animation: slideInFromLeft 0.5s ease-out forwards;
-}
-
-.pagina-saindo {
-  animation: slideOutToRight 0.5s ease-out forwards;
-}
-
-/* comando geral das sessoes ______________________________________________________________________ */
-.ficha table th,
-.ficha table td {
-  padding: 15px;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-}
-
-.ficha table th {
-  color: #888;
-  font-size: 14px;
-}
-
-.ficha table td.acoes {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  justify-content: flex-start;
-}
-
-.ficha table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-/* ESTILOS DA PÁGINA DE FUNCIONÁRIOS ______________________________________________________________________  */
-.tabela-funcionarios {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.tabela-funcionarios th {
-  color: #888;
-  font-size: 14px;
-}
-
-/* status ____________________________________________ */
-.status-trabalhando {
-  background-color: #28a745;
-}
-.status-folga {
-  background-color: #6c757d;
-}
-.status-falta {
-  background-color: #dc3545;
-}
-
-.status-pendente {
-  background-color: #ffc107;
-}
-
-.btn-acao-icone {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  text-decoration: none;
-  color: white;
-  font-size: 18px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.btn-acao-icone:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.btn-editar {
-  background-color: var(--tertiary-color);
-}
-
-.btn-excluir {
-  background-color: #dc3546c0;
-}
-
-.tabela-funcionarios td.acoes {
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
 /* sessao medicamento ____________________________________________________________________ */
-.filtros-medicamentos {
-  margin-bottom: 20px;
-  display: flex;
-  gap: 10px;
-}
-
-.filtro-btn {
-  padding: 8px 15px;
-  border: 1px solid var(--cor-borda);
-  background-color: white;
-  color: var(--cor-texto-label);
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.2s ease;
-}
-
-.filtro-btn:hover {
-  background-color: #f0f5fa;
-}
-
-.filtro-btn.ativo {
-  background-color: var(--cor-principal);
-  color: var(--tertiary-color);
-  border-color: var(--cor-principal);
-}
-
 .tabela-medicamentos {
   width: 100%;
   border-collapse: collapse;
   margin-top: 0;
 }
 
-.tabela-medicamentos th,
-.tabela-medicamentos td {
-  padding: 15px;
-  text-align: left;
-  border-bottom: 1px solid #eee;
-}
-.tabela-medicamentos th {
-  color: #888;
-  font-size: 14px;
-}
-
 .status {
-  padding: 4px 8px;
+  padding: 8px 20px;
   border-radius: 12px;
   font-weight: bold;
   font-size: 12px;
   color: white;
 }
 
-.status-ok {
-  background-color: #28a745;
-}
-.status-pendente {
-  background-color: #ffc107;
-}
-.status-atrasado {
-  background-color: #dc3545;
-}
-
-.btn-acao {
-  padding: 6px 12px;
-  border-radius: 5px;
-  border: none;
-  background-color: var(--cor-principal);
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-.btn-acao:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-.btn-acao.btn-atrasado {
-  background-color: #dc3545;
-}
-
-/* medicamento _________________________________________________________________________ */
-
-.status-administrado {
-  background-color: #28a745;
-}
-.status-pendente {
-  background-color: #ffc107;
-}
-.status-nao-tomado {
-  background-color: #dc3545;
-}
-
-.btn-acao-icone.btn-confirmar {
-  background-color: #28a745;
-}
-
-/* Garante que a célula de ações alinhe tudo ao centro verticalmente */
-.ficha table td.acoes-medicamentos {
-  display: flex;
-  justify-content: flex-start; /* Alinha tudo à esquerda */
-  align-items: center; /* Alinha tudo ao centro vertical */
-  gap: 10px;
-}
-
-/* Garante que os ícones dentro do grupo também fiquem alinhados */
-.grupo-icones {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.status-agendada {
-  background-color: #ffc107;
-}
-
 /* relatorio ______________________________________________________________________________ */
-/* Ajusta o padding dos filtros, pois eles já estão dentro de um container com padding */
 .filtros-relatorio {
   display: flex;
   align-items: flex-end;
   gap: 20px;
-  padding: 20px 30px 0 30px; /* Adiciona padding apenas nas laterais e topo */
+  padding: 20px 30px 0 30px;
 }
 .filtros-relatorio .grupo-form {
   margin-bottom: 0;
@@ -623,14 +515,12 @@ body {
   height: 51px;
 }
 
-/* Estilo para a nova linha separadora */
 .separador-relatorio {
   border: none;
   border-top: 1px solid #eee;
   margin: 20px 30px;
 }
 
-/* Container do conteúdo do relatório */
 .conteudo-relatorio {
   padding: 0 30px 20px 30px;
 }
@@ -638,4 +528,62 @@ body {
   padding: 15px 0;
   color: var(--cor-texto-label);
   margin-top: 10px;
+}
+
+/* adm __________________________________________________________________________________________ */
+
+.configuracoes-container {
+  max-width: 400px;
+  margin: 50px auto 0 auto;
+}
+
+.configuracoes-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: var(--main-color);
+  font-size: 28px;
+}
+
+.configuracoes-opcoes {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.opcao-config {
+  display: flex;
+  align-items: center;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--secondary-color);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.opcao-config:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.opcao-config i {
+  font-size: 30px;
+  margin-right: 15px;
+  color: #555;
+}
+
+.opcao-config.opcao-perigo {
+  background-color: var(--cor-vermelho-claro);
+}
+
+.opcao-config.opcao-perigo span {
+  color: #555;
+  font-weight: bold;
+}
+
+.opcao-config.opcao-perigo i {
+  color: var(--cor-vermelho-escuro);
 }
