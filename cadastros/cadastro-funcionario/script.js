@@ -52,23 +52,78 @@ document.addEventListener("DOMContentLoaded", function () {
   configurarValidacaoDatas();
   iniciarToggleSenha("senha", "toggle-senha-funcionario");
 
+  // --- LÓGICA DE EDIÇÃO (CORRIGIDA) ---
   const urlParams = new URLSearchParams(window.location.search);
   const funcionarioId = urlParams.get("id");
-  if (funcionarioId) {
+  const isEditMode = Boolean(funcionarioId);
+
+  if (isEditMode) {
+    // Ajusta a interface para o modo de edição
+    const titulo = document.querySelector("h2");
+    if (titulo) titulo.textContent = "Editar Cadastro de Funcionário";
+    if (botaoSubmit) botaoSubmit.textContent = "SALVAR ALTERAÇÕES";
+
     const listaFuncionarios = carregarFuncionarios();
-    const funcionario = listaFuncionarios.find((f) => f.id == funcionarioId);
-    if (funcionario) {
-      Object.keys(funcionario).forEach((key) => {
-        const campo = document.getElementById(key);
+    const funcionarioParaEditar = listaFuncionarios.find(
+      (f) => f.id == funcionarioId
+    );
+
+    if (funcionarioParaEditar) {
+      // Preenche os campos do formulário com os dados existentes
+      Object.keys(funcionarioParaEditar).forEach((key) => {
+        // Usamos form.elements[key] que é mais robusto
+        const campo = form.elements[key];
         if (campo) {
-          campo.value = funcionario[key];
-          campo.disabled = true;
+          campo.value = funcionarioParaEditar[key];
         }
       });
-      if (botaoSubmit) botaoSubmit.style.display = "none";
+      // Preenche as tags dos residentes vinculados, se houver
+      if (funcionarioParaEditar.residentes_vinculados_ids) {
+        idsSelecionados =
+          funcionarioParaEditar.residentes_vinculados_ids.split(",");
+        atualizarTags();
+      }
     }
+    // As linhas que desabilitavam os campos e escondiam o botão foram REMOVIDAS.
   }
 
+  // --- LÓGICA DE SALVAR (UNIFICADA PARA CRIAR E EDITAR) ---
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    if (!form.checkValidity()) {
+      alert("Por favor, preencha todos os campos obrigatórios (*).");
+      return;
+    }
+
+    const listaFuncionarios = carregarFuncionarios();
+    const formData = new FormData(form);
+    const dadosFuncionario = Object.fromEntries(formData.entries());
+
+    if (isEditMode) {
+      // SE ESTIVER EDITANDO, ATUALIZA O FUNCIONÁRIO
+      const index = listaFuncionarios.findIndex((f) => f.id == funcionarioId);
+      if (index !== -1) {
+        listaFuncionarios[index] = {
+          ...dadosFuncionario,
+          id: parseInt(funcionarioId),
+        };
+        salvarFuncionarios(listaFuncionarios);
+        alert("Cadastro de funcionário atualizado com sucesso!");
+      }
+    } else {
+      // SE FOR NOVO, CRIA UM NOVO FUNCIONÁRIO (seu código original)
+      dadosFuncionario.id = Date.now();
+      listaFuncionarios.push(dadosFuncionario);
+      salvarFuncionarios(listaFuncionarios);
+      alert("Funcionário cadastrado com sucesso!");
+    }
+
+    // Redireciona para a página de origem
+    const origem = urlParams.get("origem") || "pagina-funcionarios";
+    window.location.href = `../../index.html?pagina=${origem}`;
+  });
+
+  // --- RESTANTE DO SEU CÓDIGO ORIGINAL (sem alterações) ---
   function mostrarEtapa(indiceEtapa) {
     etapas.forEach((etapa, indice) =>
       etapa.classList.toggle("ativo", indice === indiceEtapa)
@@ -108,9 +163,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const listaResidentes = carregarResidentes();
   if (selectResidenteMultiplo) {
     listaResidentes.forEach((residente) => {
-      const option = document.createElement("option");
-      option.value = residente.id;
-      option.textContent = `${residente["primeiro-nome"]} ${residente.sobrenome}`;
+      const option = new Option(
+        `${residente["primeiro-nome"]} ${residente.sobrenome}`,
+        residente.id
+      );
       selectResidenteMultiplo.appendChild(option);
     });
   }
@@ -158,29 +214,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
-
-  form.addEventListener("submit", function (event) {
-    event.preventDefault();
-    if (!form.checkValidity()) return;
-
-    const listaFuncionarios = carregarFuncionarios();
-    const formData = new FormData(form);
-    const novoFuncionario = Object.fromEntries(formData.entries());
-    novoFuncionario.id = Date.now();
-
-    listaFuncionarios.push(novoFuncionario);
-    salvarFuncionarios(listaFuncionarios);
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const origem = urlParams.get("origem");
-    let redirectUrl = "../../index.html";
-    if (origem) {
-      redirectUrl += `?pagina=${origem}`;
-    }
-
-    alert("Funcionário cadastrado com sucesso!");
-    window.location.href = redirectUrl;
-  });
 
   mostrarEtapa(etapaAtual);
 });

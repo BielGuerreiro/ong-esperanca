@@ -1,4 +1,4 @@
-// carregar dados pra pagina principal _____________________________________________________________________________________
+// Funções de dados para carregar e salvar a lista de residentes
 function carregarResidentes() {
   const dados = sessionStorage.getItem("listaResidentes");
   return JSON.parse(dados || "[]");
@@ -8,28 +8,16 @@ function salvarResidentes(lista) {
   sessionStorage.setItem("listaResidentes", JSON.stringify(lista));
 }
 
-function configurarValidacaoDatas() {
-  const hoje = new Date().toISOString().split("T")[0];
-  const inputNascimento = document.getElementById("nascimento");
-  if (inputNascimento) {
-    inputNascimento.max = hoje;
-    inputNascimento.min = "1900-01-01";
-  }
-  const inputEntrada = document.getElementById("entrada");
-  if (inputEntrada) {
-    inputEntrada.max = "2100-12-31";
-    inputEntrada.min = "1900-01-01";
-  }
-  const inputSaida = document.getElementById("saida");
-  if (inputSaida) {
-    inputSaida.max = "2100-12-31";
-    inputSaida.min = "1900-01-01";
-  }
-}
-
-// codigo principal _________________________________________________________________________________
+// O código principal roda quando a página carrega
 document.addEventListener("DOMContentLoaded", function () {
+  // --- 1. SELEÇÃO DOS ELEMENTOS DO HTML ---
   const form = document.getElementById("form-residente");
+  if (!form) {
+    console.error(
+      "ERRO CRÍTICO: O formulário com id='form-residente' não foi encontrado!"
+    );
+    return; // Para a execução se o formulário não existir
+  }
   const etapas = document.querySelectorAll(".etapa-form");
   const botoesProximo = document.querySelectorAll(".btn-proximo");
   const botoesVoltar = document.querySelectorAll(".btn-voltar");
@@ -41,30 +29,56 @@ document.addEventListener("DOMContentLoaded", function () {
   );
   let etapaAtual = 0;
 
-  configurarValidacaoDatas();
-
+  // --- 2. LÓGICA DE EDIÇÃO (COM VERIFICAÇÕES DE SEGURANÇA) ---
   const urlParams = new URLSearchParams(window.location.search);
   const residenteId = urlParams.get("id");
-  if (residenteId) {
+  const isEditMode = Boolean(residenteId);
+
+  if (isEditMode) {
+    console.log("Modo de Edição Ativado! ID:", residenteId); // Mensagem de diagnóstico
+
+    // ATUALIZAÇÃO: Verifica se os elementos existem antes de modificá-los
+    const titulo = document.querySelector("h2");
+    if (titulo) {
+      titulo.textContent = "Editar Ficha de Residente";
+    }
+    if (botaoSubmit) {
+      botaoSubmit.textContent = "SALVAR ALTERAÇÕES";
+    }
+
     const listaResidentes = carregarResidentes();
-    const residente = listaResidentes.find((r) => r.id == residenteId);
-    if (residente) {
-      Object.keys(residente).forEach((key) => {
-        const campo = document.getElementById(key);
+    const residenteParaEditar = listaResidentes.find(
+      (r) => r.id == residenteId
+    );
+
+    if (residenteParaEditar) {
+      // Preenche os campos do formulário
+      Object.keys(residenteParaEditar).forEach((key) => {
+        const campo = form.elements[key];
         if (campo) {
-          campo.value = residente[key];
-          campo.disabled = true;
+          // Trata o caso de radio buttons
+          if (campo.type === "radio") {
+            document.querySelector(
+              `input[name="${key}"][value="${residenteParaEditar[key]}"]`
+            ).checked = true;
+          } else {
+            campo.value = residenteParaEditar[key];
+          }
         }
       });
-      if (botaoSubmit) botaoSubmit.style.display = "none";
+      if (selectFrequentaEscola) {
+        selectFrequentaEscola.dispatchEvent(new Event("change"));
+      }
     }
   }
 
+  // --- 3. CONFIGURAÇÃO DOS EVENTOS ---
   function mostrarEtapa(indiceEtapa) {
     etapas.forEach((etapa, indice) =>
       etapa.classList.toggle("ativo", indice === indiceEtapa)
     );
   }
+
   botoesProximo.forEach((botao) => {
     botao.addEventListener("click", () => {
       if (etapaAtual < etapas.length - 1) {
@@ -73,6 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
+
   botoesVoltar.forEach((botao) => {
     botao.addEventListener("click", () => {
       if (etapaAtual > 0) {
@@ -81,59 +96,55 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
+
   botoesCancelar.forEach((botao) => {
     botao.addEventListener("click", function () {
       if (confirm("Tem certeza que deseja cancelar?")) {
-        window.location.href = "/index.html";
+        window.location.href = "../../index.html?pagina=pagina-residentes";
       }
     });
   });
 
-  if (botaoSubmit) {
-    botaoSubmit.addEventListener("click", function () {
-      form.classList.add("form-foi-validado");
-
-      if (!form.checkValidity()) {
-        alert(
-          "Por favor, preencha todos os campos obrigatórios (*) antes de prosseguir."
-        );
+  if (selectFrequentaEscola) {
+    selectFrequentaEscola.addEventListener("change", function () {
+      if (containerDadosEscola) {
+        containerDadosEscola.style.display =
+          this.value === "sim" ? "block" : "none";
       }
     });
   }
 
   form.addEventListener("submit", function (event) {
     event.preventDefault();
-
-    const listaResidentes = carregarResidentes();
-
-    const formData = new FormData(form);
-    const novoResidente = Object.fromEntries(formData.entries());
-    novoResidente.id = Date.now();
-
-    listaResidentes.push(novoResidente);
-    salvarResidentes(listaResidentes);
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const origem = urlParams.get("origem");
-
-    let redirectUrl = "/index.html";
-    if (origem) {
-      redirectUrl += `?pagina=${origem}`;
+    if (!form.checkValidity()) {
+      alert("Por favor, preencha todos os campos obrigatórios (*).");
+      form.classList.add("form-foi-validado");
+      return;
     }
+    const listaResidentes = carregarResidentes();
+    const formData = new FormData(form);
+    const dadosResidente = Object.fromEntries(formData.entries());
 
-    alert("Residente cadastrado com sucesso!");
-    window.location.href = redirectUrl;
+    if (isEditMode) {
+      const index = listaResidentes.findIndex((r) => r.id == residenteId);
+      if (index !== -1) {
+        listaResidentes[index] = {
+          ...dadosResidente,
+          id: parseInt(residenteId),
+        };
+        salvarResidentes(listaResidentes);
+        alert("Ficha atualizada com sucesso!");
+      }
+    } else {
+      dadosResidente.id = Date.now();
+      listaResidentes.push(dadosResidente);
+      salvarResidentes(listaResidentes);
+      alert("Residente cadastrado com sucesso!");
+    }
+    const origem = urlParams.get("origem") || "pagina-residentes";
+    window.location.href = `../../index.html?pagina=${origem}`;
   });
 
-  if (selectFrequentaEscola && containerDadosEscola) {
-    selectFrequentaEscola.addEventListener("change", function () {
-      if (this.value === "sim") {
-        containerDadosEscola.style.display = "block";
-      } else {
-        containerDadosEscola.style.display = "none";
-      }
-    });
-  }
-
+  // --- 4. INICIALIZAÇÃO DA PÁGINA ---
   mostrarEtapa(etapaAtual);
 });
