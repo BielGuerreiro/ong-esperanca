@@ -1,12 +1,10 @@
+// Funções de dados no topo do arquivo
 function carregarFuncionarios() {
-  const dados = sessionStorage.getItem("listaFuncionarios");
-  return JSON.parse(dados || "[]");
+  return JSON.parse(sessionStorage.getItem("listaFuncionarios") || "[]");
 }
-
 function salvarFuncionarios(lista) {
   sessionStorage.setItem("listaFuncionarios", JSON.stringify(lista));
 }
-
 function carregarResidentes() {
   return JSON.parse(sessionStorage.getItem("listaResidentes") || "[]");
 }
@@ -49,16 +47,21 @@ document.addEventListener("DOMContentLoaded", function () {
   const botaoSubmit = document.querySelector(".btn-enviar");
   let etapaAtual = 0;
 
-  configurarValidacaoDatas();
-  iniciarToggleSenha("senha", "toggle-senha-funcionario");
+  // --- Seletores para a lógica de Tags ---
+  const selectResidenteMultiplo = document.getElementById("residente-select");
+  const tagsContainer = document.getElementById(
+    "residentes-selecionados-container"
+  );
+  const hiddenInputIds = document.getElementById("residentes_vinculados_ids");
+  let idsSelecionados = [];
+  const listaResidentes = carregarResidentes(); // Carrega a lista de residentes uma vez
 
-  // --- LÓGICA DE EDIÇÃO (CORRIGIDA) ---
+  // --- LÓGICA DE EDIÇÃO (CORRIGIDA E MAIS SEGURA) ---
   const urlParams = new URLSearchParams(window.location.search);
   const funcionarioId = urlParams.get("id");
   const isEditMode = Boolean(funcionarioId);
 
   if (isEditMode) {
-    // Ajusta a interface para o modo de edição
     const titulo = document.querySelector("h2");
     if (titulo) titulo.textContent = "Editar Cadastro de Funcionário";
     if (botaoSubmit) botaoSubmit.textContent = "SALVAR ALTERAÇÕES";
@@ -69,29 +72,29 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     if (funcionarioParaEditar) {
-      // Preenche os campos do formulário com os dados existentes
       Object.keys(funcionarioParaEditar).forEach((key) => {
-        // Usamos form.elements[key] que é mais robusto
         const campo = form.elements[key];
         if (campo) {
           campo.value = funcionarioParaEditar[key];
         }
       });
-      // Preenche as tags dos residentes vinculados, se houver
-      if (funcionarioParaEditar.residentes_vinculados_ids) {
+
+      // CORREÇÃO: Adicionada verificação para evitar erro se não houver residentes vinculados.
+      if (
+        funcionarioParaEditar.residentes_vinculados_ids &&
+        typeof funcionarioParaEditar.residentes_vinculados_ids === "string"
+      ) {
         idsSelecionados =
           funcionarioParaEditar.residentes_vinculados_ids.split(",");
-        atualizarTags();
+        atualizarTags(); // Chama a função para renderizar as tags
       }
     }
-    // As linhas que desabilitavam os campos e escondiam o botão foram REMOVIDAS.
   }
 
-  // --- LÓGICA DE SALVAR (UNIFICADA PARA CRIAR E EDITAR) ---
+  // --- LÓGICA DE SALVAR (UNIFICADA) ---
   form.addEventListener("submit", function (event) {
     event.preventDefault();
     if (!form.checkValidity()) {
-      alert("Por favor, preencha todos os campos obrigatórios (*).");
       return;
     }
 
@@ -100,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const dadosFuncionario = Object.fromEntries(formData.entries());
 
     if (isEditMode) {
-      // SE ESTIVER EDITANDO, ATUALIZA O FUNCIONÁRIO
+      // ATUALIZA
       const index = listaFuncionarios.findIndex((f) => f.id == funcionarioId);
       if (index !== -1) {
         listaFuncionarios[index] = {
@@ -111,65 +114,54 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("Cadastro de funcionário atualizado com sucesso!");
       }
     } else {
-      // SE FOR NOVO, CRIA UM NOVO FUNCIONÁRIO (seu código original)
+      // CRIA NOVO
       dadosFuncionario.id = Date.now();
       listaFuncionarios.push(dadosFuncionario);
       salvarFuncionarios(listaFuncionarios);
       alert("Funcionário cadastrado com sucesso!");
     }
-
-    // Redireciona para a página de origem
     const origem = urlParams.get("origem") || "pagina-funcionarios";
     window.location.href = `../../index.html?pagina=${origem}`;
   });
 
-  // --- RESTANTE DO SEU CÓDIGO ORIGINAL (sem alterações) ---
-  function mostrarEtapa(indiceEtapa) {
-    etapas.forEach((etapa, indice) =>
-      etapa.classList.toggle("ativo", indice === indiceEtapa)
-    );
+  // --- LÓGICAS DE NAVEGAÇÃO E INTERAÇÃO ---
+  function mostrarEtapa(i) {
+    etapas.forEach((e, idx) => e.classList.toggle("ativo", idx === i));
   }
-  botoesProximo.forEach((botao) => {
-    botao.addEventListener("click", () => {
+
+  botoesProximo.forEach((b) =>
+    b.addEventListener("click", () => {
       if (etapaAtual < etapas.length - 1) {
         etapaAtual++;
         mostrarEtapa(etapaAtual);
       }
-    });
-  });
-  botoesVoltar.forEach((botao) => {
-    botao.addEventListener("click", () => {
+    })
+  );
+  botoesVoltar.forEach((b) =>
+    b.addEventListener("click", () => {
       if (etapaAtual > 0) {
         etapaAtual--;
         mostrarEtapa(etapaAtual);
       }
-    });
-  });
-  botoesCancelar.forEach((botao) => {
-    botao.addEventListener("click", function () {
-      if (confirm("Tem certeza que deseja cancelar?")) {
-        window.location.href = "../../index.html";
-      }
-    });
-  });
-
-  const selectResidenteMultiplo = document.getElementById("residente-select");
-  const tagsContainer = document.getElementById(
-    "residentes-selecionados-container"
+    })
   );
-  const hiddenInputIds = document.getElementById("residentes_vinculados_ids");
-  let idsSelecionados = [];
+  botoesCancelar.forEach((b) =>
+    b.addEventListener("click", () => {
+      if (confirm("Deseja cancelar?")) {
+        window.location.href = "../../index.html?pagina=pagina-funcionarios";
+      }
+    })
+  );
 
-  const listaResidentes = carregarResidentes();
+  // --- LÓGICA DAS TAGS DE RESIDENTES ---
   if (selectResidenteMultiplo) {
-    listaResidentes.forEach((residente) => {
-      const option = new Option(
-        `${residente["primeiro-nome"]} ${residente.sobrenome}`,
-        residente.id
-      );
-      selectResidenteMultiplo.appendChild(option);
-    });
+    listaResidentes.forEach((r) =>
+      selectResidenteMultiplo.appendChild(
+        new Option(`${r["primeiro-nome"]} ${r.sobrenome}`, r.id)
+      )
+    );
   }
+
   function atualizarTags() {
     if (!tagsContainer || !hiddenInputIds) return;
     tagsContainer.innerHTML = "";
@@ -182,9 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const removeIcon = document.createElement("i");
         removeIcon.className = "bx bx-x";
         removeIcon.onclick = () => {
-          idsSelecionados = idsSelecionados.filter(
-            (selectedId) => selectedId != id
-          );
+          idsSelecionados = idsSelecionados.filter((sid) => sid != id);
           atualizarTags();
         };
         tag.appendChild(removeIcon);
@@ -193,6 +183,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     hiddenInputIds.value = idsSelecionados.join(",");
   }
+
   if (selectResidenteMultiplo) {
     selectResidenteMultiplo.addEventListener("change", function () {
       const id = this.value;
@@ -204,16 +195,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  if (botaoSubmit) {
-    botaoSubmit.addEventListener("click", function () {
-      form.classList.add("form-foi-validado");
-      if (!form.checkValidity()) {
-        alert(
-          "Por favor, preencha todos os campos obrigatórios (*) antes de prosseguir."
-        );
-      }
-    });
-  }
-
+  // --- INICIALIZAÇÃO ---
+  configurarValidacaoDatas();
+  iniciarToggleSenha("senha", "toggle-senha-funcionario");
   mostrarEtapa(etapaAtual);
 });

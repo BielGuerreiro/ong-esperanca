@@ -256,7 +256,7 @@ function iniciarPaginaFuncionarios() {
         <td>${funcionario.id.toString().slice(-4)}</td>
         <td><span class="status ${classeStatus}">${status}</span></td>
         <td class="acoes">
-            <a href="cadastro/cadastro-funcionario/index.html?id=${
+            <a href="cadastros/cadastro-funcionario/index.html?id=${
               funcionario.id
             }&origem=pagina-funcionarios" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
             <a href="#" class="btn-acao-icone btn-excluir" data-id="${
@@ -332,6 +332,7 @@ function iniciarPaginaResponsaveis() {
     const categoria = definirCategoria(idade);
     const nomeCompleto = `${responsavel["primeiro-nome"]} ${responsavel.sobrenome}`;
 
+    // --- CORREÇÃO APLICADA AQUI no href ---
     tr.innerHTML = `
         <td>${nomeCompleto}</td>
         <td>${idade}</td>
@@ -339,7 +340,7 @@ function iniciarPaginaResponsaveis() {
         <td>${responsavel.parentesco}</td>
         <td>${nomeResidente}</td>
         <td class="acoes">
-            <a href="cadastro/cadastro-responsavel/index.html?id=${responsavel.id}&origem=pagina-responsavel" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
+            <a href="cadastros/cadastro-responsavel/index.html?id=${responsavel.id}&origem=pagina-responsavel" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
             <a href="#" class="btn-acao-icone btn-excluir" data-id="${responsavel.id}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
         </td>
     `;
@@ -356,7 +357,6 @@ function iniciarPaginaResponsaveis() {
       tabelaBody.appendChild(tr);
     }
 
-    // Lógica de exclusão
     tabelaBody.addEventListener("click", function (event) {
       const botaoExcluir = event.target.closest(".btn-excluir");
       if (botaoExcluir) {
@@ -407,8 +407,11 @@ function iniciarPaginaMedicamentos() {
     const nomeResidente = residente
       ? `${residente["primeiro-nome"]} ${residente.sobrenome}`
       : "Não encontrado";
-    const classeStatus = `status-${tratamento.status.toLowerCase()}`;
+    const classeStatus = `status-${tratamento.status
+      .toLowerCase()
+      .replace(" ", "-")}`;
 
+    // A coluna de ações agora contém apenas os ícones de Editar e Excluir
     tr.innerHTML = `
         <td>${tratamento.horario}</td>
         <td>${nomeResidente}</td>
@@ -439,11 +442,12 @@ function iniciarPaginaMedicamentos() {
     }
 
     tabelaBody.addEventListener("click", function (event) {
+      // A lógica de registrar dose foi removida
+
       const botaoExcluir = event.target.closest(".btn-excluir");
       if (botaoExcluir) {
         event.preventDefault();
         const idParaExcluir = botaoExcluir.dataset.id;
-
         const nomeDoMedicamento = botaoExcluir
           .closest("tr")
           .querySelectorAll("td")[2].textContent;

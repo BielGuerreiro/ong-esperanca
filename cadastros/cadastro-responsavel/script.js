@@ -1,8 +1,4 @@
-/*
-    VERSÃO COMPLETA E FUNCIONAL DO SCRIPT DE CADASTRO DE RESPONSÁVEL
-*/
-
-// ===== CAMADA DE DADOS =====
+// Funções de dados no topo do arquivo
 function carregarResponsaveis() {
   return JSON.parse(sessionStorage.getItem("listaResponsaveis") || "[]");
 }
@@ -12,31 +8,13 @@ function salvarResponsaveis(lista) {
 function carregarResidentes() {
   return JSON.parse(sessionStorage.getItem("listaResidentes") || "[]");
 }
+
 function configurarValidacaoDatas() {
   const hoje = new Date().toISOString().split("T")[0];
   const inputNascimento = document.getElementById("nascimento");
   if (inputNascimento) {
     inputNascimento.max = hoje;
     inputNascimento.min = "1900-01-01";
-  }
-}
-
-// Esta função será usada nos scripts dos formulários
-function iniciarToggleSenha(inputId, toggleId) {
-  const inputSenha = document.getElementById(inputId);
-  const toggleIcon = document.getElementById(toggleId);
-
-  if (inputSenha && toggleIcon) {
-    toggleIcon.addEventListener("click", function () {
-      // Verifica o tipo atual do input
-      const type =
-        inputSenha.getAttribute("type") === "password" ? "text" : "password";
-      inputSenha.setAttribute("type", type);
-
-      // Troca o ícone
-      this.classList.toggle("bx-show");
-      this.classList.toggle("bx-hide");
-    });
   }
 }
 
@@ -51,69 +29,103 @@ document.addEventListener("DOMContentLoaded", function () {
   const selectResidente = document.getElementById("residenteId");
   let etapaAtual = 0;
 
-  configurarValidacaoDatas();
-  iniciarToggleSenha("senha", "toggle-senha-responsavel");
+  // --- LÓGICA DE EDIÇÃO (ADICIONADA) ---
+  const urlParams = new URLSearchParams(window.location.search);
+  const responsavelId = urlParams.get("id");
+  const isEditMode = Boolean(responsavelId);
+
+  if (isEditMode) {
+    const titulo = document.querySelector("h2");
+    if (titulo) titulo.textContent = "Editar Ficha de Responsável";
+    if (botaoSubmit) botaoSubmit.textContent = "SALVAR ALTERAÇÕES";
+
+    const listaResponsaveis = carregarResponsaveis();
+    const responsavelParaEditar = listaResponsaveis.find(
+      (r) => r.id == responsavelId
+    );
+    if (responsavelParaEditar) {
+      Object.keys(responsavelParaEditar).forEach((key) => {
+        const campo = form.elements[key];
+        if (campo) {
+          campo.value = responsavelParaEditar[key];
+        }
+      });
+    }
+  }
 
   // Popula o campo de seleção com os residentes existentes
   const listaResidentes = carregarResidentes();
   if (selectResidente) {
     listaResidentes.forEach((residente) => {
-      const option = document.createElement("option");
-      option.value = residente.id;
-      option.textContent = `${residente["primeiro-nome"]} ${residente.sobrenome}`;
+      const option = new Option(
+        `${residente["primeiro-nome"]} ${residente.sobrenome}`,
+        residente.id
+      );
       selectResidente.appendChild(option);
     });
   }
 
-  // Lógica do modo "Ver Ficha" (para o futuro)
-  const urlParams = new URLSearchParams(window.location.search);
-  const responsavelId = urlParams.get("id");
-  if (responsavelId) {
-    const listaResponsaveis = carregarResponsaveis();
-    const responsavel = listaResponsaveis.find((r) => r.id == responsavelId);
-    if (responsavel) {
-      Object.keys(responsavel).forEach((key) => {
-        const campo = document.getElementById(key);
-        if (campo) {
-          campo.value = responsavel[key];
-          campo.disabled = true;
-        }
-      });
-      if (botaoSubmit) botaoSubmit.style.display = "none";
+  // --- LÓGICA DE SALVAR (UNIFICADA) ---
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    if (!form.checkValidity()) {
+      alert("Por favor, preencha todos os campos obrigatórios (*).");
+      return;
     }
-  }
+    const listaResponsaveis = carregarResponsaveis();
+    const formData = new FormData(form);
+    const dadosResponsavel = Object.fromEntries(formData.entries());
 
-  // Lógica de Navegação entre Etapas
-  function mostrarEtapa(indiceEtapa) {
-    etapas.forEach((etapa, indice) =>
-      etapa.classList.toggle("ativo", indice === indiceEtapa)
-    );
+    if (isEditMode) {
+      // ATUALIZA
+      const index = listaResponsaveis.findIndex((r) => r.id == responsavelId);
+      if (index !== -1) {
+        listaResponsaveis[index] = {
+          ...dadosResponsavel,
+          id: parseInt(responsavelId),
+        };
+        salvarResponsaveis(listaResponsaveis);
+        alert("Ficha do responsável atualizada com sucesso!");
+      }
+    } else {
+      // CRIA NOVO
+      dadosResponsavel.id = Date.now();
+      listaResponsaveis.push(dadosResponsavel);
+      salvarResponsaveis(listaResponsaveis);
+      alert("Responsável cadastrado com sucesso!");
+    }
+    const origem = urlParams.get("origem") || "pagina-responsavel";
+    window.location.href = `../../index.html?pagina=${origem}`;
+  });
+
+  // --- LÓGICAS DE NAVEGAÇÃO E INTERAÇÃO (SEU CÓDIGO ORIGINAL) ---
+  function mostrarEtapa(i) {
+    etapas.forEach((e, idx) => e.classList.toggle("ativo", idx === i));
   }
-  botoesProximo.forEach((botao) => {
-    botao.addEventListener("click", () => {
+  botoesProximo.forEach((b) =>
+    b.addEventListener("click", () => {
       if (etapaAtual < etapas.length - 1) {
         etapaAtual++;
         mostrarEtapa(etapaAtual);
       }
-    });
-  });
-  botoesVoltar.forEach((botao) => {
-    botao.addEventListener("click", () => {
+    })
+  );
+  botoesVoltar.forEach((b) =>
+    b.addEventListener("click", () => {
       if (etapaAtual > 0) {
         etapaAtual--;
         mostrarEtapa(etapaAtual);
       }
-    });
-  });
-  botoesCancelar.forEach((botao) => {
-    botao.addEventListener("click", function () {
-      if (confirm("Tem certeza que deseja cancelar?")) {
-        window.location.href = "/index.html";
+    })
+  );
+  botoesCancelar.forEach((b) =>
+    b.addEventListener("click", () => {
+      if (confirm("Deseja cancelar?")) {
+        window.location.href = "../../index.html?pagina=pagina-responsavel";
       }
-    });
-  });
+    })
+  );
 
-  // Lógica de Validação e Envio do Formulário
   if (botaoSubmit) {
     botaoSubmit.addEventListener("click", function () {
       form.classList.add("form-foi-validado");
@@ -125,30 +137,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  form.addEventListener("submit", function (event) {
-    event.preventDefault();
-    if (!form.checkValidity()) return;
-
-    const listaResponsaveis = carregarResponsaveis();
-    const formData = new FormData(form);
-    const novoResponsavel = Object.fromEntries(formData.entries());
-    novoResponsavel.id = Date.now();
-    novoResponsavel.nivel = "responsavel";
-
-    listaResponsaveis.push(novoResponsavel);
-    salvarResponsaveis(listaResponsaveis);
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const origem = urlParams.get("origem");
-
-    let redirectUrl = "/index.html";
-    if (origem) {
-      redirectUrl += `?pagina=${origem}`;
-    }
-
-    alert("Responsavel cadastrado com sucesso!");
-    window.location.href = redirectUrl;
-  });
-
+  configurarValidacaoDatas();
   mostrarEtapa(etapaAtual);
 });
