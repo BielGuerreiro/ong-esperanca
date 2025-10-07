@@ -1,3 +1,10 @@
+// Funções Globais_______________________________________________________________________________
+/*
+  Estas são funções de "ajuda" que podem ser usadas em várias partes do sistema.
+  A função 'calcularIdade' recebe uma data de nascimento e retorna a idade atual da pessoa.
+  A função 'definirCategoria' recebe uma idade e retorna uma classificação 
+  (Criança, Adolescente, Adulto, Idoso).
+*/
 function calcularIdade(dataNascimento) {
   if (!dataNascimento) return "?";
   const hoje = new Date();
@@ -18,6 +25,13 @@ function definirCategoria(idade) {
 }
 
 // tabela dashboard ______________________________________________________________________________________________________________
+/*
+  Esta função inicializa a página de Dashboard. Ela é responsável por calcular e exibir 
+  os números nos cards de resumo (total de residentes, medicamentos pendentes e atividades 
+  de hoje). Além disso, ela cria a lista de residentes à esquerda e prepara a área 
+  dos gráficos, definindo que, ao clicar em um residente, os gráficos de atividades 
+  e medicamentos sejam gerados e exibidos na tela.
+*/
 let graficoAtividades = null;
 let graficoMedicamentos = null;
 
@@ -160,6 +174,12 @@ function iniciarPaginaDashboard() {
 }
 
 // tabela residentes ______________________________________________________________________________________________________________
+/*
+  Esta função inicializa a página de Residentes. Ela busca a lista de residentes salvos 
+  na memória, e então cria dinamicamente a tabela que é exibida na tela, adicionando 
+  uma linha para cada residente com suas informações (nome, idade, etc.) e os botões 
+  de ação (editar e excluir). Ela também ativa a funcionalidade do botão de excluir.
+*/
 function iniciarPaginaResidentes() {
   const listaResidentes = JSON.parse(
     sessionStorage.getItem("listaResidentes") || "[]"
@@ -226,6 +246,12 @@ function iniciarPaginaResidentes() {
 }
 
 // tabela funcionario ______________________________________________________________________________________________________________
+/*
+  Esta função inicializa a página de Funcionários. Assim como a de residentes, ela 
+  lê a lista de funcionários salvos e constrói a tabela na tela, mostrando 
+  informações como nome, turno, e status de cada um. Ela também cria os links 
+  corretos para a edição de cada ficha e ativa a funcionalidade do botão de excluir.
+*/
 function iniciarPaginaFuncionarios() {
   const listaFuncionarios = JSON.parse(
     sessionStorage.getItem("listaFuncionarios") || "[]"
@@ -308,7 +334,12 @@ function iniciarPaginaFuncionarios() {
 }
 
 // tabela responsavel  ______________________________________________________________________________________________________________
-
+/*
+  Esta função inicializa a página de Responsáveis. Ela lê a lista de responsáveis e 
+  de residentes para poder exibir a tabela completa, mostrando qual residente está 
+  vinculado a qual responsável. Assim como as outras, ela também cria os botões 
+  de ação (editar/excluir) e ativa a funcionalidade de exclusão.
+*/
 function iniciarPaginaResponsaveis() {
   const listaResponsaveis = JSON.parse(
     sessionStorage.getItem("listaResponsaveis") || "[]"
@@ -332,7 +363,6 @@ function iniciarPaginaResponsaveis() {
     const categoria = definirCategoria(idade);
     const nomeCompleto = `${responsavel["primeiro-nome"]} ${responsavel.sobrenome}`;
 
-    // --- CORREÇÃO APLICADA AQUI no href ---
     tr.innerHTML = `
         <td>${nomeCompleto}</td>
         <td>${idade}</td>
@@ -390,6 +420,12 @@ function iniciarPaginaResponsaveis() {
 }
 
 // sessao medicamento -_____________________________________________________________________________________________________
+/*
+  Esta função inicializa a página de Medicamentos. Ela busca a lista de tratamentos e 
+  de residentes para montar a tabela de agendamentos de medicação. Para cada item, 
+  ela exibe o horário, o residente, o medicamento e o status (Pendente ou Administrado),
+  junto com os botões de editar e excluir, e ativa a função de exclusão.
+*/
 function iniciarPaginaMedicamentos() {
   const listaResidentes = JSON.parse(
     sessionStorage.getItem("listaResidentes") || "[]"
@@ -411,7 +447,6 @@ function iniciarPaginaMedicamentos() {
       .toLowerCase()
       .replace(" ", "-")}`;
 
-    // A coluna de ações agora contém apenas os ícones de Editar e Excluir
     tr.innerHTML = `
         <td>${tratamento.horario}</td>
         <td>${nomeResidente}</td>
@@ -442,8 +477,6 @@ function iniciarPaginaMedicamentos() {
     }
 
     tabelaBody.addEventListener("click", function (event) {
-      // A lógica de registrar dose foi removida
-
       const botaoExcluir = event.target.closest(".btn-excluir");
       if (botaoExcluir) {
         event.preventDefault();
@@ -474,6 +507,13 @@ function iniciarPaginaMedicamentos() {
 }
 
 // sessao atividades  -_____________________________________________________________________________________________________
+/*
+  Esta função inicializa a página de Atividades. Ela contém uma sub-função 'renderizarTabela' 
+  que é responsável por ler os agendamentos de atividades e construir a tabela na tela, 
+  mostrando data, horário, nome da atividade, status, etc. A função também ativa a 
+  funcionalidade do botão de excluir, que ao ser clicado, remove o item e redesenha a 
+  tabela para refletir a mudança instantaneamente.
+*/
 function iniciarPaginaAtividades() {
   const tabelaBody = document.getElementById("lista-atividades-body");
 
@@ -555,6 +595,12 @@ function iniciarPaginaAtividades() {
 }
 
 // sessao relatorio   -_____________________________________________________________________________________________________
+/*
+  Esta função inicializa a página de Relatórios. Ela lê a lista de relatórios diários 
+  e de residentes para poder construir a tabela de registros salvos, mostrando a data, 
+  o residente, o responsável pelo registro, o medicamento e seu status. Assim como as 
+  outras, ela também cria os botões de ação e ativa a funcionalidade de exclusão.
+*/
 function iniciarPaginaRelatorios() {
   const tabelaBody = document.getElementById("lista-relatorios-body");
   if (!tabelaBody) return;
@@ -646,6 +692,12 @@ function iniciarPaginaRelatorios() {
 }
 
 // sessao adm  -_____________________________________________________________________________________________________
+/*
+  Esta função inicializa a página de Administração. No momento, sua única 
+  funcionalidade é ativar o botão "Sair da conta". Ao ser clicado, ele pede 
+  confirmação, limpa toda a memória da sessão (desconectando o usuário) e 
+  o redireciona para a página de login.
+*/
 function iniciarPaginaAdm() {
   const botaoLogout = document.getElementById("btn-logout");
 
@@ -667,6 +719,14 @@ function iniciarPaginaAdm() {
 }
 
 // document da pagina principal ___________________________________________________________________________________
+/*
+  Este é o bloco de código mais importante para a navegação do site. Ele é executado 
+  quando a página principal carrega. Sua principal responsabilidade é gerenciar a 
+  troca entre as diferentes "páginas" (Dashboard, Residentes, etc.) do sistema, 
+  criando o efeito de transição e ajustando a altura do container. Ele também 
+  chama todas as funções 'iniciarPagina...' para garantir que cada seção seja 
+  carregada com seus dados corretos.
+*/
 document.addEventListener("DOMContentLoaded", function () {
   const containerGeral = document.querySelector(".container-geral");
   const menuItens = document.querySelectorAll(".menu-header li");
@@ -712,6 +772,13 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // iniciacao __________________________________________________________________________________________________
+  /*
+    Este bloco final é o ponto de partida de tudo. Após a página carregar e a navegação 
+    ser configurada, ele chama cada uma das funções 'iniciarPagina...' para que todas 
+    as seções do sistema (Dashboard, Residentes, etc.) sejam populadas com os dados 
+    corretos desde o início. Ele também verifica se o usuário veio de uma outra página 
+    (como um formulário de cadastro) para abrir a aba correta automaticamente.
+  */
   iniciarPaginaDashboard();
   iniciarPaginaResidentes();
   iniciarPaginaFuncionarios();

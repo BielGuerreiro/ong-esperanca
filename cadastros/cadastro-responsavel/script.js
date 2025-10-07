@@ -1,4 +1,10 @@
-// Funções de dados no topo do arquivo
+// Funções de dados no topo do arquivo_______________________________________________________________________________
+/*
+  Este bloco contém funções de "ajuda" para gerenciar os dados. As funções 'carregar' 
+  e 'salvar' são responsáveis por ler e escrever as listas de responsáveis e de 
+  residentes na memória do navegador (sessionStorage). A função 'configurarValidacaoDatas' 
+  impede que o usuário insira datas inválidas nos campos de data do formulário.
+*/
 function carregarResponsaveis() {
   return JSON.parse(sessionStorage.getItem("listaResponsaveis") || "[]");
 }
@@ -18,7 +24,12 @@ function configurarValidacaoDatas() {
   }
 }
 
-// ===== CÓDIGO PRINCIPAL DA PÁGINA =====
+// ===== CÓDIGO PRINCIPAL DA PÁGINA _______________________________________________________________________________
+/*
+  Este é o motor da página, que roda quando o HTML termina de carregar. Ele organiza 
+  todas as funcionalidades do formulário, como a seleção de elementos, a verificação 
+  do modo de edição, a navegação entre etapas e o processo de salvar os dados.
+*/
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("form-responsavel");
   const etapas = document.querySelectorAll(".etapa-form");
@@ -29,7 +40,13 @@ document.addEventListener("DOMContentLoaded", function () {
   const selectResidente = document.getElementById("residenteId");
   let etapaAtual = 0;
 
-  // --- LÓGICA DE EDIÇÃO (ADICIONADA) ---
+  // --- LÓGICA DE EDIÇÃO (ADICIONADA) _______________________________________________________________________________
+  /*
+    Esta seção ativa o "Modo de Edição". Ela verifica se a URL da página contém um ID.
+    Se um ID for encontrado, o script altera a interface (título e texto do botão),
+    busca os dados daquele responsável específico e preenche todos os campos do 
+    formulário com as informações que já foram salvas.
+  */
   const urlParams = new URLSearchParams(window.location.search);
   const responsavelId = urlParams.get("id");
   const isEditMode = Boolean(responsavelId);
@@ -53,7 +70,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Popula o campo de seleção com os residentes existentes
+  // Popula o campo de seleção com os residentes existentes_______________________________________________________________________________
+  /*
+    Este trecho é responsável por preencher o campo de seleção "Residente Vinculado".
+    Ele busca a lista de todos os residentes cadastrados e cria uma opção no menu
+    dropdown para cada um, permitindo vincular o responsável ao residente correto.
+  */
   const listaResidentes = carregarResidentes();
   if (selectResidente) {
     listaResidentes.forEach((residente) => {
@@ -65,7 +87,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // --- LÓGICA DE SALVAR (UNIFICADA) ---
+  // --- LÓGICA DE SALVAR (UNIFICADA) _______________________________________________________________________________
+  /*
+    Este bloco define a ação principal do formulário ao ser enviado. Ele valida se os 
+    campos obrigatórios estão preenchidos e, em seguida, verifica se está em "Modo de Edição"
+    para decidir se deve ATUALIZAR um responsável existente ou CRIAR um novo. Ao final,
+    exibe um alerta de sucesso e redireciona o usuário para a página de responsáveis.
+  */
   form.addEventListener("submit", function (event) {
     event.preventDefault();
     if (!form.checkValidity()) {
@@ -98,7 +126,13 @@ document.addEventListener("DOMContentLoaded", function () {
     window.location.href = `../../index.html?pagina=${origem}`;
   });
 
-  // --- LÓGICAS DE NAVEGAÇÃO E INTERAÇÃO (SEU CÓDIGO ORIGINAL) ---
+  // --- LÓGICAS DE NAVEGAÇÃO E INTERAÇÃO (SEU CÓDIGO ORIGINAL) _______________________________________________________________________________
+  /*
+    Esta seção gerencia a experiência do usuário com o formulário de múltiplas etapas.
+    A função 'mostrarEtapa' controla qual etapa do formulário está visível. Os blocos 
+    seguintes ativam os botões "Próximo", "Voltar" e "Cancelar", definindo o que acontece
+    quando cada um deles é clicado.
+  */
   function mostrarEtapa(i) {
     etapas.forEach((e, idx) => e.classList.toggle("ativo", idx === i));
   }

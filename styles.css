@@ -586,3 +586,18 @@ body {
 .opcao-config.opcao-perigo i {
   color: var(--cor-vermelho-escuro);
 }
+
+/* resposivo sabrina :] ______________________________________________________________________ */
+@media (max-width: 1366px) {
+  .menu-header li {
+    font-size: 16px;
+  }
+
+  .menu-header span {
+    font-size: 20px;
+  }
+
+  .logo-header img {
+    width: 13%;
+  }
+}

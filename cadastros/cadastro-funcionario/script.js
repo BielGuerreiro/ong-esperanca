@@ -1,4 +1,10 @@
-// Funções de dados no topo do arquivo
+// ===== FUNÇÕES GLOBAIS DE APOIO _______________________________________________________________________________
+/*
+  Este bloco contém funções de "ajuda" reutilizáveis. As funções 'carregar' e 'salvar' 
+  gerenciam a leitura e a escrita dos dados no sessionStorage do navegador. 
+  'configurarValidacaoDatas' impede que o usuário insira datas inválidas (como nascer no futuro).
+  'iniciarToggleSenha' ativa a funcionalidade de mostrar/esconder a senha ao clicar no ícone de olho.
+*/
 function carregarFuncionarios() {
   return JSON.parse(sessionStorage.getItem("listaFuncionarios") || "[]");
 }
@@ -37,7 +43,12 @@ function iniciarToggleSenha(inputId, toggleId) {
   }
 }
 
-// ===== CÓDIGO PRINCIPAL DA PÁGINA =====
+// ===== CÓDIGO PRINCIPAL DA PÁGINA _______________________________________________________________________________
+/*
+  Este é o motor principal da página, executado assim que o HTML é carregado. 
+  Ele seleciona os elementos da página, define o comportamento de todos os botões e campos,
+  e gerencia a lógica principal do formulário.
+*/
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("form-funcionario");
   const etapas = document.querySelectorAll(".etapa-form");
@@ -47,7 +58,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const botaoSubmit = document.querySelector(".btn-enviar");
   let etapaAtual = 0;
 
-  // --- Seletores para a lógica de Tags ---
+  // --- Seletores para a lógica de Tags _______________________________________________________________________________
+  /*
+    Esta parte seleciona os elementos HTML necessários para a funcionalidade de 
+    "Residentes sob cuidados", como o campo de seleção, o container onde as tags 
+    aparecem e o campo oculto que armazena os IDs dos residentes selecionados.
+  */
   const selectResidenteMultiplo = document.getElementById("residente-select");
   const tagsContainer = document.getElementById(
     "residentes-selecionados-container"
@@ -56,7 +72,13 @@ document.addEventListener("DOMContentLoaded", function () {
   let idsSelecionados = [];
   const listaResidentes = carregarResidentes(); // Carrega a lista de residentes uma vez
 
-  // --- LÓGICA DE EDIÇÃO (CORRIGIDA E MAIS SEGURA) ---
+  // --- LÓGICA DE EDIÇÃO (CORRIGIDA E MAIS SEGURA) _______________________________________________________________________________
+  /*
+    Este bloco é o controlador do "Modo de Edição". Ele verifica se a URL da página 
+    contém um ID de funcionário. Se houver, ele ajusta o título e o botão, busca os 
+    dados completos daquele funcionário e preenche automaticamente todos os campos 
+    do formulário, incluindo as "tags" de residentes vinculados.
+  */
   const urlParams = new URLSearchParams(window.location.search);
   const funcionarioId = urlParams.get("id");
   const isEditMode = Boolean(funcionarioId);
@@ -79,7 +101,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
 
-      // CORREÇÃO: Adicionada verificação para evitar erro se não houver residentes vinculados.
       if (
         funcionarioParaEditar.residentes_vinculados_ids &&
         typeof funcionarioParaEditar.residentes_vinculados_ids === "string"
@@ -91,7 +112,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // --- LÓGICA DE SALVAR (UNIFICADA) ---
+  // --- LÓGICA DE SALVAR (UNIFICADA) _______________________________________________________________________________
+  /*
+    Define o que acontece ao enviar o formulário. Ele impede o recarregamento da página, 
+    valida os campos e, em seguida, verifica se está em "Modo de Edição". Se estiver, 
+    ele ATUALIZA o cadastro existente. Se não, ele CRIA um novo cadastro de funcionário. 
+    Após salvar, exibe um alerta de sucesso e redireciona o usuário de volta.
+  */
   form.addEventListener("submit", function (event) {
     event.preventDefault();
     if (!form.checkValidity()) {
@@ -124,7 +151,13 @@ document.addEventListener("DOMContentLoaded", function () {
     window.location.href = `../../index.html?pagina=${origem}`;
   });
 
-  // --- LÓGICAS DE NAVEGAÇÃO E INTERAÇÃO ---
+  // --- LÓGICAS DE NAVEGAÇÃO E INTERAÇÃO _______________________________________________________________________________
+  /*
+    Esta seção controla a experiência do formulário de múltiplas etapas. A função 
+    'mostrarEtapa' é responsável por exibir a etapa correta, enquanto os blocos 
+    seguintes ativam os botões "Próximo", "Voltar" e "Cancelar", definindo o que 
+    acontece quando cada um é clicado.
+  */
   function mostrarEtapa(i) {
     etapas.forEach((e, idx) => e.classList.toggle("ativo", idx === i));
   }
@@ -153,7 +186,13 @@ document.addEventListener("DOMContentLoaded", function () {
     })
   );
 
-  // --- LÓGICA DAS TAGS DE RESIDENTES ---
+  // --- LÓGICA DAS TAGS DE RESIDENTES _______________________________________________________________________________
+  /*
+    Este bloco gerencia o campo de seleção múltipla "Residentes sob cuidados". 
+    Ele primeiro preenche o dropdown com os nomes dos residentes. A função 'atualizarTags' 
+    é a responsável por criar e remover as "tags" visuais conforme o usuário seleciona 
+    ou remove os residentes da lista.
+  */
   if (selectResidenteMultiplo) {
     listaResidentes.forEach((r) =>
       selectResidenteMultiplo.appendChild(
@@ -195,7 +234,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // --- INICIALIZAÇÃO ---
+  // --- INICIALIZAÇÃO _______________________________________________________________________________
+  /*
+    Estas são as últimas ações executadas quando a página carrega. Elas chamam as 
+    funções de configuração inicial para a validação das datas e para o botão de 
+    mostrar/esconder senha, e finalmente garantem que a primeira etapa do formulário 
+    seja exibida para o usuário.
+  */
   configurarValidacaoDatas();
   iniciarToggleSenha("senha", "toggle-senha-funcionario");
   mostrarEtapa(etapaAtual);
