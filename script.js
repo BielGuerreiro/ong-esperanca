@@ -24,6 +24,34 @@ function definirCategoria(idade) {
   return "Idoso";
 }
 
+// Funções Globais_______________________________________________________________________________
+/*
+  ... (suas funções calcularIdade e definirCategoria ficam aqui) ...
+*/
+
+// NOVA FUNÇÃO PARA SAUDAÇÃO DINÂMICA
+function atualizarSaudacao() {
+  const elementoSaudacao = document.getElementById("mensagem-saudacao");
+  if (!elementoSaudacao) return; // Se não encontrar o elemento, não faz nada
+
+  const horaAtual = new Date().getHours();
+  let saudacao = "";
+
+  if (horaAtual >= 5 && horaAtual < 12) {
+    saudacao = "Bom dia";
+  } else if (horaAtual >= 12 && horaAtual < 18) {
+    saudacao = "Boa tarde";
+  } else {
+    saudacao = "Boa noite";
+  }
+
+  // Futuramente, você pode pegar o nome do usuário logado da memória
+  // Ex: const nomeUsuario = sessionStorage.getItem("usuarioLogado") || "Usuário";
+  const nomeUsuario = "Usuário"; // Por enquanto, usamos um nome padrão
+
+  elementoSaudacao.textContent = `Olá, ${saudacao}, ${nomeUsuario}!`;
+}
+
 // tabela dashboard ______________________________________________________________________________________________________________
 /*
   Esta função inicializa a página de Dashboard. Ela é responsável por calcular e exibir 
@@ -36,6 +64,8 @@ let graficoAtividades = null;
 let graficoMedicamentos = null;
 
 function iniciarPaginaDashboard() {
+  atualizarSaudacao();
+
   const listaResidentes = JSON.parse(
     sessionStorage.getItem("listaResidentes") || "[]"
   );

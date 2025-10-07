@@ -289,6 +289,11 @@ body {
   font-size: 40px;
 }
 
+.bem-vindo h2 {
+  color: var(--main-color);
+  font-size: 45px;
+}
+
 /* dashboard _______________________________________________________________________________________________________________________ */
 .ficha-container .ficha {
   height: 600px;
