@@ -10,17 +10,19 @@
     <main>
       <div class="container-formulario">
         <form id="form-atividade" class="formulario-etapas">
+          <div class="titulo">Agendar Nova Atividade</div>
           <div class="etapa-form ativo">
-            <h2>Agendar Nova Atividade</h2>
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="nome-atividade"
                   >Nome da Atividade <span class="obrigatorio">*</span></label
                 >
+
                 <input
                   type="text"
                   id="nome-atividade"
                   name="nome-atividade"
+                  placeholder="Digite o nome da atividade"
                   required
                 />
               </div>
@@ -42,10 +44,16 @@
                 </select>
               </div>
             </div>
+
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="local">Local</label>
-                <input type="text" id="local" name="local" />
+                <input
+                  type="text"
+                  id="local"
+                  name="local"
+                  placeholder="Local onde vai acontecer"
+                />
               </div>
               <div class="grupo-form">
                 <label for="data"

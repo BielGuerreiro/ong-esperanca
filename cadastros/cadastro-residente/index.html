@@ -3,14 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cadastro de Residente</title>
-    <link rel="stylesheet" href="../styles.css" />
+    <title>ONG Esperança</title>
+
+    <link
+      href="https://cdn.boxicons.com/fonts/basic/boxicons.min.css"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
     <link rel="shortcut icon" href="/img/logo.png" type="image/x-icon" />
+
+    <link rel="stylesheet" href="../styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
     <main>
       <div class="container-formulario">
         <form id="form-residente" class="formulario-etapas">
+          <div class="titulo">Cadastrar Ficha Do Residente</div>
           <!-- primeira parte ________________________________________________________________________ -->
           <div id="etapa-1" class="etapa-form ativo">
             <!-- nome ______________________________________________________________________________ -->
@@ -330,7 +347,7 @@
 
           <!-- terceira parte  _________________________________________________________________________________ -->
           <div id="etapa-3" class="etapa-form">
-            <h3>Informações Escolares e de Saúde</h3>
+            <div class="titulo">Informações Escolares e de Saúde</div>
 
             <div class="grupo-form">
               <label for="frequenta-escola"
@@ -395,7 +412,7 @@
           </div>
 
           <div id="etapa-4" class="etapa-form">
-            <h3>Informações Adicionais</h3>
+            <div class="titulo">Informações Adicionais</div>
 
             <div class="grupo-form">
               <label for="vacinas">Vacinas (Opcional)</label>

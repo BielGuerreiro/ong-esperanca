@@ -11,24 +11,38 @@
     <main>
       <div class="container-formulario">
         <form id="form-responsavel" class="formulario-etapas">
+          <div class="titulo">Cadastrar Ficha Do Responsável</div>
           <div id="etapa-1" class="etapa-form ativo">
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="primeiro-nome"
-                  >Primeiro nome <span class="obrigatorio">*</span></label
-                ><input
+                  >Primeiro nome<span class="obrigatorio">*</span></label
+                >
+                <input
                   type="text"
                   id="primeiro-nome"
                   name="primeiro-nome"
+                  placeholder="Digite o nome"
+                  maxlength="50"
                   required
                 />
               </div>
+
               <div class="grupo-form campo-expandir">
                 <label for="sobrenome"
                   >Sobrenome <span class="obrigatorio">*</span></label
-                ><input type="text" id="sobrenome" name="sobrenome" required />
+                >
+                <input
+                  type="text"
+                  id="sobrenome"
+                  name="sobrenome"
+                  placeholder="Digite o sobrenome"
+                  maxlength="100"
+                  required
+                />
               </div>
             </div>
+
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="nascimento"
@@ -56,11 +70,13 @@
                   type="text"
                   id="cpf"
                   name="cpf"
+                  placeholder="000.000.000-00"
                   inputmode="numeric"
                   maxlength="11"
                   required
                 />
               </div>
+
               <div class="grupo-form campo-expandir">
                 <label for="estado-civil">Estado Civil</label
                 ><select id="estado-civil" name="estado-civil">
@@ -72,11 +88,18 @@
                 </select>
               </div>
             </div>
+
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="email">E-mail</label
-                ><input type="email" id="email" name="email" />
+                ><input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="exemplo@email.com"
+                />
               </div>
+
               <div class="grupo-form campo-expandir">
                 <label for="telefone"
                   >Telefone <span class="obrigatorio">*</span></label
@@ -84,11 +107,13 @@
                   type="tel"
                   id="telefone"
                   name="telefone"
+                  placeholder="(00) 00000-0000"
                   inputmode="numeric"
                   required
                 />
               </div>
             </div>
+
             <div class="linha-form">
               <div class="grupo-form campo-expandir senha-container">
                 <label for="senha">Crie uma Senha (para futuro portal)</label>

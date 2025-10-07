@@ -1,8 +1,3 @@
-/*
-    VERSÃO FINAL E COMPLETA DO SCRIPT DE CADASTRO DE ATIVIDADE
-    - Inclui toda a lógica de botões, validação e seleção múltipla de participantes.
-*/
-
 // ===== CAMADA DE DADOS E FUNÇÕES GLOBAIS =====
 function carregarAgendamentos() {
   return JSON.parse(
@@ -18,25 +13,59 @@ function carregarResidentes() {
 
 // ===== CÓDIGO PRINCIPAL DA PÁGINA =====
 document.addEventListener("DOMContentLoaded", function () {
-  // --- Seletores de Elementos ---
   const form = document.getElementById("form-atividade");
   const botaoSubmit = document.querySelector(".btn-enviar");
   const botaoCancelar = document.querySelector(".btn-cancelar");
 
-  // --- Lógica para Seleção Múltipla de Participantes ---
+  // --- LÓGICA DE EDIÇÃO (ADICIONADA) ---
+  const urlParams = new URLSearchParams(window.location.search);
+  const atividadeId = urlParams.get("id");
+  const isEditMode = Boolean(atividadeId);
+
+  // --- Variáveis para a Seleção Múltipla ---
   const selectResidente = document.getElementById("residente-select");
   const tagsContainer = document.getElementById(
     "residentes-selecionados-container"
   );
   const hiddenInputIds = document.getElementById("participantes_ids");
   let idsSelecionados = [];
-
   const listaResidentes = carregarResidentes();
+
+  if (isEditMode) {
+    const titulo = document.querySelector("h2");
+    if (titulo) titulo.textContent = "Editar Atividade";
+    if (botaoSubmit) botaoSubmit.textContent = "SALVAR ALTERAÇÕES";
+
+    const listaAgendamentos = carregarAgendamentos();
+    const atividadeParaEditar = listaAgendamentos.find(
+      (a) => a.id == atividadeId
+    );
+
+    if (atividadeParaEditar) {
+      Object.keys(atividadeParaEditar).forEach((key) => {
+        const campo = form.elements[key];
+        if (campo) {
+          campo.value = atividadeParaEditar[key];
+        }
+      });
+      // Preenche as tags dos participantes se a atividade já tiver
+      if (
+        atividadeParaEditar.participantes_ids &&
+        typeof atividadeParaEditar.participantes_ids === "string"
+      ) {
+        idsSelecionados = atividadeParaEditar.participantes_ids.split(",");
+        atualizarTags();
+      }
+    }
+  }
+
+  // --- Lógica para Seleção Múltipla de Participantes ---
   if (selectResidente) {
     listaResidentes.forEach((residente) => {
-      const option = document.createElement("option");
-      option.value = residente.id;
-      option.textContent = `${residente["primeiro-nome"]} ${residente.sobrenome}`;
+      const option = new Option(
+        `${residente["primeiro-nome"]} ${residente.sobrenome}`,
+        residente.id
+      );
       selectResidente.appendChild(option);
     });
   }
@@ -76,9 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // --- Lógica dos Botões e Envio do Formulário ---
-
-  // Lógica do botão Cancelar
+  // --- Lógica dos Botões e Envio ---
   if (botaoCancelar) {
     botaoCancelar.addEventListener("click", function () {
       if (confirm("Tem certeza que deseja cancelar?")) {
@@ -87,31 +114,44 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Lógica de Validação (roda no clique do botão de enviar)
-  if (botaoSubmit) {
-    botaoSubmit.addEventListener("click", function () {
-      form.classList.add("form-foi-validado");
-      if (!form.checkValidity()) {
-        alert("Por favor, preencha todos os campos obrigatórios (*).");
-      }
-    });
-  }
+  // REMOVIDO: O listener de 'click' que causava bugs foi retirado.
 
-  // Lógica de Envio (só roda se o formulário for válido)
+  // Lógica de Envio ÚNICA E CORRETA
   form.addEventListener("submit", function (event) {
     event.preventDefault();
-    if (!form.checkValidity()) return;
+    if (!form.checkValidity()) {
+      alert("Por favor, preencha todos os campos obrigatórios (*).");
+      form.classList.add("form-foi-validado");
+      return;
+    }
 
     const listaAgendamentos = carregarAgendamentos();
     const formData = new FormData(form);
-    const novoAgendamento = Object.fromEntries(formData.entries());
-    novoAgendamento.id = Date.now();
-    novoAgendamento.status = "Agendada";
+    const dadosAtividade = Object.fromEntries(formData.entries());
 
-    listaAgendamentos.push(novoAgendamento);
-    salvarAgendamentos(listaAgendamentos);
+    if (isEditMode) {
+      // ATUALIZA
+      const index = listaAgendamentos.findIndex((a) => a.id == atividadeId);
+      if (index !== -1) {
+        const agendamentoExistente = listaAgendamentos[index];
+        listaAgendamentos[index] = {
+          ...agendamentoExistente,
+          ...dadosAtividade,
+          id: parseInt(atividadeId),
+        };
+        salvarAgendamentos(listaAgendamentos);
+        alert("Atividade atualizada com sucesso!");
+      }
+    } else {
+      // CRIA NOVO
+      dadosAtividade.id = Date.now();
+      dadosAtividade.status = "Agendada";
+      listaAgendamentos.push(dadosAtividade);
+      salvarAgendamentos(listaAgendamentos);
+      alert("Atividade agendada com sucesso!");
+    }
 
-    alert("Atividade agendada com sucesso!");
-    window.location.href = "../../index.html?pagina=pagina-atividades";
+    const origem = urlParams.get("origem") || "pagina-atividades";
+    window.location.href = `../../index.html?pagina=${origem}`;
   });
 });

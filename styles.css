@@ -9,13 +9,12 @@
 }
 
 :root {
-  /* Suas cores antigas */
   --main-color: #75afdc;
   --secondary-color: #7e7e7e;
   --cor-azul-claro: #92c0e3;
   --cor-cinza-fundo: rgba(241, 241, 241, 0.74);
-  --cor-vermelho-claro: #ffd2d2; /* Fundo para mensagens de erro/alerta suaves */
-  --cor-vermelho-escuro: #dc3546c0; /* Cor principal para botões de excluir ou alertas importantes */
+  --cor-vermelho-claro: #ffd2d2;
+  --cor-vermelho-escuro: #dc3546c0;
 }
 
 html {

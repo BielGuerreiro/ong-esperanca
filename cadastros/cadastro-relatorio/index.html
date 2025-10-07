@@ -2,15 +2,27 @@
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
-    <title>Criar Relatório Diário</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ONG Esperança</title>
+
+    <link
+      href="https://cdn.boxicons.com/fonts/basic/boxicons.min.css"
+      rel="stylesheet"
+    />
+
+    <link rel="shortcut icon" href="/img/logo.png" type="image/x-icon" />
+
     <link rel="stylesheet" href="../styles.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
+
   <body>
     <main>
       <div class="container-formulario">
         <form id="form-relatorio" class="formulario-etapas">
+          <div class="titulo">Criar Novo Registro Diário</div>
           <div class="etapa-form ativo">
-            <h2>Criar Novo Registro Diário</h2>
             <div class="grupo-form">
               <label for="data"
                 >Data do Relatório <span class="obrigatorio">*</span></label
@@ -25,7 +37,8 @@
             </div>
 
             <hr class="separador-relatorio" />
-            <h3>Registro de Medicação</h3>
+
+            <div class="titulo">Registro de Medicação</div>
 
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
