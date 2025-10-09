@@ -35,44 +35,51 @@
     <header class="header2">
       <div class="menu-header">
         <ul>
-          <li data-pagina="pagina-dashboard" class="menu-ativo">
-            <i class="bx bx-dashboard-alt"></i
+          <li
+            data-pagina="pagina-dashboard"
+            class="menu-ativo item-menu-mobile item-menu-desktop"
+          >
+            <i class="bx bx-home-alt"></i
             ><span class="texto-lado">Dashboard</span>
           </li>
-
-          <li data-pagina="pagina-residentes">
+          <li
+            data-pagina="pagina-residentes"
+            class="item-menu-mobile item-menu-desktop"
+          >
             <i class="bx bx-user"></i
             ><span class="texto-lado">Ficha Residentes</span>
           </li>
-
-          <li data-pagina="pagina-funcionarios">
-            <i class="bx bx-user"></i
-            ><span class="texto-lado">Ficha Funcionarios</span>
-          </li>
-
-          <li data-pagina="pagina-responsavel">
-            <i class="bx bx-user"></i
-            ><span class="texto-lado">Ficha Responsavel</span>
-          </li>
-
-          <li data-pagina="pagina-medicamentos">
-            <i class="bx bx-alarm"></i>
-            <span class="texto-lado">Medicamentos</span>
-          </li>
-
-          <li data-pagina="pagina-atividades">
-            <i class="bx bx-walking"></i>
-            <span class="texto-lado">Atividades</span>
-          </li>
-
-          <li data-pagina="pagina-relatorios">
+          <li
+            data-pagina="pagina-relatorios"
+            class="item-menu-mobile item-menu-desktop"
+          >
             <i class="bx bx-clipboard"></i
             ><span class="texto-lado">Relatórios</span>
           </li>
 
-          <li data-pagina="pagina-adm">
-            <i class="bx bx-cog"></i>
-            <span class="texto-lado">Adiministração</span>
+          <li id="btn-menu-flyout" class="item-menu-mobile">
+            <i class="bx bx-menu"></i><span class="texto-lado">Menu</span>
+          </li>
+
+          <li data-pagina="pagina-funcionarios" class="item-menu-desktop">
+            <i class="bx bx-id-card"></i
+            ><span class="texto-lado">Ficha Funcionarios</span>
+          </li>
+          <li data-pagina="pagina-responsavel" class="item-menu-desktop">
+            <i class="bx bx-user-check"></i
+            ><span class="texto-lado">Ficha Responsavel</span>
+          </li>
+          <li data-pagina="pagina-medicamentos" class="item-menu-desktop">
+            <i class="bx bx-capsule"></i
+            ><span class="texto-lado">Medicamentos</span>
+          </li>
+          <li data-pagina="pagina-atividades" class="item-menu-desktop">
+            <i class="bx bx-calendar-event"></i
+            ><span class="texto-lado">Atividades</span>
+          </li>
+          <li data-pagina="pagina-adm" class="item-menu-desktop">
+            <i class="bx bx-cog"></i
+            ><span class="texto-lado">Administração</span>
           </li>
         </ul>
       </div>
@@ -285,7 +292,7 @@
               <div class="ficha-header">
                 <h2>Próximas Atividades</h2>
                 <a
-                  href="/cadastros/cadastro-atividade/index.html?origem=pagina-atividades"
+                  href="cadastros/cadastro-atividade/index.html?origem=pagina-atividades"
                   class="btn-nova-ficha item-gerente"
                   >Nova Atividade +</a
                 >

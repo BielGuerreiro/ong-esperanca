@@ -772,6 +772,10 @@ document.addEventListener("DOMContentLoaded", function () {
       if (isAnimating) return;
       const paginaAlvoId = this.dataset.pagina;
       if (!paginaAlvoId) return;
+
+      document.body.className = "";
+      document.body.classList.add(paginaAlvoId + "-ativa");
+
       const paginaAlvo = document.getElementById(paginaAlvoId);
       const paginaAtual = document.querySelector(".pagina-conteudo.ativa");
       if (paginaAlvo === paginaAtual) return;
