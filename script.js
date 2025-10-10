@@ -805,6 +805,68 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  //CÓDIGO PARA O MENU FLYOUT ____________________________________________________________________________________________
+  const btnMenuFlyout = document.getElementById("btn-menu-flyout");
+  const flyoutContainer = document.querySelector(".flyout-container");
+
+  if (flyoutContainer) {
+    const flyoutBackdrop = document.querySelector(".flyout-backdrop");
+    const flyoutClose = document.querySelector(".flyout-close");
+    const flyoutLinksContainer = document.getElementById(
+      "flyout-links-container"
+    );
+    const todosOsLinksDoMenu = document.querySelectorAll(
+      ".header2 .menu-header > ul > li"
+    );
+
+    const fecharFlyout = () => {
+      flyoutContainer.classList.remove("ativo");
+    };
+
+    const abrirFlyout = () => {
+      flyoutContainer.classList.add("ativo");
+    };
+
+    const popularMenuFlyout = () => {
+      flyoutLinksContainer.innerHTML = "";
+      todosOsLinksDoMenu.forEach((item) => {
+        if (
+          item.classList.contains("item-menu-desktop") &&
+          !item.classList.contains("item-menu-mobile")
+        ) {
+          const pagina = item.dataset.pagina;
+          const iconeHTML = item.querySelector("i").outerHTML;
+          const texto = item.querySelector(".texto-lado").textContent;
+
+          const novoLink = document.createElement("a");
+          novoLink.href = "#";
+          novoLink.dataset.pagina = pagina;
+          novoLink.innerHTML = `${iconeHTML} <span>${texto}</span>`;
+
+          novoLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            const itemOriginalDoMenu = document.querySelector(
+              `.menu-header li[data-pagina="${pagina}"]`
+            );
+            if (itemOriginalDoMenu) {
+              itemOriginalDoMenu.click();
+            }
+            fecharFlyout();
+          });
+
+          flyoutLinksContainer.appendChild(novoLink);
+        }
+      });
+    };
+
+    // Adiciona os eventos
+    btnMenuFlyout.addEventListener("click", abrirFlyout);
+    flyoutBackdrop.addEventListener("click", fecharFlyout);
+    flyoutClose.addEventListener("click", fecharFlyout);
+
+    popularMenuFlyout();
+  }
+
   // iniciacao __________________________________________________________________________________________________
   /*
     Este bloco final é o ponto de partida de tudo. Após a página carregar e a navegação 

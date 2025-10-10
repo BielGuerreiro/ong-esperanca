@@ -613,7 +613,10 @@ body {
 }
 
 @media (max-width: 850px) {
-  /* --- 1. LÓGICA DE VISIBILIDADE DO MENU (sem alteração) --- */
+  .header1 {
+    display: none;
+  }
+
   .item-menu-desktop {
     display: none !important;
   }
@@ -621,7 +624,6 @@ body {
     display: flex !important;
   }
 
-  /* --- 2. ESTILOS DA BARRA DE MENU INFERIOR (sem alteração) --- */
   .header2 {
     position: fixed;
     width: 100%;
@@ -668,7 +670,6 @@ body {
     color: inherit;
   }
 
-  /* --- 3. AJUSTES DO BODY E DO BACKGROUND AZUL --- */
   body {
     position: relative;
     background: var(--cor-cinza-fundo);
@@ -680,19 +681,19 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: 180px; /* Altura do fundo azul no topo */
-    z-index: -1; /* Fica atrás do conteúdo */
+    height: 180px;
+    z-index: -1;
     background-color: var(--main-color);
   }
 
   body.pagina-dashboard-ativa {
-    background: var(--main-color); /* Fundo azul geral SÓ no dashboard */
+    background: var(--main-color);
   }
 
   body.pagina-dashboard-ativa .container-geral {
     margin-left: 0;
     padding: 20px;
-    margin-top: 10vh; /* Desce o container branco */
+    margin-top: 10vh;
     position: relative;
     z-index: 1;
     background-color: white;
@@ -703,9 +704,8 @@ body {
   }
 
   body.pagina-dashboard-ativa .bem-vindo {
-    /* Posiciona a saudação no espaço azul acima do container branco */
     position: absolute;
-    top: -60px; /* Puxa o texto para cima */
+    top: -60px;
     left: 0;
     right: 0;
     padding: 0 20px;
@@ -716,53 +716,32 @@ body {
     font-size: 24px;
   }
 
-  /* --- PARA AS OUTRAS PÁGINAS (LAYOUT NORMAL) --- */
   body:not(.pagina-dashboard-ativa) {
-    background: var(--cor-cinza-fundo); /* Fundo cinza padrão */
+    background: var(--cor-cinza-fundo);
   }
 
   body:not(.pagina-dashboard-ativa) .container-geral {
     margin-left: 0;
     padding: 20px;
-    padding-top: 20px; /* Espaçamento normal no topo */
+    padding-top: 20px;
     padding-bottom: 90px;
-    background-color: white; /* Garante que o fundo seja branco */
+    background-color: white;
   }
 
-  .header1 {
-    display: none; /* Esconde o header original no celular */
-  }
-
-  /* --- 5. CONTEÚDO PRINCIPAL (COM BORDA MAIS ARREDONDADA - ALTERADO) --- */
   .container-geral {
     margin-left: 0;
     padding: 20px;
-    margin-top: -20px; /* Sobe um pouco para criar a sobreposição */
+    margin-top: -20px;
     position: relative;
     z-index: 1;
     background-color: white;
-
-    /* BORDA MAIS ARREDONDADA, COMO VOCÊ PEDIU */
     border-top-left-radius: 45px;
     border-top-right-radius: 45px;
-
     box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
     padding-bottom: 90px;
   }
 
-  /* --- 6. ORDEM DOS ÍCONES E FLYOUT (sem alteração) --- */
-  li[data-pagina="pagina-dashboard"] {
-    order: 1;
-  }
-  li[data-pagina="pagina-residentes"] {
-    order: 2;
-  }
-  li[data-pagina="pagina-relatorios"] {
-    order: 3;
-  }
-  #btn-menu-flyout {
-    order: 4;
-  }
+  /* parte da box do menu ______________________________________________________________________________________________ */
 
   .flyout-container {
     display: block;
@@ -772,15 +751,19 @@ body {
     width: 100%;
     height: 100%;
     z-index: 2000;
+    /* Começa invisível */
     visibility: hidden;
     opacity: 0;
     transition: visibility 0s 0.3s, opacity 0.3s ease;
   }
+
   .flyout-container.ativo {
+    /* Fica visível quando a classe 'ativo' é adicionada */
     visibility: visible;
     opacity: 1;
     transition: opacity 0.3s ease;
   }
+
   .flyout-backdrop {
     position: absolute;
     top: 0;
@@ -789,34 +772,52 @@ body {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
   }
+
   .flyout-content {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
     background-color: white;
-    border-radius: 20px 20px 0 0;
+
+    /* AQUI ESTÁ A MÁGICA: copiando o estilo do seu container */
+    border-top-left-radius: 45px;
+    border-top-right-radius: 45px;
     padding: 20px;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+
+    /* Animação: começa fora da tela (embaixo) */
     transform: translateY(100%);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease-out;
   }
+
   .flyout-container.ativo .flyout-content {
+    /* Animação: desliza para a posição 0 (visível) */
     transform: translateY(0);
   }
+
   .flyout-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
     color: var(--main-color);
+    padding: 0 10px;
   }
+
+  .flyout-header h2 {
+    font-size: 24px;
+  }
+
   .flyout-close {
     background: none;
     border: none;
-    font-size: 28px;
+    font-size: 32px;
     cursor: pointer;
-    color: #888;
+    color: var(--secondary-color);
+    line-height: 1;
   }
+
   #flyout-links-container {
     display: flex;
     flex-direction: column;
@@ -824,6 +825,7 @@ body {
     list-style: none;
     padding: 0;
   }
+
   #flyout-links-container a {
     display: flex;
     align-items: center;
@@ -834,9 +836,11 @@ body {
     font-size: 18px;
     font-weight: 500;
   }
+
   #flyout-links-container a:hover {
     background-color: #f0f0f0;
   }
+
   #flyout-links-container i {
     font-size: 24px;
     margin-right: 20px;

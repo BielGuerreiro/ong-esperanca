@@ -39,16 +39,37 @@
             data-pagina="pagina-dashboard"
             class="menu-ativo item-menu-mobile item-menu-desktop"
           >
-            <i class="bx bx-home-alt"></i
-            ><span class="texto-lado">Dashboard</span>
+            <i class="bx bx-home"></i>
+            <span class="texto-lado">Dashboard</span>
           </li>
           <li
             data-pagina="pagina-residentes"
             class="item-menu-mobile item-menu-desktop"
           >
-            <i class="bx bx-user"></i
-            ><span class="texto-lado">Ficha Residentes</span>
+            <i class="bx bx-user"></i>
+            <span class="texto-lado">Ficha Residentes</span>
           </li>
+
+          <li data-pagina="pagina-responsavel" class="item-menu-desktop">
+            <i class="bx bx-user"></i>
+            <span class="texto-lado">Ficha Responsavel</span>
+          </li>
+
+          <li data-pagina="pagina-funcionarios" class="item-menu-desktop">
+            <i class="bx bx-user"></i>
+            <span class="texto-lado">Ficha Funcionarios</span>
+          </li>
+
+          <li data-pagina="pagina-atividades" class="item-menu-desktop">
+            <i class="bx bx-walking"></i>
+            <span class="texto-lado">Atividades</span>
+          </li>
+
+          <li data-pagina="pagina-medicamentos" class="item-menu-desktop">
+            <i class="bx bx-pill"></i>
+            <span class="texto-lado">Medicamentos</span>
+          </li>
+
           <li
             data-pagina="pagina-relatorios"
             class="item-menu-mobile item-menu-desktop"
@@ -56,30 +77,13 @@
             <i class="bx bx-clipboard"></i
             ><span class="texto-lado">Relatórios</span>
           </li>
-
-          <li id="btn-menu-flyout" class="item-menu-mobile">
-            <i class="bx bx-menu"></i><span class="texto-lado">Menu</span>
-          </li>
-
-          <li data-pagina="pagina-funcionarios" class="item-menu-desktop">
-            <i class="bx bx-id-card"></i
-            ><span class="texto-lado">Ficha Funcionarios</span>
-          </li>
-          <li data-pagina="pagina-responsavel" class="item-menu-desktop">
-            <i class="bx bx-user-check"></i
-            ><span class="texto-lado">Ficha Responsavel</span>
-          </li>
-          <li data-pagina="pagina-medicamentos" class="item-menu-desktop">
-            <i class="bx bx-capsule"></i
-            ><span class="texto-lado">Medicamentos</span>
-          </li>
-          <li data-pagina="pagina-atividades" class="item-menu-desktop">
-            <i class="bx bx-calendar-event"></i
-            ><span class="texto-lado">Atividades</span>
-          </li>
           <li data-pagina="pagina-adm" class="item-menu-desktop">
             <i class="bx bx-cog"></i
             ><span class="texto-lado">Administração</span>
+          </li>
+
+          <li id="btn-menu-flyout" class="item-menu-mobile">
+            <i class="bx bx-menu"></i><span class="texto-lado">Menu</span>
           </li>
         </ul>
       </div>
@@ -383,6 +387,17 @@
         <!-- final sessao adm ______________________________________________________________________________ -->
       </div>
     </main>
+
+    <div class="flyout-container">
+      <div class="flyout-backdrop"></div>
+      <div class="flyout-content">
+        <div class="flyout-header">
+          <h2>Menu</h2>
+          <button class="flyout-close">&times;</button>
+        </div>
+        <ul id="flyout-links-container"></ul>
+      </div>
+    </div>
 
     <script src="script.js"></script>
   </body>
