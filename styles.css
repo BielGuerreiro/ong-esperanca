@@ -300,10 +300,6 @@ body {
 }
 
 /* dashboard _______________________________________________________________________________________________________________________ */
-.ficha-container .ficha {
-  height: 600px;
-  max-height: 80vh;
-}
 
 .boxes-container {
   display: flex;
@@ -450,10 +446,10 @@ body {
   position: relative;
   background-color: white;
   height: 500px;
+  max-height: 80vh;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   flex-grow: 1;
-
   display: flex;
   flex-direction: column;
 }
@@ -676,7 +672,7 @@ body {
     color: inherit;
   }
 
-  /* parte do container das paginas ________________________________________________________ */
+  /* parte do container das paginas */
   .container-geral {
     margin-left: 0;
     padding: 20px;
@@ -688,6 +684,17 @@ body {
     border-top-right-radius: 45px;
     box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
     padding-bottom: 90px;
+  }
+
+  body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 180px; /* <-- Não é mais necessário */
+    z-index: -1;
+    background-color: var(--main-color);
   }
 
   body {
@@ -704,8 +711,8 @@ body {
   }
 
   .bem-vindo.movido-para-topo {
-    position: fixed;
-    top: 1.5em;
+    position: absolute;
+    top: 0;
     left: 0;
     right: 0;
     height: 10vh;
@@ -740,7 +747,6 @@ body {
   }
 
   /* parte da box do menu ______________________________________________________________________________________________ */
-
   .flyout-container {
     display: block;
     position: fixed;
@@ -843,5 +849,11 @@ body {
     font-size: 24px;
     margin-right: 20px;
     color: var(--main-color);
+  }
+
+  /* container da ficha de cadastro _____________________________________________________________________________________________________________________________ */
+  .ficha {
+    height: auto;
+    min-height: 430px;
   }
 }
