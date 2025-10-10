@@ -285,6 +285,7 @@ body {
   padding: 30px;
   top: 10vh;
   box-sizing: border-box;
+  overflow: hidden;
   transition: height 0.4s ease-out;
 }
 
@@ -675,30 +676,11 @@ body {
     color: inherit;
   }
 
-  body {
-    position: relative;
-    background: white;
-  }
-
-  body::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 180px;
-    z-index: -1;
-    background-color: var(--main-color);
-  }
-
-  body.pagina-dashboard-ativa {
-    background: var(--main-color);
-  }
-
-  body.pagina-dashboard-ativa .container-geral {
+  /* parte do container das paginas ________________________________________________________ */
+  .container-geral {
     margin-left: 0;
     padding: 20px;
-    margin-top: 10vh;
+    margin-top: -20px;
     position: relative;
     z-index: 1;
     background-color: white;
@@ -708,15 +690,38 @@ body {
     padding-bottom: 90px;
   }
 
-  body.pagina-dashboard-ativa .bem-vindo {
-    position: absolute;
-    top: -90px;
-    left: 0;
-    right: 0;
-    padding: 0 20px;
+  body {
+    position: relative;
+    background: white;
   }
 
-  body.pagina-dashboard-ativa .bem-vindo h2 {
+  body.pagina-dashboard-ativa {
+    background: var(--main-color);
+  }
+
+  body.pagina-dashboard-ativa .container-geral {
+    margin-top: 5vh;
+  }
+
+  .bem-vindo.movido-para-topo {
+    position: fixed;
+    top: 1.5em;
+    left: 0;
+    right: 0;
+    height: 10vh;
+    padding: 0 20px;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    display: none;
+  }
+
+  body.pagina-dashboard-ativa .bem-vindo.movido-para-topo {
+    display: flex;
+  }
+
+  .bem-vindo.movido-para-topo h2 {
     color: white;
     text-align: center;
     font-size: clamp(1.3rem, 7vw, 35px);
@@ -732,19 +737,6 @@ body {
     padding-top: 20px;
     padding-bottom: 90px;
     background-color: white;
-  }
-
-  .container-geral {
-    margin-left: 0;
-    padding: 20px;
-    margin-top: -20px;
-    position: relative;
-    z-index: 1;
-    background-color: white;
-    border-top-left-radius: 45px;
-    border-top-right-radius: 45px;
-    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
-    padding-bottom: 90px;
   }
 
   /* parte da box do menu ______________________________________________________________________________________________ */

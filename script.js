@@ -868,13 +868,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // iniciacao __________________________________________________________________________________________________
-  /*
-    Este bloco final é o ponto de partida de tudo. Após a página carregar e a navegação 
-    ser configurada, ele chama cada uma das funções 'iniciarPagina...' para que todas 
-    as seções do sistema (Dashboard, Residentes, etc.) sejam populadas com os dados 
-    corretos desde o início. Ele também verifica se o usuário veio de uma outra página 
-    (como um formulário de cadastro) para abrir a aba correta automaticamente.
-  */
   iniciarPaginaDashboard();
   iniciarPaginaResidentes();
   iniciarPaginaFuncionarios();
@@ -907,4 +900,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const paginaInicial = document.querySelector(".pagina-conteudo.ativa");
   ajustarAlturaContainer(paginaInicial);
+
+  // texto de boas vinda no responsivo _______________________________________________________________________________________________
+  const bemVindoEl = document.querySelector("#pagina-dashboard .bem-vindo");
+  const containerOriginal = document.querySelector("#pagina-dashboard");
+  const bodyEl = document.body;
+
+  const mobileMediaQuery = window.matchMedia("(max-width: 850px)");
+
+  function handleLayoutChange(e) {
+    if (!bemVindoEl || !containerOriginal) return;
+
+    if (e.matches) {
+      bodyEl.appendChild(bemVindoEl);
+      bemVindoEl.classList.add("movido-para-topo");
+    } else {
+      containerOriginal.prepend(bemVindoEl);
+      bemVindoEl.classList.remove("movido-para-topo");
+    }
+  }
+
+  handleLayoutChange(mobileMediaQuery);
+  mobileMediaQuery.addEventListener("change", handleLayoutChange);
 });
