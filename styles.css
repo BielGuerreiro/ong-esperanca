@@ -285,7 +285,6 @@ body {
   padding: 30px;
   top: 10vh;
   box-sizing: border-box;
-  overflow: hidden;
   transition: height 0.4s ease-out;
 }
 
@@ -636,10 +635,12 @@ body {
     border-top: 1px solid #e0e0e0;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
   }
+
   .menu-header {
     position: static;
     height: 100%;
   }
+
   .menu-header ul {
     flex-direction: row;
     justify-content: space-around;
@@ -648,6 +649,7 @@ body {
     padding: 0;
     gap: 0;
   }
+
   .menu-header li {
     flex-direction: column;
     justify-content: center;
@@ -656,13 +658,16 @@ body {
     height: 100%;
     color: var(--secondary-color);
   }
+
   .menu-header li.menu-ativo {
     color: var(--main-color);
     background-color: transparent;
   }
+
   .menu-header li i {
     font-size: 24px;
   }
+
   .menu-header span.texto-lado {
     font-size: 11px;
     margin-left: 0;
@@ -672,7 +677,7 @@ body {
 
   body {
     position: relative;
-    background: var(--cor-cinza-fundo);
+    background: white;
   }
 
   body::before {
@@ -705,15 +710,16 @@ body {
 
   body.pagina-dashboard-ativa .bem-vindo {
     position: absolute;
-    top: -60px;
+    top: -90px;
     left: 0;
     right: 0;
     padding: 0 20px;
   }
+
   body.pagina-dashboard-ativa .bem-vindo h2 {
     color: white;
     text-align: center;
-    font-size: 24px;
+    font-size: clamp(1.3rem, 7vw, 35px);
   }
 
   body:not(.pagina-dashboard-ativa) {
