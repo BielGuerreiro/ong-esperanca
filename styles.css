@@ -21,12 +21,12 @@
 .flyout-container {
   display: none;
 }
-
-.residentes-mobile-view {
-  display: none;
-}
-
-.relatorios-mobile-view {
+.residentes-mobile-view,
+.relatorios-mobile-view,
+.responsaveis-mobile-view,
+.funcionarios-mobile-view,
+.medicamentos-mobile-view,
+.atividades-mobile-view {
   display: none;
 }
 
@@ -970,4 +970,489 @@ body {
   }
 
   /* parte do mostrador dos relatorios criado _________________________________________________________________ */
+  body.pagina-relatorios-ativa .titulo,
+  body.pagina-relatorios-ativa .ficha-container {
+    display: none;
+  }
+
+  body.pagina-relatorios-ativa .relatorios-mobile-view {
+    display: block;
+  }
+
+  .btn-adicionar-relatorio {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    font-size: 16px;
+    margin-bottom: 30px;
+  }
+  .btn-adicionar-relatorio i {
+    font-size: 24px;
+    color: var(--main-color);
+    margin-right: 10px;
+  }
+
+  .lista-relatorios-nova {
+    margin-left: -18px;
+    margin-right: -18px;
+  }
+
+  .lista-header-relatorios {
+    display: grid;
+    grid-template-columns: 1.5fr 2fr 1fr;
+    padding: 0 12px 10px 12px;
+    color: var(--main-color);
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .lista-header-relatorios span:nth-child(2) {
+    text-align: center;
+  }
+  .lista-header-relatorios span:nth-child(3) {
+    text-align: right;
+  }
+
+  #lista-relatorios-nova-body {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Itens individuais da lista */
+  #lista-relatorios-nova-body li {
+    display: grid;
+    grid-template-columns: 1.5fr 2fr 1fr;
+    align-items: center;
+    padding: 15px 12px;
+    border-radius: 10px;
+  }
+
+  #lista-relatorios-nova-body li:nth-child(odd) {
+    background-color: #eaf2fa;
+  }
+  #lista-relatorios-nova-body li:nth-child(even) {
+    background-color: rgba(245, 245, 245, 0.836);
+  }
+
+  .relatorio-data {
+    font-weight: bold;
+    color: #333;
+  }
+
+  .relatorio-residente {
+    font-weight: 500;
+    color: var(--secondary-color);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .relatorio-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .relatorio-acoes .btn-acao {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    font-size: 20px;
+    color: var(--secondary-color);
+  }
+
+  .relatorio-acoes .btn-acao:hover {
+    color: var(--main-color);
+  }
+
+  /* parte do mostrador dos responsaveis criado _________________________________________________________________ */
+  body.pagina-responsavel-ativa .titulo,
+  body.pagina-responsavel-ativa .ficha-container {
+    display: none;
+  }
+
+  body.pagina-responsavel-ativa .responsaveis-mobile-view {
+    display: block;
+  }
+
+  .btn-adicionar-responsavel {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    font-size: 16px;
+    margin-bottom: 30px;
+  }
+  .btn-adicionar-responsavel i {
+    font-size: 24px;
+    color: var(--main-color);
+    margin-right: 10px;
+  }
+
+  .lista-responsaveis-nova {
+    margin-left: -18px;
+    margin-right: -18px;
+  }
+
+  .lista-header-responsaveis {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1fr;
+    padding: 0 12px 10px 12px;
+    color: var(--main-color);
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .lista-header-responsaveis span:nth-child(2) {
+    text-align: center;
+  }
+  .lista-header-responsaveis span:nth-child(3) {
+    text-align: right;
+  }
+
+  #lista-responsaveis-nova-body {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #lista-responsaveis-nova-body li {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1fr;
+    align-items: center;
+    padding: 15px 12px;
+    border-radius: 10px;
+  }
+
+  #lista-responsaveis-nova-body li:nth-child(odd) {
+    background-color: #eaf2fa;
+  }
+  #lista-responsaveis-nova-body li:nth-child(even) {
+    background-color: rgba(245, 245, 245, 0.836);
+  }
+
+  .responsavel-nome {
+    font-weight: bold;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .responsavel-parentesco {
+    text-align: center;
+    color: var(--secondary-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .responsavel-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  /* parte do mostrador dos funcionarios criado _________________________________________________________________ */
+  body.pagina-funcionarios-ativa .titulo,
+  body.pagina-funcionarios-ativa .ficha-container {
+    display: none;
+  }
+
+  body.pagina-funcionarios-ativa .funcionarios-mobile-view {
+    display: block;
+  }
+
+  .btn-adicionar-funcionario {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    font-size: 16px;
+    margin-bottom: 30px;
+  }
+  .btn-adicionar-funcionario i {
+    font-size: 24px;
+    color: var(--main-color);
+    margin-right: 10px;
+  }
+
+  .lista-funcionarios-nova {
+    margin-left: -18px;
+    margin-right: -18px;
+  }
+
+  .lista-header-funcionarios {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1fr;
+    padding: 0 12px 10px 12px;
+    color: var(--main-color);
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .lista-header-funcionarios span:nth-child(2) {
+    text-align: center;
+  }
+  .lista-header-funcionarios span:nth-child(3) {
+    text-align: right;
+  }
+
+  #lista-funcionarios-nova-body {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #lista-funcionarios-nova-body li {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1fr;
+    align-items: center;
+    padding: 15px 12px;
+    border-radius: 10px;
+  }
+
+  #lista-funcionarios-nova-body li:nth-child(odd) {
+    background-color: #eaf2fa;
+  }
+  #lista-funcionarios-nova-body li:nth-child(even) {
+    background-color: rgba(245, 245, 245, 0.836);
+  }
+
+  .funcionario-nome {
+    font-weight: bold;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .funcionario-status {
+    text-align: center;
+  }
+  .funcionario-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  /* parte do mostrador dos medicamentos criado _________________________________________________________________ */
+  body.pagina-medicamentos-ativa .titulo,
+  body.pagina-medicamentos-ativa .ficha-container {
+    display: none;
+  }
+
+  body.pagina-medicamentos-ativa .medicamentos-mobile-view {
+    display: block;
+  }
+
+  .btn-adicionar-medicamento {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    font-size: 16px;
+    margin-bottom: 30px;
+  }
+  .btn-adicionar-medicamento i {
+    font-size: 24px;
+    color: var(--main-color);
+    margin-right: 10px;
+  }
+
+  .lista-medicamentos-nova {
+    margin-left: -18px;
+    margin-right: -18px;
+  }
+
+  .lista-header-medicamentos {
+    display: grid;
+    grid-template-columns: 1.5fr 1.5fr 1fr;
+    padding: 0 12px 10px 12px;
+    color: var(--main-color);
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .lista-header-medicamentos span:nth-child(2) {
+    text-align: center;
+  }
+  .lista-header-medicamentos span:nth-child(3) {
+    text-align: right;
+  }
+
+  #lista-medicamentos-nova-body {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #lista-medicamentos-nova-body li {
+    display: grid;
+    grid-template-columns: 1.5fr 1.5fr 1fr;
+    align-items: center;
+    padding: 15px 12px;
+    border-radius: 10px;
+  }
+
+  #lista-medicamentos-nova-body li:nth-child(odd) {
+    background-color: #eaf2fa;
+  }
+  #lista-medicamentos-nova-body li:nth-child(even) {
+    background-color: rgba(245, 245, 245, 0.836);
+  }
+
+  .medicamento-residente,
+  .medicamento-nome {
+    font-weight: bold;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .medicamento-nome {
+    text-align: center;
+    color: var(--secondary-color);
+    font-weight: 500;
+  }
+
+  .medicamento-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  /* parte do mostrador das atividades criado _________________________________________________________________ */
+  body.pagina-atividades-ativa .titulo,
+  body.pagina-atividades-ativa .ficha-container {
+    display: none;
+  }
+
+  body.pagina-atividades-ativa .atividades-mobile-view {
+    display: block;
+  }
+
+  .btn-adicionar-atividade {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    font-size: 16px;
+    margin-bottom: 30px;
+  }
+  .btn-adicionar-atividade i {
+    font-size: 24px;
+    color: var(--main-color);
+    margin-right: 10px;
+  }
+
+  .lista-atividades-nova {
+    margin-left: -18px;
+    margin-right: -18px;
+  }
+
+  .lista-header-atividades {
+    display: grid;
+    grid-template-columns: 1.5fr 2fr 1fr;
+    padding: 0 12px 10px 12px;
+    color: var(--main-color);
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .lista-header-atividades span:nth-child(2) {
+    text-align: center;
+  }
+  .lista-header-atividades span:nth-child(3) {
+    text-align: right;
+  }
+
+  #lista-atividades-nova-body {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #lista-atividades-nova-body li {
+    display: grid;
+    grid-template-columns: 1.5fr 2fr 1fr;
+    align-items: center;
+    padding: 15px 12px;
+    border-radius: 10px;
+  }
+
+  #lista-atividades-nova-body li:nth-child(odd) {
+    background-color: #eaf2fa;
+  }
+  #lista-atividades-nova-body li:nth-child(even) {
+    background-color: rgba(245, 245, 245, 0.836);
+  }
+
+  /* Estilos para as colunas individuais _____________________________________________________________________ */
+  .atividade-data-hora .data {
+    display: block;
+    font-weight: bold;
+    color: #333;
+  }
+  .atividade-data-hora .hora {
+    display: block;
+    font-size: 14px;
+    color: var(--secondary-color);
+  }
+
+  .atividade-nome {
+    text-align: center;
+    color: var(--secondary-color);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .atividade-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
 }

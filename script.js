@@ -310,81 +310,96 @@ function iniciarPaginaFuncionarios() {
   const listaFuncionarios = JSON.parse(
     sessionStorage.getItem("listaFuncionarios") || "[]"
   );
-  const tabelaBody = document.getElementById("lista-funcionarios-body");
 
-  function adicionarFuncionarioNaTabela(funcionario) {
-    const tr = document.createElement("tr");
-    const nomeCompleto = `${funcionario["primeiro-nome"]} ${funcionario.sobrenome}`;
-    function definirHorario(turno) {
-      switch (turno) {
-        case "manha":
-          return "06:00 - 14:00";
-        case "tarde":
-          return "14:00 - 22:00";
-        case "noite":
-          return "22:00 - 06:00";
-        default:
-          return "N/A";
+  const tabelaBodyDesktop = document.getElementById("lista-funcionarios-body");
+  const listaBodyMobile = document.getElementById(
+    "lista-funcionarios-nova-body"
+  );
+
+  if (!tabelaBodyDesktop || !listaBodyMobile) return;
+
+  tabelaBodyDesktop.innerHTML = "";
+  listaBodyMobile.innerHTML = "";
+
+  if (listaFuncionarios.length > 0) {
+    listaFuncionarios.forEach((funcionario) => {
+      const nomeCompleto = `${funcionario["primeiro-nome"]} ${funcionario.sobromenome}`;
+
+      function definirHorario(turno) {
+        switch (turno) {
+          case "manha":
+            return "06:00 - 14:00";
+          case "tarde":
+            return "14:00 - 22:00";
+          case "noite":
+            return "22:00 - 06:00";
+          default:
+            return "N/A";
+        }
       }
-    }
-    const horario = definirHorario(funcionario.turno);
-    const status = funcionario.status || "Pendente";
-    const classeStatus = `status-${status.toLowerCase()}`;
-    tr.innerHTML = `
+      const horario = definirHorario(funcionario.turno);
+      const status = funcionario.status || "Pendente";
+      const classeStatus = `status-${status.toLowerCase()}`;
+      const statusHTML = `<span class="status ${classeStatus}">${status}</span>`;
+
+      const acoesHTML = `
+        <a href="cadastros/cadastro-funcionario/index.html?id=${funcionario.id}&origem=pagina-funcionarios" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
+        <a href="#" class="btn-acao-icone btn-excluir" data-id="${funcionario.id}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
+      `;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
         <td>${horario}</td>
         <td>${nomeCompleto}</td>
         <td>${funcionario.id.toString().slice(-4)}</td>
-        <td><span class="status ${classeStatus}">${status}</span></td>
-        <td class="acoes">
-            <a href="cadastros/cadastro-funcionario/index.html?id=${
-              funcionario.id
-            }&origem=pagina-funcionarios" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
-            <a href="#" class="btn-acao-icone btn-excluir" data-id="${
-              funcionario.id
-            }" title="Excluir Ficha"><i class='bx bxs-trash'></i></a>
-        </td>
-    `;
-    tabelaBody.appendChild(tr);
+        <td>${statusHTML}</td>
+        <td class="acoes">${acoesHTML}</td>
+      `;
+      tabelaBodyDesktop.appendChild(tr);
+
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span class="funcionario-nome">${nomeCompleto}</span>
+        <div class="funcionario-status">${statusHTML}</div>
+        <div class="funcionario-acoes">${acoesHTML}</div>
+      `;
+      listaBodyMobile.appendChild(li);
+    });
+  } else {
+    // Mensagem de "vazio" para ambos os layouts
+    tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum funcionário cadastrado.</td></tr>`;
+    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum funcionário cadastrado.</li>`;
   }
 
-  if (tabelaBody) {
-    tabelaBody.innerHTML = "";
-    if (listaFuncionarios.length > 0) {
-      listaFuncionarios.forEach((f) => adicionarFuncionarioNaTabela(f));
-    } else {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="5" style="text-align: center;">Nenhum funcionário cadastrado.</td>`;
-      tabelaBody.appendChild(tr);
+  const paginaFuncionarios = document.getElementById("pagina-funcionarios");
+
+  paginaFuncionarios.addEventListener("click", function (event) {
+    const botaoExcluir = event.target.closest(".btn-excluir");
+    if (!botaoExcluir) return;
+
+    event.preventDefault();
+    const idParaExcluir = botaoExcluir.dataset.id;
+
+    const itemPai = botaoExcluir.closest("tr") || botaoExcluir.closest("li");
+    const nomeDoFuncionario = itemPai.querySelector(
+      "td:nth-child(2), .funcionario-nome"
+    ).textContent;
+
+    if (
+      confirm(
+        `Tem certeza que deseja excluir o funcionário "${nomeDoFuncionario}"?`
+      )
+    ) {
+      const novaLista = JSON.parse(
+        sessionStorage.getItem("listaFuncionarios") || "[]"
+      ).filter((func) => func.id != idParaExcluir);
+
+      sessionStorage.setItem("listaFuncionarios", JSON.stringify(novaLista));
+      alert("Funcionário excluído com sucesso!");
+
+      iniciarPaginaFuncionarios();
     }
-    tabelaBody.addEventListener("click", function (event) {
-      const botaoExcluir = event.target.closest(".btn-excluir");
-      if (botaoExcluir) {
-        event.preventDefault();
-        const idParaExcluir = botaoExcluir.dataset.id;
-        const nomeDoFuncionario = botaoExcluir
-          .closest("tr")
-          .querySelectorAll("td")[1].textContent;
-        if (
-          confirm(
-            `Tem certeza que deseja excluir o funcionário "${nomeDoFuncionario}"?`
-          )
-        ) {
-          let funcionariosAtuais = JSON.parse(
-            sessionStorage.getItem("listaFuncionarios") || "[]"
-          );
-          const novaLista = funcionariosAtuais.filter(
-            (func) => func.id != idParaExcluir
-          );
-          sessionStorage.setItem(
-            "listaFuncionarios",
-            JSON.stringify(novaLista)
-          );
-          alert("Funcionário excluído com sucesso!");
-          window.location.reload();
-        }
-      }
-    });
-  }
+  });
 }
 
 // tabela responsavel  ______________________________________________________________________________________________________________
@@ -401,76 +416,89 @@ function iniciarPaginaResponsaveis() {
   const listaResidentes = JSON.parse(
     sessionStorage.getItem("listaResidentes") || "[]"
   );
-  const tabelaBody = document.getElementById("lista-responsaveis-body");
 
-  function adicionarResponsavelNaTabela(responsavel) {
-    const tr = document.createElement("tr");
+  const tabelaBodyDesktop = document.getElementById("lista-responsaveis-body");
+  const listaBodyMobile = document.getElementById(
+    "lista-responsaveis-nova-body"
+  );
 
-    const residenteVinculado = listaResidentes.find(
-      (r) => r.id == responsavel.residenteId
-    );
-    const nomeResidente = residenteVinculado
-      ? `${residenteVinculado["primeiro-nome"]} ${residenteVinculado.sobrenome}`
-      : "Não encontrado";
+  if (!tabelaBodyDesktop || !listaBodyMobile) return;
 
-    const idade = calcularIdade(responsavel.nascimento);
-    const categoria = definirCategoria(idade);
-    const nomeCompleto = `${responsavel["primeiro-nome"]} ${responsavel.sobrenome}`;
+  tabelaBodyDesktop.innerHTML = "";
+  listaBodyMobile.innerHTML = "";
 
-    tr.innerHTML = `
+  if (listaResponsaveis.length > 0) {
+    listaResponsaveis.forEach((responsavel) => {
+      const idade = calcularIdade(responsavel.nascimento);
+      const categoria = definirCategoria(idade);
+      const nomeCompleto = `${responsavel["primeiro-nome"]} ${responsavel.sobrenome}`;
+      const parentesco = responsavel.parentesco;
+
+      const residenteVinculado = listaResidentes.find(
+        (r) => r.id == responsavel.residenteId
+      );
+      const nomeResidente = residenteVinculado
+        ? `${residenteVinculado["primeiro-nome"]} ${residenteVinculado.sobrenome}`
+        : "Não encontrado";
+
+      const acoesHTML = `
+        <a href="cadastros/cadastro-responsavel/index.html?id=${responsavel.id}&origem=pagina-responsavel" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
+        <a href="#" class="btn-acao-icone btn-excluir" data-id="${responsavel.id}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
+      `;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
         <td>${nomeCompleto}</td>
         <td>${idade}</td>
         <td>${categoria}</td>
-        <td>${responsavel.parentesco}</td>
+        <td>${parentesco}</td>
         <td>${nomeResidente}</td>
-        <td class="acoes">
-            <a href="cadastros/cadastro-responsavel/index.html?id=${responsavel.id}&origem=pagina-responsavel" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
-            <a href="#" class="btn-acao-icone btn-excluir" data-id="${responsavel.id}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
-        </td>
-    `;
-    tabelaBody.appendChild(tr);
-  }
+        <td class="acoes">${acoesHTML}</td>
+      `;
+      tabelaBodyDesktop.appendChild(tr);
 
-  if (tabelaBody) {
-    tabelaBody.innerHTML = "";
-    if (listaResponsaveis.length > 0) {
-      listaResponsaveis.forEach((r) => adicionarResponsavelNaTabela(r));
-    } else {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="6" style="text-align:center;">Nenhum responsável cadastrado.</td></tr>`;
-      tabelaBody.appendChild(tr);
-    }
-
-    tabelaBody.addEventListener("click", function (event) {
-      const botaoExcluir = event.target.closest(".btn-excluir");
-      if (botaoExcluir) {
-        event.preventDefault();
-        const idParaExcluir = botaoExcluir.dataset.id;
-        const nomeDoResponsavel = botaoExcluir
-          .closest("tr")
-          .querySelectorAll("td")[0].textContent;
-
-        if (
-          confirm(
-            `Tem certeza que deseja excluir o responsável "${nomeDoResponsavel}"?`
-          )
-        ) {
-          const responsaveisAtuais = JSON.parse(
-            sessionStorage.getItem("listaResponsaveis") || "[]"
-          );
-          const novaLista = responsaveisAtuais.filter(
-            (resp) => resp.id != idParaExcluir
-          );
-          sessionStorage.setItem(
-            "listaResponsaveis",
-            JSON.stringify(novaLista)
-          );
-          alert("Responsável excluído com sucesso!");
-          window.location.reload();
-        }
-      }
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span class="responsavel-nome">${nomeCompleto}</span>
+        <span class="responsavel-parentesco">${parentesco}</span>
+        <div class="responsavel-acoes">${acoesHTML}</div>
+      `;
+      listaBodyMobile.appendChild(li);
     });
+  } else {
+    tabelaBodyDesktop.innerHTML = `<td colspan="6" style="text-align:center;">Nenhum responsável cadastrado.</td>`;
+    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum responsável cadastrado.</li>`;
   }
+
+  const paginaResponsaveis = document.getElementById("pagina-responsavel");
+
+  paginaResponsaveis.addEventListener("click", function (event) {
+    const botaoExcluir = event.target.closest(".btn-excluir");
+    if (!botaoExcluir) return;
+
+    event.preventDefault();
+    const idParaExcluir = botaoExcluir.dataset.id;
+
+    const itemPai = botaoExcluir.closest("tr") || botaoExcluir.closest("li");
+    const nomeDoResponsavel = itemPai.querySelector(
+      "td:first-child, .responsavel-nome"
+    ).textContent;
+
+    if (
+      confirm(
+        `Tem certeza que deseja excluir o responsável "${nomeDoResponsavel}"?`
+      )
+    ) {
+      const novaLista = JSON.parse(
+        sessionStorage.getItem("listaResponsaveis") || "[]"
+      ).filter((resp) => resp.id != idParaExcluir);
+
+      sessionStorage.setItem("listaResponsaveis", JSON.stringify(novaLista));
+      alert("Responsável excluído com sucesso!");
+
+      iniciarPaginaResponsaveis();
+    }
+  });
 }
 
 // sessao medicamento -_____________________________________________________________________________________________________
@@ -487,77 +515,91 @@ function iniciarPaginaMedicamentos() {
   const listaTratamentos = JSON.parse(
     sessionStorage.getItem("listaTratamentos") || "[]"
   );
-  const tabelaBody = document.getElementById("lista-medicamentos-body");
 
-  function adicionarTratamentoNaTabela(tratamento) {
-    const tr = document.createElement("tr");
-    const residente = listaResidentes.find(
-      (r) => r.id == tratamento.residenteId
-    );
-    const nomeResidente = residente
-      ? `${residente["primeiro-nome"]} ${residente.sobrenome}`
-      : "Não encontrado";
-    const classeStatus = `status-${tratamento.status
-      .toLowerCase()
-      .replace(" ", "-")}`;
+  const tabelaBodyDesktop = document.getElementById("lista-medicamentos-body");
+  const listaBodyMobile = document.getElementById(
+    "lista-medicamentos-nova-body"
+  );
 
-    tr.innerHTML = `
+  if (!tabelaBodyDesktop || !listaBodyMobile) return;
+
+  tabelaBodyDesktop.innerHTML = "";
+  listaBodyMobile.innerHTML = "";
+
+  if (listaTratamentos.length > 0) {
+    listaTratamentos.forEach((tratamento) => {
+      const residente = listaResidentes.find(
+        (r) => r.id == tratamento.residenteId
+      );
+      const nomeResidente = residente
+        ? `${residente["primeiro-nome"]} ${residente.sobrenome}`
+        : "Não encontrado";
+
+      const classeStatus = `status-${tratamento.status
+        .toLowerCase()
+        .replace(" ", "-")}`;
+
+      const statusHTML = `<span class="status ${classeStatus}">${tratamento.status}</span>`;
+
+      const acoesHTML = `
+        <a href="cadastros/cadastro-medicamento/index.html?id=${tratamento.id}&origem=pagina-medicamentos" class="btn-acao-icone btn-editar" title="Editar Agendamento"><i class='bx bxs-pencil'></i></a>
+        <a href="#" class="btn-acao-icone btn-excluir" data-id="${tratamento.id}" title="Excluir Agendamento"><i class='bx bx-trash-alt'></i></a>
+      `;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
         <td>${tratamento.horario}</td>
         <td>${nomeResidente}</td>
         <td>${tratamento.medicamento}</td>
         <td>${tratamento.dosagem}</td>
         <td>${tratamento.tipo || "N/A"}</td>
-        <td><span class="status ${classeStatus}">${
-      tratamento.status
-    }</span></td>
-        <td class="acoes">
-            <a href="cadastros/cadastro-medicamento/index.html?id=${
-              tratamento.id
-            }&origem=pagina-medicamentos" class="btn-acao-icone btn-editar" title="Editar Agendamento"><i class='bx bxs-pencil'></i></a>
-            <a href="#" class="btn-acao-icone btn-excluir" data-id="${
-              tratamento.id
-            }" title="Excluir Agendamento"><i class='bx bx-trash-alt'></i></a>
-        </td>
+        <td>${statusHTML}</td>
+        <td class="acoes">${acoesHTML}</td>
       `;
-    tabelaBody.appendChild(tr);
-  }
+      tabelaBodyDesktop.appendChild(tr);
 
-  if (tabelaBody) {
-    tabelaBody.innerHTML = "";
-    if (listaTratamentos.length > 0) {
-      listaTratamentos.forEach((t) => adicionarTratamentoNaTabela(t));
-    } else {
-      tabelaBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Nenhum tratamento agendado.</td></tr>`;
-    }
-
-    tabelaBody.addEventListener("click", function (event) {
-      const botaoExcluir = event.target.closest(".btn-excluir");
-      if (botaoExcluir) {
-        event.preventDefault();
-        const idParaExcluir = botaoExcluir.dataset.id;
-        const nomeDoMedicamento = botaoExcluir
-          .closest("tr")
-          .querySelectorAll("td")[2].textContent;
-
-        if (
-          confirm(
-            `Tem certeza que deseja excluir o agendamento do medicamento "${nomeDoMedicamento}"?`
-          )
-        ) {
-          const tratamentosAtuais = JSON.parse(
-            sessionStorage.getItem("listaTratamentos") || "[]"
-          );
-          const novaLista = tratamentosAtuais.filter(
-            (t) => t.id != idParaExcluir
-          );
-          sessionStorage.setItem("listaTratamentos", JSON.stringify(novaLista));
-
-          alert("Agendamento excluído com sucesso!");
-          window.location.reload();
-        }
-      }
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span class="medicamento-residente">${nomeResidente}</span>
+        <span class="medicamento-nome">${tratamento.medicamento}</span>
+        <div class="medicamento-acoes">${acoesHTML}</div>
+      `;
+      listaBodyMobile.appendChild(li);
     });
+  } else {
+    tabelaBodyDesktop.innerHTML = `<tr><td colspan="7" style="text-align:center;">Nenhum tratamento agendado.</td></tr>`;
+    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum tratamento agendado.</li>`;
   }
+
+  const paginaMedicamentos = document.getElementById("pagina-medicamentos");
+
+  paginaMedicamentos.addEventListener("click", function (event) {
+    const botaoExcluir = event.target.closest(".btn-excluir");
+    if (!botaoExcluir) return;
+
+    event.preventDefault();
+    const idParaExcluir = botaoExcluir.dataset.id;
+
+    const nomeDoMedicamento =
+      JSON.parse(sessionStorage.getItem("listaTratamentos")).find(
+        (t) => t.id == idParaExcluir
+      )?.medicamento || "este agendamento";
+
+    if (
+      confirm(
+        `Tem certeza que deseja excluir o agendamento do medicamento "${nomeDoMedicamento}"?`
+      )
+    ) {
+      const novaLista = JSON.parse(
+        sessionStorage.getItem("listaTratamentos") || "[]"
+      ).filter((t) => t.id != idParaExcluir);
+
+      sessionStorage.setItem("listaTratamentos", JSON.stringify(novaLista));
+
+      alert("Agendamento excluído com sucesso!");
+      iniciarPaginaMedicamentos();
+    }
+  });
 }
 
 // sessao atividades  -_____________________________________________________________________________________________________
@@ -569,83 +611,91 @@ function iniciarPaginaMedicamentos() {
   tabela para refletir a mudança instantaneamente.
 */
 function iniciarPaginaAtividades() {
-  const tabelaBody = document.getElementById("lista-atividades-body");
+  const listaAgendamentos = JSON.parse(
+    sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
+  );
 
-  function renderizarTabela() {
-    let listaAgendamentos = JSON.parse(
-      sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
-    );
+  const tabelaBodyDesktop = document.getElementById("lista-atividades-body");
+  const listaBodyMobile = document.getElementById("lista-atividades-nova-body");
 
-    if (!tabelaBody) return;
+  if (!tabelaBodyDesktop || !listaBodyMobile) return;
 
-    tabelaBody.innerHTML = "";
+  tabelaBodyDesktop.innerHTML = "";
+  listaBodyMobile.innerHTML = "";
 
-    if (listaAgendamentos.length > 0) {
-      listaAgendamentos.forEach((agendamento) => {
-        const tr = document.createElement("tr");
-        const status = agendamento.status || "Agendada";
-        const classeStatus = `status-${status.toLowerCase()}`;
+  if (listaAgendamentos.length > 0) {
+    listaAgendamentos.forEach((agendamento) => {
+      const status = agendamento.status || "Agendada";
+      const classeStatus = `status-${status.toLowerCase()}`;
+      const statusHTML = `<span class="status ${classeStatus}">${status}</span>`;
 
-        const dataFormatada = new Date(
-          agendamento.data + "T00:00:00"
-        ).toLocaleDateString("pt-BR");
+      const dataFormatada = new Date(
+        agendamento.data + "T00:00:00"
+      ).toLocaleDateString("pt-BR");
 
-        tr.innerHTML = `
-            <td>${dataFormatada}</td>
-            <td>${agendamento.horario}</td>
-            <td>${agendamento["nome-atividade"]}</td>
-            <td>${agendamento.duracao || "N/A"}</td>
-            <td><span class="status ${classeStatus}">${status}</span></td>
-            <td class="acoes">
-                <a href="cadastros/cadastro-atividade/index.html?id=${
-                  agendamento.id
-                }&origem=pagina-atividades" class="btn-acao-icone btn-editar" title="Editar Atividade"><i class='bx bxs-pencil'></i></a>
-                <a href="#" class="btn-acao-icone btn-excluir" data-id="${
-                  agendamento.id
-                }" title="Excluir Atividade"><i class='bx bx-trash-alt'></i></a>
-            </td>
-        `;
-        tabelaBody.appendChild(tr);
-      });
-    } else {
-      tabelaBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Nenhuma atividade agendada.</td></tr>`;
-    }
-  }
+      const acoesHTML = `
+        <a href="cadastros/cadastro-atividade/index.html?id=${agendamento.id}&origem=pagina-atividades" class="btn-acao-icone btn-editar" title="Editar Atividade"><i class='bx bxs-pencil'></i></a>
+        <a href="#" class="btn-acao-icone btn-excluir" data-id="${agendamento.id}" title="Excluir Atividade"><i class='bx bx-trash-alt'></i></a>
+      `;
 
-  if (tabelaBody) {
-    renderizarTabela();
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${dataFormatada}</td>
+        <td>${agendamento.horario}</td>
+        <td>${agendamento["nome-atividade"]}</td>
+        <td>${agendamento.duracao || "N/A"}</td>
+        <td>${statusHTML}</td>
+        <td class="acoes">${acoesHTML}</td>
+      `;
+      tabelaBodyDesktop.appendChild(tr);
 
-    tabelaBody.addEventListener("click", function (event) {
-      const botaoExcluir = event.target.closest(".btn-excluir");
-
-      if (botaoExcluir) {
-        event.preventDefault();
-        const idParaExcluir = botaoExcluir.dataset.id;
-        let listaAgendamentos = JSON.parse(
-          sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
-        );
-        const agendamento = listaAgendamentos.find(
-          (ag) => ag.id == idParaExcluir
-        );
-
-        if (
-          agendamento &&
-          confirm(
-            `Tem certeza que deseja excluir a atividade "${agendamento["nome-atividade"]}"?`
-          )
-        ) {
-          const novaLista = listaAgendamentos.filter(
-            (ag) => ag.id != idParaExcluir
-          );
-          sessionStorage.setItem(
-            "listaAgendamentosAtividade",
-            JSON.stringify(novaLista)
-          );
-          renderizarTabela();
-        }
-      }
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <div class="atividade-data-hora">
+            <span class="data">${dataFormatada}</span>
+            <span class="hora">${agendamento.horario}</span>
+        </div>
+        <span class="atividade-nome">${agendamento["nome-atividade"]}</span>
+        <div class="atividade-acoes">${acoesHTML}</div>
+      `;
+      listaBodyMobile.appendChild(li);
     });
+  } else {
+    tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align:center;">Nenhuma atividade agendada.</td></tr>`;
+    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhuma atividade agendada.</li>`;
   }
+
+  const paginaAtividades = document.getElementById("pagina-atividades");
+
+  paginaAtividades.addEventListener("click", function (event) {
+    const botaoExcluir = event.target.closest(".btn-excluir");
+    if (!botaoExcluir) return;
+
+    event.preventDefault();
+    const idParaExcluir = botaoExcluir.dataset.id;
+    const agendamento = JSON.parse(
+      sessionStorage.getItem("listaAgendamentosAtividade")
+    ).find((ag) => ag.id == idParaExcluir);
+
+    if (
+      agendamento &&
+      confirm(
+        `Tem certeza que deseja excluir a atividade "${agendamento["nome-atividade"]}"?`
+      )
+    ) {
+      const novaLista = JSON.parse(
+        sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
+      ).filter((ag) => ag.id != idParaExcluir);
+
+      sessionStorage.setItem(
+        "listaAgendamentosAtividade",
+        JSON.stringify(novaLista)
+      );
+
+      alert("Atividade excluída com sucesso!");
+      iniciarPaginaAtividades();
+    }
+  });
 }
 
 // sessao relatorio   -_____________________________________________________________________________________________________
