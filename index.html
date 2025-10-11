@@ -146,30 +146,56 @@
           <div class="titulo">
             <h2>Ficha de Residentes</h2>
           </div>
-          <div class="ficha-container">
-            <div class="ficha">
-              <div class="ficha-header">
-                <h2>Lista de Residentes</h2>
-                <a
-                  href="cadastros/cadastro-residente/index.html?origem=pagina-residentes"
-                  class="btn-nova-ficha item-gerente"
-                  >Nova Residente +</a
-                >
+
+          <div class="residentes-desktop-view">
+            <div class="ficha-container">
+              <div class="ficha">
+                <div class="ficha-header">
+                  <h2>Lista de Residentes</h2>
+                  <a
+                    href="cadastros/cadastro-residente/index.html?origem=pagina-residentes"
+                    class="btn-nova-ficha item-gerente"
+                    >Nova Residente +</a
+                  >
+                </div>
+                <div class="lista-residentes-container">
+                  <table class="tabela-residentes">
+                    <thead>
+                      <tr>
+                        <th>Nome</th>
+                        <th>Idade</th>
+                        <th>Sexo</th>
+                        <th>Categoria</th>
+                        <th>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody id="lista-residentes-body"></tbody>
+                  </table>
+                </div>
               </div>
-              <div class="lista-residentes-container">
-                <table class="tabela-residentes">
-                  <thead>
-                    <tr>
-                      <th>Nome</th>
-                      <th>Idade</th>
-                      <th>Sexo</th>
-                      <th>Categoria</th>
-                      <th>Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody id="lista-residentes-body"></tbody>
-                </table>
+            </div>
+          </div>
+          <div class="residentes-mobile-view">
+            <div class="search-bar-container">
+              <i class="bx bx-search"></i>
+              <input type="search" placeholder="Procure por um residente" />
+            </div>
+
+            <a
+              href="cadastros/cadastro-residente/index.html?origem=pagina-residentes"
+              class="btn-adicionar-residente item-gerente"
+            >
+              <i class="bx bx-user-plus bx-flip-horizontal"></i>
+              <span>Adicionar residente</span>
+            </a>
+
+            <div class="lista-residentes-nova">
+              <div class="lista-header-nova">
+                <span>Nome</span>
+                <span>Idade</span>
+                <span>Ações</span>
               </div>
+              <ul id="lista-residentes-nova-body"></ul>
             </div>
           </div>
         </div>
