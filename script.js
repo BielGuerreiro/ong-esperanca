@@ -843,6 +843,7 @@ document.addEventListener("DOMContentLoaded", function () {
       containerGeral.style.height = `${paginaAtiva.scrollHeight + 60}px`;
     }
   }
+
   menuItens.forEach((item) => {
     item.addEventListener("click", function () {
       if (isAnimating) return;

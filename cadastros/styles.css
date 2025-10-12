@@ -283,3 +283,25 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   margin-bottom: 0;
   font-weight: normal;
 }
+
+@media (max-width: 850px) {
+  /* Faz com que as linhas do formulário empilhem seus itens verticalmente */
+  .linha-form {
+    flex-direction: column;
+    gap: 0; /* Remove o espaçamento lateral, já que agora estão empilhados */
+  }
+
+  /* Garante que todos os grupos de formulário ocupem a largura total */
+  .grupo-form {
+    width: 100%;
+  }
+
+  /* Ajusta o alinhamento dos botões para o centro e define uma largura máxima */
+  .navegacao-form {
+    align-items: center;
+  }
+
+  .navegacao-form button {
+    width: 100%; /* Botões ocupam a largura total do container */
+  }
+}
