@@ -850,6 +850,19 @@ body {
     font-size: clamp(1.3rem, 7vw, 35px);
   }
 
+  .box {
+    min-height: 100px;
+    max-width: 330px;
+  }
+
+  .box h3 {
+    font-size: 30px;
+  }
+
+  .box p {
+    font-size: 20px;
+  }
+
   /* container da ficha de cadastro _____________________________________________________________________________________________________________________________ */
 
   body.pagina-residentes-ativa .titulo,
