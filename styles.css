@@ -866,11 +866,29 @@ body {
   /* container da ficha de cadastro _____________________________________________________________________________________________________________________________ */
 
   body.pagina-residentes-ativa .titulo,
-  body.pagina-residentes-ativa .residentes-desktop-view {
+  body.pagina-residentes-ativa .residentes-desktop-view,
+  body.pagina-relatorios-ativa .titulo,
+  body.pagina-relatorios-ativa .ficha-container,
+  body.pagina-responsavel-ativa .titulo,
+  body.pagina-responsavel-ativa .ficha-container,
+  body.pagina-responsavel-ativa .titulo,
+  body.pagina-responsavel-ativa .ficha-container,
+  body.pagina-funcionarios-ativa .titulo,
+  body.pagina-funcionarios-ativa .ficha-container,
+  body.pagina-medicamentos-ativa .titulo,
+  body.pagina-medicamentos-ativa .ficha-container,
+  body.pagina-atividades-ativa .titulo,
+  body.pagina-atividades-ativa .ficha-container {
     display: none;
   }
 
-  body.pagina-residentes-ativa .residentes-mobile-view {
+  body.pagina-residentes-ativa .residentes-mobile-view,
+  body.pagina-relatorios-ativa .relatorios-mobile-view,
+  body.pagina-responsavel-ativa .responsaveis-mobile-view,
+  body.pagina-responsavel-ativa .responsaveis-mobile-view,
+  body.pagina-funcionarios-ativa .funcionarios-mobile-view,
+  body.pagina-medicamentos-ativa .medicamentos-mobile-view,
+  body.pagina-atividades-ativa .atividades-mobile-view {
     display: block;
   }
 
@@ -899,7 +917,7 @@ body {
     color: var(--secondary-color);
   }
 
-  .btn-adicionar-residente {
+  .btn-adicionar-mobile {
     display: flex;
     align-items: center;
     background-color: white;
@@ -912,7 +930,8 @@ body {
     font-size: 16px;
     margin-bottom: 30px;
   }
-  .btn-adicionar-residente i {
+
+  .btn-adicionar-mobile i {
     font-size: 24px;
     color: var(--main-color);
     margin-right: 10px;
@@ -983,33 +1002,6 @@ body {
   }
 
   /* parte do mostrador dos relatorios criado _________________________________________________________________ */
-  body.pagina-relatorios-ativa .titulo,
-  body.pagina-relatorios-ativa .ficha-container {
-    display: none;
-  }
-
-  body.pagina-relatorios-ativa .relatorios-mobile-view {
-    display: block;
-  }
-
-  .btn-adicionar-relatorio {
-    display: flex;
-    align-items: center;
-    background-color: white;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    font-size: 16px;
-    margin-bottom: 30px;
-  }
-  .btn-adicionar-relatorio i {
-    font-size: 24px;
-    color: var(--main-color);
-    margin-right: 10px;
-  }
 
   .lista-relatorios-nova {
     margin-left: -18px;
@@ -1090,33 +1082,6 @@ body {
   }
 
   /* parte do mostrador dos responsaveis criado _________________________________________________________________ */
-  body.pagina-responsavel-ativa .titulo,
-  body.pagina-responsavel-ativa .ficha-container {
-    display: none;
-  }
-
-  body.pagina-responsavel-ativa .responsaveis-mobile-view {
-    display: block;
-  }
-
-  .btn-adicionar-responsavel {
-    display: flex;
-    align-items: center;
-    background-color: white;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    font-size: 16px;
-    margin-bottom: 30px;
-  }
-  .btn-adicionar-responsavel i {
-    font-size: 24px;
-    color: var(--main-color);
-    margin-right: 10px;
-  }
 
   .lista-responsaveis-nova {
     margin-left: -18px;
@@ -1186,33 +1151,6 @@ body {
   }
 
   /* parte do mostrador dos funcionarios criado _________________________________________________________________ */
-  body.pagina-funcionarios-ativa .titulo,
-  body.pagina-funcionarios-ativa .ficha-container {
-    display: none;
-  }
-
-  body.pagina-funcionarios-ativa .funcionarios-mobile-view {
-    display: block;
-  }
-
-  .btn-adicionar-funcionario {
-    display: flex;
-    align-items: center;
-    background-color: white;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    font-size: 16px;
-    margin-bottom: 30px;
-  }
-  .btn-adicionar-funcionario i {
-    font-size: 24px;
-    color: var(--main-color);
-    margin-right: 10px;
-  }
 
   .lista-funcionarios-nova {
     margin-left: -18px;
@@ -1276,33 +1214,6 @@ body {
   }
 
   /* parte do mostrador dos medicamentos criado _________________________________________________________________ */
-  body.pagina-medicamentos-ativa .titulo,
-  body.pagina-medicamentos-ativa .ficha-container {
-    display: none;
-  }
-
-  body.pagina-medicamentos-ativa .medicamentos-mobile-view {
-    display: block;
-  }
-
-  .btn-adicionar-medicamento {
-    display: flex;
-    align-items: center;
-    background-color: white;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    font-size: 16px;
-    margin-bottom: 30px;
-  }
-  .btn-adicionar-medicamento i {
-    font-size: 24px;
-    color: var(--main-color);
-    margin-right: 10px;
-  }
 
   .lista-medicamentos-nova {
     margin-left: -18px;
@@ -1370,33 +1281,6 @@ body {
   }
 
   /* parte do mostrador das atividades criado _________________________________________________________________ */
-  body.pagina-atividades-ativa .titulo,
-  body.pagina-atividades-ativa .ficha-container {
-    display: none;
-  }
-
-  body.pagina-atividades-ativa .atividades-mobile-view {
-    display: block;
-  }
-
-  .btn-adicionar-atividade {
-    display: flex;
-    align-items: center;
-    background-color: white;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    font-size: 16px;
-    margin-bottom: 30px;
-  }
-  .btn-adicionar-atividade i {
-    font-size: 24px;
-    color: var(--main-color);
-    margin-right: 10px;
-  }
 
   .lista-atividades-nova {
     margin-left: -18px;
