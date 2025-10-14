@@ -999,3 +999,53 @@ document.addEventListener("DOMContentLoaded", function () {
   handleLayoutChange(mobileMediaQuery);
   mobileMediaQuery.addEventListener("change", handleLayoutChange);
 });
+
+// LÓGICA PARA O MODO ESCURO ________________________________________________________________________________________
+
+// Este código deve rodar depois que a página carregou
+document.addEventListener("DOMContentLoaded", () => {
+  const darkModeToggle = document.getElementById("dark-mode-toggle");
+  const body = document.body;
+
+  // Função para aplicar o tema
+  const aplicarTema = (tema) => {
+    const textoDoSwitch = document.getElementById("dark-mode-text");
+    const iconeDoSwitch = document.querySelector(".opcao-dark-mode .bx");
+
+    if (tema === "dark") {
+      body.classList.add("dark-mode");
+      darkModeToggle.checked = true;
+      textoDoSwitch.textContent = "Modo Claro"; // Muda o texto
+      iconeDoSwitch.classList.replace("bx-moon", "bx-sun"); // Troca ícone para sol
+    } else {
+      body.classList.remove("dark-mode");
+      darkModeToggle.checked = false;
+      textoDoSwitch.textContent = "Modo Escuro"; // Volta o texto
+      iconeDoSwitch.classList.replace("bx-sun", "bx-moon"); // Troca ícone para lua
+    }
+  };
+
+  // 1. Verifica se já existe um tema salvo no navegador
+  const temaSalvo = localStorage.getItem("theme");
+
+  // Se existir, aplica o tema salvo. Senão, usa o tema padrão (claro).
+  if (temaSalvo) {
+    aplicarTema(temaSalvo);
+  } else {
+    aplicarTema("light");
+  }
+
+  // 2. Adiciona o "ouvinte" para o clique no interruptor
+  darkModeToggle.addEventListener("change", () => {
+    let novoTema;
+    if (darkModeToggle.checked) {
+      novoTema = "dark";
+    } else {
+      novoTema = "light";
+    }
+
+    // Aplica o novo tema e salva a escolha no navegador
+    aplicarTema(novoTema);
+    localStorage.setItem("theme", novoTema);
+  });
+});

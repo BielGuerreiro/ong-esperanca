@@ -17,6 +17,16 @@
   --cor-vermelho-escuro: #dc3546c0;
 }
 
+body.dark-mode {
+  --main-color: #82c0f0; /* Um azul um pouco mais claro para contraste */
+  --cor-borda: #33394b;
+  --cor-fundo-pagina: #121212;
+  --cor-fundo-elemento: #1e1e1e;
+  --cor-texto-principal: #e0e0e0;
+  --cor-texto-secundario: #b0b0b0;
+  --cor-sombra: rgba(0, 0, 0, 0.4);
+}
+
 #btn-menu-flyout,
 .flyout-container {
   display: none;
@@ -599,6 +609,72 @@ body {
 
 .opcao-config.opcao-perigo i {
   color: var(--cor-vermelho-escuro);
+}
+
+/* --- Container da Opção na tela de ADM --- */
+.opcao-dark-mode {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+.opcao-dark-mode span {
+  flex-grow: 1;
+  margin-left: 15px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 80px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: var(--main-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
 }
 
 /* resposivo sabrina :] ______________________________________________________________________ */
