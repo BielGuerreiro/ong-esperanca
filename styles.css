@@ -636,8 +636,8 @@ body {
   .header2 {
     position: fixed;
     width: 100%;
-    height: 70px;
-    background-color: white;
+    height: 9vh;
+    background-color: white !important;
     top: auto;
     bottom: 0;
     left: 0;
@@ -722,20 +722,15 @@ body {
     left: 0;
     width: 100%;
     background-color: white;
-
-    /* AQUI ESTÁ A MÁGICA: copiando o estilo do seu container */
     border-top-left-radius: 45px;
     border-top-right-radius: 45px;
     padding: 20px;
     box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
-
-    /* Animação: começa fora da tela (embaixo) */
     transform: translateY(100%);
     transition: transform 0.3s ease-out;
   }
 
   .flyout-container.ativo .flyout-content {
-    /* Animação: desliza para a posição 0 (visível) */
     transform: translateY(0);
   }
 
@@ -848,19 +843,6 @@ body {
     color: white;
     text-align: center;
     font-size: clamp(1.3rem, 7vw, 35px);
-  }
-
-  .box {
-    min-height: 100px;
-    max-width: 330px;
-  }
-
-  .box h3 {
-    font-size: 30px;
-  }
-
-  .box p {
-    font-size: 20px;
   }
 
   /* container da ficha de cadastro _____________________________________________________________________________________________________________________________ */

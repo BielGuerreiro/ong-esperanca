@@ -198,17 +198,18 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   font-weight: bold;
 }
 
+/* olho ___________________________________________________________ */
+
 .grupo-form.senha-container {
   position: relative;
 }
 
-/* olho ___________________________________________________________ */
 .toggle-senha {
   position: absolute;
-  top: 45px;
+  top: 43px;
   right: 15px;
   cursor: pointer;
-  color: var(--cor-texto-label);
+  color: var(--secondary-color);
   font-size: 24px;
 }
 
