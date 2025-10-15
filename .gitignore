@@ -1,0 +1,10 @@
+# Ignorar dependências e build
+node_modules/
+package-lock.json
+
+# Ignorar variáveis de ambiente
+.env
+
+# Ignorar arquivos temporários
+.DS_Store
+Thumbs.db
