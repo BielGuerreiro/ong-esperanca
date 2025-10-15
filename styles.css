@@ -459,6 +459,10 @@ body {
   margin-top: 30px;
 }
 
+.ficha-container-dashboard {
+  margin-top: 10px;
+}
+
 .ficha {
   position: relative;
   background-color: white;
@@ -693,10 +697,8 @@ input:checked + .slider:before {
 
 /* responsivo de celular __________________________________________________________________________________ */
 @media (max-width: 850px) {
-  .header1 {
-    display: none;
-  }
-
+  .header1,
+  .ficha-container-dashboard,
   .coluna-desktop {
     display: none;
   }

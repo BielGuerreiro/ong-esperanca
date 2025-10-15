@@ -743,7 +743,8 @@ function iniciarPaginaRelatorios() {
       let classeStatus = "";
       if (relatorio.statusMedicacao === "Medicado") {
         classeStatus = "status-administrado";
-      } else if (relatorio.statusMedicacao === "Não Medicado") {
+      } else if (relatorio.statusMedicacao === "Não Tomado") {
+        // <<< CORRIGIDO
         classeStatus = "status-nao-tomado";
       }
       if (classeStatus) {
@@ -809,15 +810,12 @@ function iniciarPaginaAdm() {
 
   if (botaoLogout) {
     botaoLogout.addEventListener("click", function (event) {
-      event.preventDefault(); // Impede o comportamento padrão do link
+      event.preventDefault();
 
       if (confirm("Tem certeza que deseja sair da sua conta?")) {
-        // Limpa todos os dados salvos na sessão
         sessionStorage.clear();
 
-        // Redireciona para a página de login
         alert("Você foi desconectado com sucesso.");
-        // ATENÇÃO: Coloque aqui o nome correto da sua página de login
         window.location.href = "login.html";
       }
     });
@@ -1002,12 +1000,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // LÓGICA PARA O MODO ESCURO ________________________________________________________________________________________
 
-// Este código deve rodar depois que a página carregou
 document.addEventListener("DOMContentLoaded", () => {
   const darkModeToggle = document.getElementById("dark-mode-toggle");
   const body = document.body;
 
-  // Função para aplicar o tema
   const aplicarTema = (tema) => {
     const textoDoSwitch = document.getElementById("dark-mode-text");
     const iconeDoSwitch = document.querySelector(".opcao-dark-mode .bx");
@@ -1015,27 +1011,24 @@ document.addEventListener("DOMContentLoaded", () => {
     if (tema === "dark") {
       body.classList.add("dark-mode");
       darkModeToggle.checked = true;
-      textoDoSwitch.textContent = "Modo Claro"; // Muda o texto
-      iconeDoSwitch.classList.replace("bx-moon", "bx-sun"); // Troca ícone para sol
+      textoDoSwitch.textContent = "Modo Claro";
+      iconeDoSwitch.classList.replace("bx-moon", "bx-sun");
     } else {
       body.classList.remove("dark-mode");
       darkModeToggle.checked = false;
-      textoDoSwitch.textContent = "Modo Escuro"; // Volta o texto
-      iconeDoSwitch.classList.replace("bx-sun", "bx-moon"); // Troca ícone para lua
+      textoDoSwitch.textContent = "Modo Escuro";
+      iconeDoSwitch.classList.replace("bx-sun", "bx-moon");
     }
   };
 
-  // 1. Verifica se já existe um tema salvo no navegador
   const temaSalvo = localStorage.getItem("theme");
 
-  // Se existir, aplica o tema salvo. Senão, usa o tema padrão (claro).
   if (temaSalvo) {
     aplicarTema(temaSalvo);
   } else {
     aplicarTema("light");
   }
 
-  // 2. Adiciona o "ouvinte" para o clique no interruptor
   darkModeToggle.addEventListener("change", () => {
     let novoTema;
     if (darkModeToggle.checked) {
@@ -1044,7 +1037,6 @@ document.addEventListener("DOMContentLoaded", () => {
       novoTema = "light";
     }
 
-    // Aplica o novo tema e salva a escolha no navegador
     aplicarTema(novoTema);
     localStorage.setItem("theme", novoTema);
   });
