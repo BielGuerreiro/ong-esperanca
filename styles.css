@@ -33,7 +33,6 @@ body.dark-mode {
 }
 .residentes-mobile-view,
 .relatorios-mobile-view,
-.responsaveis-mobile-view,
 .funcionarios-mobile-view,
 .medicamentos-mobile-view,
 .atividades-mobile-view {
@@ -927,10 +926,6 @@ input:checked + .slider:before {
   body.pagina-residentes-ativa .residentes-desktop-view,
   body.pagina-relatorios-ativa .titulo,
   body.pagina-relatorios-ativa .ficha-container,
-  body.pagina-responsavel-ativa .titulo,
-  body.pagina-responsavel-ativa .ficha-container,
-  body.pagina-responsavel-ativa .titulo,
-  body.pagina-responsavel-ativa .ficha-container,
   body.pagina-funcionarios-ativa .titulo,
   body.pagina-funcionarios-ativa .ficha-container,
   body.pagina-medicamentos-ativa .titulo,
@@ -942,8 +937,6 @@ input:checked + .slider:before {
 
   body.pagina-residentes-ativa .residentes-mobile-view,
   body.pagina-relatorios-ativa .relatorios-mobile-view,
-  body.pagina-responsavel-ativa .responsaveis-mobile-view,
-  body.pagina-responsavel-ativa .responsaveis-mobile-view,
   body.pagina-funcionarios-ativa .funcionarios-mobile-view,
   body.pagina-medicamentos-ativa .medicamentos-mobile-view,
   body.pagina-atividades-ativa .atividades-mobile-view {
@@ -1137,75 +1130,6 @@ input:checked + .slider:before {
 
   .relatorio-acoes .btn-acao:hover {
     color: var(--main-color);
-  }
-
-  /* parte do mostrador dos responsaveis criado _________________________________________________________________ */
-
-  .lista-responsaveis-nova {
-    margin-left: -18px;
-    margin-right: -18px;
-  }
-
-  .lista-header-responsaveis {
-    display: grid;
-    grid-template-columns: 2fr 1.5fr 1fr;
-    padding: 0 12px 10px 12px;
-    color: var(--main-color);
-    font-size: 14px;
-    font-weight: bold;
-  }
-
-  .lista-header-responsaveis span:nth-child(2) {
-    text-align: center;
-  }
-  .lista-header-responsaveis span:nth-child(3) {
-    text-align: right;
-  }
-
-  #lista-responsaveis-nova-body {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  #lista-responsaveis-nova-body li {
-    display: grid;
-    grid-template-columns: 2fr 1.5fr 1fr;
-    align-items: center;
-    padding: 15px 12px;
-    border-radius: 10px;
-  }
-
-  #lista-responsaveis-nova-body li:nth-child(odd) {
-    background-color: #eaf2fa;
-  }
-  #lista-responsaveis-nova-body li:nth-child(even) {
-    background-color: rgba(245, 245, 245, 0.836);
-  }
-
-  .responsavel-nome {
-    font-weight: bold;
-    color: #333;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 0;
-  }
-
-  .responsavel-parentesco {
-    text-align: center;
-    color: var(--secondary-color);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 0;
-  }
-
-  .responsavel-acoes {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
   }
 
   /* parte do mostrador dos funcionarios criado _________________________________________________________________ */
