@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro de Ponto - ONG Esperança</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="shortcut icon" href="/img/logo.png" type="image/x-icon" />
+    <link
+      href="https://cdn.boxicons.com/fonts/basic/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <main class="ponto-container">
+      <div class="ponto-box">
+        <img src="/img/logo.png" alt="Logo ONG Esperança" class="logo" />
+        <h1>Registro de Ponto</h1>
+        <p class="data-hora" id="data-hora-atual"></p>
+
+        <form id="ponto-form">
+          <div class="grupo-form">
+            <label for="matricula">Número do Funcionário</label>
+            <input
+              type="number"
+              id="matricula"
+              placeholder="Digite seu número de registro"
+              inputmode="numeric"
+              required
+            />
+          </div>
+          <div class="grupo-form senha-container">
+            <label for="senha">Senha</label>
+            <input
+              type="password"
+              id="senha"
+              placeholder="Digite sua senha"
+              required
+            />
+            <i class="bx bx-eye-slash" id="toggle-senha"></i>
+          </div>
+          <button type="submit" id="btn-registrar-ponto">
+            Registrar Ponto
+          </button>
+        </form>
+
+        <div id="mensagem-feedback"></div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

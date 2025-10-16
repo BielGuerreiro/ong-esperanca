@@ -1,4 +1,4 @@
-// ===== FUNÇÕES GLOBAIS DE APOIO _______________________________________________________________________________
+// ===== FUNÇÕES GLOBAIS DE APOIO ============================================================
 function carregarFuncionarios() {
   return JSON.parse(sessionStorage.getItem("listaFuncionarios") || "[]");
 }
@@ -38,7 +38,7 @@ function iniciarToggleSenha(inputId, toggleId) {
   }
 }
 
-// ===== CÓDIGO PRINCIPAL DA PÁGINA _______________________________________________________________________________
+//  CÓDIGO PRINCIPAL ________________________________________________________________________________________________________________
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("form-funcionario");
   const etapas = document.querySelectorAll(".etapa-form");
@@ -48,32 +48,26 @@ document.addEventListener("DOMContentLoaded", function () {
   const botaoSubmit = document.querySelector(".btn-enviar");
   let etapaAtual = 0;
 
-  // --- Seletores para a lógica de Tags _______________________________________________________________________________
-  /*
-    Esta parte seleciona os elementos HTML necessários para a funcionalidade de 
-    "Residentes sob cuidados", como o campo de seleção, o container onde as tags 
-    aparecem e o campo oculto que armazena os IDs dos residentes selecionados.
-  */
   const selectResidenteMultiplo = document.getElementById("residente-select");
   const tagsContainer = document.getElementById(
     "residentes-selecionados-container"
   );
   const hiddenInputIds = document.getElementById("residentes_vinculados_ids");
   let idsSelecionados = [];
-  const listaResidentes = carregarResidentes(); // Carrega a lista de residentes uma vez
+  const listaResidentes = carregarResidentes();
 
-  // --- LÓGICA DE EDIÇÃO (CORRIGIDA E MAIS SEGURA) _______________________________________________________________________________
-  /*
-    Este bloco é o controlador do "Modo de Edição". Ele verifica se a URL da página 
-    contém um ID de funcionário. Se houver, ele ajusta o título e o botão, busca os 
-    dados completos daquele funcionário e preenche automaticamente todos os campos 
-    do formulário, incluindo as "tags" de residentes vinculados.
-  */
+  // --- DESATIVA VALIDAÇÃO NATIVA PARA USARMOS A NOSSA ---
+  form.setAttribute("novalidate", true);
+
+  // --- LÓGICA DE EDIÇÃO E NÚMERO DE REGISTRO ---
   const urlParams = new URLSearchParams(window.location.search);
   const funcionarioId = urlParams.get("id");
   const isEditMode = Boolean(funcionarioId);
+  const inputNumeroRegistro = document.getElementById("numero-registro");
 
   if (isEditMode) {
+    if (inputNumeroRegistro) inputNumeroRegistro.value = funcionarioId;
+
     const titulo = document.querySelector(".titulo");
     if (titulo) titulo.textContent = "Editar Ficha Do Funcionário";
     if (botaoSubmit) botaoSubmit.textContent = "SALVAR ALTERAÇÕES";
@@ -86,70 +80,95 @@ document.addEventListener("DOMContentLoaded", function () {
     if (funcionarioParaEditar) {
       Object.keys(funcionarioParaEditar).forEach((key) => {
         const campo = form.elements[key];
-        if (campo) {
+        if (campo && key !== "id") {
           campo.value = funcionarioParaEditar[key];
         }
       });
-
       if (
         funcionarioParaEditar.residentes_vinculados_ids &&
         typeof funcionarioParaEditar.residentes_vinculados_ids === "string"
       ) {
         idsSelecionados =
           funcionarioParaEditar.residentes_vinculados_ids.split(",");
-        atualizarTags(); // Chama a função para renderizar as tags
+        atualizarTags();
       }
+    }
+  } else {
+    if (inputNumeroRegistro) {
+      const listaFuncionarios = carregarFuncionarios();
+      let proximoId;
+      if (listaFuncionarios.length === 0) {
+        proximoId = 101;
+      } else {
+        const maiorId = Math.max(
+          ...listaFuncionarios.map((f) => parseInt(f.id))
+        );
+        proximoId = maiorId + 1;
+      }
+      inputNumeroRegistro.value = proximoId;
     }
   }
 
-  // --- LÓGICA DE SALVAR (UNIFICADA) _______________________________________________________________________________
-  /*
-    Define o que acontece ao enviar o formulário. Ele impede o recarregamento da página, 
-    valida os campos e, em seguida, verifica se está em "Modo de Edição". Se estiver, 
-    ele ATUALIZA o cadastro existente. Se não, ele CRIA um novo cadastro de funcionário. 
-    Após salvar, exibe um alerta de sucesso e redireciona o usuário de volta.
-  */
+  // --- LÓGICA DE SALVAR (COM A VALIDAÇÃO DO RESIDENTE) ---
   form.addEventListener("submit", function (event) {
     event.preventDefault();
-    if (!form.checkValidity()) {
+
+    let primeiroCampoInvalido = null;
+
+    for (const campo of form.querySelectorAll("[required]")) {
+      if (campo.closest('[style*="display: none"]') === null) {
+        if (!campo.value.trim()) {
+          primeiroCampoInvalido = campo;
+          break;
+        }
+      }
+    }
+
+    if (primeiroCampoInvalido) {
+      form.classList.add("form-foi-validado");
+
+      const etapaComErro = primeiroCampoInvalido.closest(".etapa-form");
+      if (etapaComErro) {
+        const indiceEtapaComErro = Array.from(etapas).indexOf(etapaComErro);
+        if (indiceEtapaComErro !== -1) {
+          mostrarEtapa(indiceEtapaComErro);
+        }
+      }
+
+      primeiroCampoInvalido.focus();
+      alert("Por favor, preencha todos os campos obrigatórios (*).");
       return;
     }
 
     const listaFuncionarios = carregarFuncionarios();
     const formData = new FormData(form);
     const dadosFuncionario = Object.fromEntries(formData.entries());
+    dadosFuncionario.id = parseInt(dadosFuncionario.id);
 
     if (isEditMode) {
-      // ATUALIZA
       const index = listaFuncionarios.findIndex((f) => f.id == funcionarioId);
       if (index !== -1) {
-        listaFuncionarios[index] = {
-          ...dadosFuncionario,
-          id: parseInt(funcionarioId),
-        };
+        listaFuncionarios[index] = dadosFuncionario;
         salvarFuncionarios(listaFuncionarios);
         alert("Cadastro de funcionário atualizado com sucesso!");
       }
     } else {
-      // CRIA NOVO
-      dadosFuncionario.id = Date.now();
       listaFuncionarios.push(dadosFuncionario);
       salvarFuncionarios(listaFuncionarios);
-      alert("Funcionário cadastrado com sucesso!");
+      alert(
+        `Funcionário cadastrado com sucesso! O número de registro é: ${dadosFuncionario.id}`
+      );
     }
-    const origem = urlParams.get("origem") || "pagina-funcionarios";
-    window.location.href = `../../index.html?pagina=${origem}`;
+
+    setTimeout(() => {
+      const origem = urlParams.get("origem") || "pagina-funcionarios";
+      window.location.href = `../../index.html?pagina=${origem}`;
+    }, 1000);
   });
 
-  // --- LÓGICAS DE NAVEGAÇÃO E INTERAÇÃO _______________________________________________________________________________
-  /*
-    Esta seção controla a experiência do formulário de múltiplas etapas. A função 
-    'mostrarEtapa' é responsável por exibir a etapa correta, enquanto os blocos 
-    seguintes ativam os botões "Próximo", "Voltar" e "Cancelar", definindo o que 
-    acontece quando cada um é clicado.
-  */
   function mostrarEtapa(i) {
     etapas.forEach((e, idx) => e.classList.toggle("ativo", idx === i));
+    etapaAtual = i;
   }
 
   botoesProximo.forEach((b) =>
@@ -160,6 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     })
   );
+
   botoesVoltar.forEach((b) =>
     b.addEventListener("click", () => {
       if (etapaAtual > 0) {
@@ -168,6 +188,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     })
   );
+
   botoesCancelar.forEach((b) =>
     b.addEventListener("click", () => {
       if (confirm("Deseja cancelar?")) {
@@ -176,13 +197,6 @@ document.addEventListener("DOMContentLoaded", function () {
     })
   );
 
-  // --- LÓGICA DAS TAGS DE RESIDENTES _______________________________________________________________________________
-  /*
-    Este bloco gerencia o campo de seleção múltipla "Residentes sob cuidados". 
-    Ele primeiro preenche o dropdown com os nomes dos residentes. A função 'atualizarTags' 
-    é a responsável por criar e remover as "tags" visuais conforme o usuário seleciona 
-    ou remove os residentes da lista.
-  */
   if (selectResidenteMultiplo) {
     listaResidentes.forEach((r) =>
       selectResidenteMultiplo.appendChild(
@@ -224,13 +238,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // --- INICIALIZAÇÃO _______________________________________________________________________________
-  /*
-    Estas são as últimas ações executadas quando a página carrega. Elas chamam as 
-    funções de configuração inicial para a validação das datas e para o botão de 
-    mostrar/esconder senha, e finalmente garantem que a primeira etapa do formulário 
-    seja exibida para o usuário.
-  */
   configurarValidacaoDatas();
   iniciarToggleSenha("senha", "toggle-senha-funcionario");
   mostrarEtapa(etapaAtual);

@@ -89,12 +89,10 @@ main {
   flex-grow: 1;
 }
 
-/* ÚNICO: Estilo de título que só existia no CSS do Residente */
 #etapa-3 h3 {
   color: var(--cor-texto-label);
 }
 
-/* 1. ESTILO PADRÃO (Define a cor do TEXTO DEPOIS de digitado/selecionado) */
 .grupo-form input,
 .grupo-form select,
 .grupo-form textarea {
@@ -322,15 +320,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background-color: #e9ecef;
 }
 
-/* Ícone de seta */
 .accordion-header::after {
-  content: "\\02795"; /* Símbolo de mais '+' */
+  content: "\\02795";
   font-size: 13px;
   color: var(--secondary-color);
 }
 
 .accordion-header.active::after {
-  content: "\\2796"; /* Símbolo de menos '-' */
+  content: "\\2796";
 }
 
 .accordion-content {

@@ -18,7 +18,7 @@
 }
 
 body.dark-mode {
-  --main-color: #82c0f0; /* Um azul um pouco mais claro para contraste */
+  --main-color: #82c0f0;
   --cor-borda: #33394b;
   --cor-fundo-pagina: #121212;
   --cor-fundo-elemento: #1e1e1e;
@@ -601,16 +601,16 @@ body {
   color: #555;
 }
 
-.opcao-config.opcao-perigo {
+.opcao-config.opcao-logout {
   background-color: var(--cor-vermelho-claro);
 }
 
-.opcao-config.opcao-perigo span {
+.opcao-config.opcao-logout span {
   color: #555;
   font-weight: bold;
 }
 
-.opcao-config.opcao-perigo i {
+.opcao-config.opcao-logout i {
   color: var(--cor-vermelho-escuro);
 }
 

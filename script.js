@@ -806,20 +806,40 @@ function iniciarPaginaRelatorios() {
   o redireciona para a página de login.
 */
 function iniciarPaginaAdm() {
-  const botaoLogout = document.getElementById("btn-logout");
+  const botaoLoginLogout = document.getElementById("btn-logout");
+  if (!botaoLoginLogout) return;
 
-  if (botaoLogout) {
-    botaoLogout.addEventListener("click", function (event) {
-      event.preventDefault();
+  const iconeBotao = botaoLoginLogout.querySelector("i");
+  const textoBotao = botaoLoginLogout.querySelector("span");
 
-      if (confirm("Tem certeza que deseja sair da sua conta?")) {
-        sessionStorage.clear();
+  function configurarBotao() {
+    const usuarioLogado = sessionStorage.getItem("usuarioLogado");
 
-        alert("Você foi desconectado com sucesso.");
-        window.location.href = "login.html";
-      }
-    });
+    if (usuarioLogado) {
+      botaoLoginLogout.classList.add("opcao-logout");
+      textoBotao.textContent = "Sair da conta";
+      iconeBotao.className = "fa-solid fa-right-from-bracket";
+      botaoLoginLogout.href = "#";
+      botaoLoginLogout.addEventListener("click", handleLogout);
+    } else {
+      botaoLoginLogout.classList.remove("opcao-logout");
+      textoBotao.textContent = "Fazer Login";
+      iconeBotao.className = "bx bx-user-hexagon";
+      botaoLoginLogout.href = "login/index.html";
+      botaoLoginLogout.removeEventListener("click", handleLogout);
+    }
   }
+
+  const handleLogout = function (event) {
+    event.preventDefault();
+    if (confirm("Tem certeza que deseja sair da sua conta?")) {
+      sessionStorage.clear();
+      alert("Você foi desconectado com sucesso.");
+      configurarBotao();
+    }
+  };
+
+  configurarBotao();
 }
 
 // document da pagina principal ___________________________________________________________________________________

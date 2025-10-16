@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redefinir Senha - ONG Esperança</title>
+    <link rel="stylesheet" href="redefinir.css" />
+    <link
+      href="https://cdn.boxicons.com/fonts/basic/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="shortcut icon" href="../img/logo.png" type="image/x-icon" />
+  </head>
+  <body>
+    <main>
+      <div class="container-formulario">
+        <div class="titulo">Redefinir Senha</div>
+
+        <form id="redefinir-form">
+          <div id="etapa-1" class="etapa-form ativo">
+            <p class="subtitulo">
+              Digite seu CPF e e-mail para confirmar sua identidade.
+            </p>
+            <div class="grupo-form">
+              <label for="cpf">CPF <span class="obrigatorio">*</span></label>
+              <input
+                type="text"
+                id="cpf"
+                placeholder="Digite seu CPF"
+                inputmode="numeric"
+                maxlength="14"
+                required
+              />
+            </div>
+            <div class="grupo-form">
+              <label for="email"
+                >E-mail <span class="obrigatorio">*</span></label
+              >
+              <input
+                type="email"
+                id="email"
+                placeholder="Digite seu e-mail de cadastro"
+                maxlength="255"
+                required
+              />
+            </div>
+
+            <div class="navegacao-form">
+              <button type="button" id="btn-verificar">Verificar</button>
+              <button type="button" class="btn-cancelar">&larr; Voltar</button>
+            </div>
+          </div>
+
+          <div id="etapa-2" class="etapa-form">
+            <p class="subtitulo">Agora, crie uma nova senha de acesso.</p>
+            <div class="grupo-form senha-container">
+              <label for="nova-senha"
+                >Nova Senha <span class="obrigatorio">*</span></label
+              >
+              <input
+                type="password"
+                id="nova-senha"
+                placeholder="Crie uma nova senha forte"
+                required
+                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                title="Mínimo 8 caracteres, com maiúscula, minúscula, número e caractere especial."
+              />
+              <i
+                class="bx bx-eye-slash toggle-senha"
+                id="toggle-nova-senha"
+              ></i>
+            </div>
+            <div class="grupo-form senha-container">
+              <label for="confirmar-nova-senha"
+                >Confirmar Nova Senha <span class="obrigatorio">*</span></label
+              >
+              <input
+                type="password"
+                id="confirmar-nova-senha"
+                placeholder="Digite a nova senha novamente"
+                required
+              />
+              <i
+                class="bx bx-eye-slash toggle-senha"
+                id="toggle-confirmar-senha"
+              ></i>
+            </div>
+            <div class="navegacao-form">
+              <button type="submit">Salvar Nova Senha</button>
+              <button type="button" class="btn-cancelar">&larr; Voltar</button>
+            </div>
+          </div>
+        </form>
+
+        <div id="mensagem-feedback"></div>
+      </div>
+    </main>
+    <script src="redefinir.js"></script>
+  </body>
+</html>

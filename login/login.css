@@ -1,0 +1,126 @@
+:root {
+  --main-color: #75afdc;
+  --secondary-color: #7e7e7e;
+  --cor-vermelho-claro: #ffd2d2;
+  --cor-sucesso: #28a745;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: #333;
+}
+
+.login-container {
+  width: 100%;
+  padding: 20px;
+}
+
+.login-box {
+  max-width: 400px;
+  margin: 0 auto;
+  background-color: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px B30px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.logo {
+  width: 80px;
+  margin-bottom: 20px;
+}
+
+h1 {
+  color: var(--main-color);
+  margin-bottom: 30px;
+  font-weight: 700;
+}
+
+.grupo-form {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.grupo-form label {
+  display: block;
+  color: var(--secondary-color);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.grupo-form input {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.2s;
+}
+
+.grupo-form input:focus {
+  outline: none;
+  border-color: var(--main-color);
+  box-shadow: 0 0 0 3px rgba(117, 175, 220, 0.3);
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--main-color);
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #5a9ed1;
+}
+
+#mensagem-feedback {
+  margin-top: 20px;
+  font-weight: 500;
+  padding: 12px;
+  border-radius: 8px;
+  display: none;
+}
+
+#mensagem-feedback.sucesso {
+  display: block;
+  background-color: #e9f7ec;
+  color: var(--cor-sucesso);
+}
+
+#mensagem-feedback.erro {
+  display: block;
+  background-color: var(--cor-vermelho-claro);
+  color: #a72d39;
+}
+
+.senha-container {
+  position: relative;
+}
+
+#toggle-senha {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(15%);
+  cursor: pointer;
+  font-size: 24px;
+  color: var(--secondary-color);
+}

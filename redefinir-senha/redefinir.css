@@ -1,0 +1,162 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+
+:root {
+  --main-color: #75afdc;
+  --secondary-color: #7e7e7e;
+  --cor-vermelho-claro: #ffd2d2;
+  --cor-vermelho-escuro: #dc3546c0;
+  --cor-borda: #dce8f6;
+  --cor-sucesso: #28a745;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+main {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+}
+
+.container-formulario {
+  background-color: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.titulo {
+  color: var(--main-color);
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.subtitulo {
+  text-align: center;
+  color: var(--secondary-color);
+  margin-bottom: 30px;
+}
+
+/* --- ESTILOS PARA AS ETAPAS --- */
+.etapa-form {
+  display: none; /* Todas as etapas começam escondidas */
+}
+.etapa-form.ativo {
+  display: block; /* A etapa com a classe 'ativo' será exibida */
+}
+
+.grupo-form {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.grupo-form label {
+  display: block;
+  color: var(--secondary-color);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.grupo-form input {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.2s;
+}
+
+.grupo-form input:focus {
+  outline: none;
+  border-color: var(--main-color);
+  box-shadow: 0 0 0 3px rgba(117, 175, 220, 0.3);
+}
+
+.obrigatorio {
+  color: var(--cor-vermelho-escuro);
+  font-weight: bold;
+}
+
+.toggle-senha {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(25%);
+  cursor: pointer;
+  font-size: 24px;
+  color: var(--secondary-color);
+}
+
+.separador-discreto {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 30px 0;
+}
+
+.navegacao-form {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.navegacao-form button {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: var(
+    --main-color
+  ); /* Todos os botões principais agora são azuis */
+  color: white;
+}
+.navegacao-form button:hover {
+  background-color: #5a9ed1;
+}
+
+.navegacao-form .btn-cancelar {
+  background-color: transparent;
+  color: var(--secondary-color);
+  box-shadow: none;
+}
+.navegacao-form .btn-cancelar:hover {
+  background-color: #f0f2f5;
+}
+
+#mensagem-feedback {
+  margin-top: 20px;
+  font-weight: 500;
+  padding: 12px;
+  border-radius: 8px;
+  display: none;
+}
+
+#mensagem-feedback.sucesso {
+  display: block;
+  background-color: #e9f7ec;
+  color: var(--cor-sucesso);
+}
+
+#mensagem-feedback.erro {
+  display: block;
+  background-color: var(--cor-vermelho-claro);
+  color: #a72d39;
+}
