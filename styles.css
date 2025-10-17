@@ -276,7 +276,6 @@ body {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  text-decoration: none;
   color: white;
   font-size: 18px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -508,7 +507,6 @@ body {
 
 .acao-ver-ficha {
   color: var(--main-color);
-  text-decoration: none;
   font-weight: bold;
 }
 
@@ -583,7 +581,6 @@ body {
   border-radius: 12px;
   background-color: white;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  text-decoration: none;
   font-size: 18px;
   font-weight: 500;
   color: var(--secondary-color);
@@ -614,7 +611,7 @@ body {
   color: var(--cor-vermelho-escuro);
 }
 
-/* --- Container da Opção na tela de ADM --- */
+/*  modo escuro _____________________________________________________________________________________________________________________ */
 .opcao-dark-mode {
   display: flex;
   align-items: center;
@@ -844,7 +841,6 @@ input:checked + .slider:before {
     align-items: center;
     padding: 15px;
     border-radius: 10px;
-    text-decoration: none;
     color: #333;
     font-size: 18px;
     font-weight: 500;
@@ -878,7 +874,7 @@ input:checked + .slider:before {
     top: 0;
     left: 0;
     right: 0;
-    height: 180px;
+    height: 190px;
     z-index: -1;
     background-color: var(--main-color);
   }
@@ -888,12 +884,17 @@ input:checked + .slider:before {
     background: white;
   }
 
+  /* teste de container  */
   body.pagina-dashboard-ativa {
-    background: var(--main-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
 
   body.pagina-dashboard-ativa .container-geral {
-    margin-top: 3vh;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   .bem-vindo.movido-para-topo {
@@ -918,6 +919,19 @@ input:checked + .slider:before {
     color: white;
     text-align: center;
     font-size: clamp(1.3rem, 7vw, 35px);
+  }
+
+  .box {
+    min-height: 100px;
+    max-width: 330px;
+  }
+
+  .box h3 {
+    font-size: 40px;
+  }
+
+  .box p {
+    font-size: 24px;
   }
 
   /* container da ficha de cadastro _____________________________________________________________________________________________________________________________ */
@@ -975,7 +989,6 @@ input:checked + .slider:before {
     padding: 15px;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    text-decoration: none;
     color: #333;
     font-weight: 500;
     font-size: 16px;

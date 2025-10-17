@@ -1,4 +1,4 @@
-// ===== FUNÇÕES GLOBAIS DE APOIO ============================================================
+// FUNÇÕES GLOBAIS DE APOIO ___________________________________________________________________________________________________
 function carregarFuncionarios() {
   return JSON.parse(sessionStorage.getItem("listaFuncionarios") || "[]");
 }
@@ -38,7 +38,7 @@ function iniciarToggleSenha(inputId, toggleId) {
   }
 }
 
-//  CÓDIGO PRINCIPAL ________________________________________________________________________________________________________________
+//  CÓDIGO PRINCIPAL __________________________________________________________________________
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("form-funcionario");
   const etapas = document.querySelectorAll(".etapa-form");
@@ -56,10 +56,9 @@ document.addEventListener("DOMContentLoaded", function () {
   let idsSelecionados = [];
   const listaResidentes = carregarResidentes();
 
-  // --- DESATIVA VALIDAÇÃO NATIVA PARA USARMOS A NOSSA ---
   form.setAttribute("novalidate", true);
 
-  // --- LÓGICA DE EDIÇÃO E NÚMERO DE REGISTRO ---
+  //LÓGICA DE EDIÇÃO E NÚMERO DE REGISTRO _________________________________________________________________________
   const urlParams = new URLSearchParams(window.location.search);
   const funcionarioId = urlParams.get("id");
   const isEditMode = Boolean(funcionarioId);
@@ -109,7 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // --- LÓGICA DE SALVAR (COM A VALIDAÇÃO DO RESIDENTE) ---
+  // LÓGICA DE SALVAR (COM A VALIDAÇÃO DO RESIDENTE) _____________________________________________________________________________
   form.addEventListener("submit", function (event) {
     event.preventDefault();
 

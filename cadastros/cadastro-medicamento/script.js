@@ -50,7 +50,6 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     if (tratamentoParaEditar) {
-      // Preenche os campos do formulário com os dados existentes
       Object.keys(tratamentoParaEditar).forEach((key) => {
         const campo = form.elements[key];
         if (campo) {
@@ -68,9 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
   */
   const listaResidentes = carregarResidentes();
   if (selectResidente) {
-    // Adiciona uma opção padrão "Selecione" antes de popular
     if (!isEditMode) {
-      // Só mostra no modo de cadastro
       selectResidente.innerHTML =
         '<option value="" disabled selected>Selecione um residente</option>';
     }
@@ -81,7 +78,6 @@ document.addEventListener("DOMContentLoaded", function () {
       );
       selectResidente.appendChild(option);
     });
-    // Se estiver em modo de edição, o loop acima já terá selecionado o residente correto
   }
 
   // --- LÓGICA DE SALVAR (UNIFICADA PARA CRIAR E EDITAR) _______________________________________________________________________________
@@ -105,10 +101,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const dadosTratamento = Object.fromEntries(formData.entries());
 
     if (isEditMode) {
-      // ATUALIZA o tratamento existente
       const index = listaTratamentos.findIndex((t) => t.id == tratamentoId);
       if (index !== -1) {
-        // Pega o status existente para não perdê-lo na edição
         const tratamentoExistente = listaTratamentos[index];
         listaTratamentos[index] = {
           ...tratamentoExistente,
@@ -119,20 +113,19 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("Tratamento atualizado com sucesso!");
       }
     } else {
-      // CRIA um novo tratamento
       dadosTratamento.id = Date.now();
-      dadosTratamento.status = "Pendente"; // Status inicial para novos tratamentos
+      dadosTratamento.status = "Pendente";
       listaTratamentos.push(dadosTratamento);
       salvarTratamentos(listaTratamentos);
       alert("Tratamento cadastrado com sucesso!");
     }
 
-    // Redireciona de volta para a página principal de medicamentos
     const origem = urlParams.get("origem") || "pagina-medicamentos";
     window.location.href = `../../index.html?pagina=${origem}`;
   });
 
   // Lógica do botão Cancelar_______________________________________________________________________________
+
   /*
     Esta parte do código adiciona a funcionalidade ao botão "Cancelar". Ao ser clicado,
     ele exibe uma caixa de diálogo pedindo confirmação. Se o usuário confirmar, ele 

@@ -311,7 +311,7 @@ function iniciarPaginaFuncionarios() {
 
   if (listaFuncionarios.length > 0) {
     listaFuncionarios.forEach((funcionario) => {
-      const nomeCompleto = `${funcionario["primeiro-nome"]} ${funcionario.sobromenome}`;
+      const nomeCompleto = `${funcionario["primeiro-nome"]} ${funcionario.sobrenome}`;
 
       function definirHorario(turno) {
         switch (turno) {
@@ -523,25 +523,19 @@ function iniciarPaginaMedicamentos() {
         ? `${residente["primeiro-nome"]} ${residente.sobrenome}`
         : "Não encontrado";
 
-      const classeStatus = `status-${tratamento.status
-        .toLowerCase()
-        .replace(" ", "-")}`;
-
-      const statusHTML = `<span class="status ${classeStatus}">${tratamento.status}</span>`;
-
       const acoesHTML = `
         <a href="cadastros/cadastro-medicamento/index.html?id=${tratamento.id}&origem=pagina-medicamentos" class="btn-acao-icone btn-editar" title="Editar Agendamento"><i class='bx bxs-pencil'></i></a>
         <a href="#" class="btn-acao-icone btn-excluir" data-id="${tratamento.id}" title="Excluir Agendamento"><i class='bx bx-trash-alt'></i></a>
       `;
 
       const tr = document.createElement("tr");
+
       tr.innerHTML = `
         <td>${tratamento.horario}</td>
         <td>${nomeResidente}</td>
         <td>${tratamento.medicamento}</td>
         <td>${tratamento.dosagem}</td>
         <td>${tratamento.tipo || "N/A"}</td>
-        <td>${statusHTML}</td>
         <td class="acoes">${acoesHTML}</td>
       `;
       tabelaBodyDesktop.appendChild(tr);
@@ -555,19 +549,17 @@ function iniciarPaginaMedicamentos() {
       listaBodyMobile.appendChild(li);
     });
   } else {
-    tabelaBodyDesktop.innerHTML = `<tr><td colspan="7" style="text-align:center;">Nenhum tratamento agendado.</td></tr>`;
+    tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align:center;">Nenhum tratamento agendado.</td></tr>`;
     listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum tratamento agendado.</li>`;
   }
 
   const paginaMedicamentos = document.getElementById("pagina-medicamentos");
-
   paginaMedicamentos.addEventListener("click", function (event) {
     const botaoExcluir = event.target.closest(".btn-excluir");
     if (!botaoExcluir) return;
 
     event.preventDefault();
     const idParaExcluir = botaoExcluir.dataset.id;
-
     const nomeDoMedicamento =
       JSON.parse(sessionStorage.getItem("listaTratamentos")).find(
         (t) => t.id == idParaExcluir
@@ -581,9 +573,7 @@ function iniciarPaginaMedicamentos() {
       const novaLista = JSON.parse(
         sessionStorage.getItem("listaTratamentos") || "[]"
       ).filter((t) => t.id != idParaExcluir);
-
       sessionStorage.setItem("listaTratamentos", JSON.stringify(novaLista));
-
       alert("Agendamento excluído com sucesso!");
       iniciarPaginaMedicamentos();
     }
@@ -949,13 +939,33 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     };
 
-    // Adiciona os eventos
     btnMenuFlyout.addEventListener("click", abrirFlyout);
     flyoutBackdrop.addEventListener("click", fecharFlyout);
     flyoutClose.addEventListener("click", fecharFlyout);
 
     popularMenuFlyout();
   }
+
+  // --- TEXTO DE BOAS-VINDAS NO RESPONSIVO _________________________________________________________________________
+  const bemVindoEl = document.querySelector("#pagina-dashboard .bem-vindo");
+  const containerOriginal = document.querySelector("#pagina-dashboard");
+  const bodyEl = document.body;
+  const mobileMediaQuery = window.matchMedia("(max-width: 850px)");
+
+  function handleLayoutChange(e) {
+    if (!bemVindoEl || !containerOriginal) return;
+
+    if (e.matches) {
+      bodyEl.appendChild(bemVindoEl);
+      bemVindoEl.classList.add("movido-para-topo");
+    } else {
+      containerOriginal.prepend(bemVindoEl);
+      bemVindoEl.classList.remove("movido-para-topo");
+    }
+  }
+
+  handleLayoutChange(mobileMediaQuery);
+  mobileMediaQuery.addEventListener("change", handleLayoutChange);
 
   // iniciacao __________________________________________________________________________________________________
   iniciarPaginaDashboard();
@@ -984,34 +994,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (itemInicial) {
     itemInicial.click();
-  } else {
-    ajustarAlturaContainer(document.querySelector(".pagina-conteudo.ativa"));
   }
-
-  const paginaInicial = document.querySelector(".pagina-conteudo.ativa");
-  ajustarAlturaContainer(paginaInicial);
-
-  // texto de boas vinda no responsivo _______________________________________________________________________________________________
-  const bemVindoEl = document.querySelector("#pagina-dashboard .bem-vindo");
-  const containerOriginal = document.querySelector("#pagina-dashboard");
-  const bodyEl = document.body;
-
-  const mobileMediaQuery = window.matchMedia("(max-width: 850px)");
-
-  function handleLayoutChange(e) {
-    if (!bemVindoEl || !containerOriginal) return;
-
-    if (e.matches) {
-      bodyEl.appendChild(bemVindoEl);
-      bemVindoEl.classList.add("movido-para-topo");
-    } else {
-      containerOriginal.prepend(bemVindoEl);
-      bemVindoEl.classList.remove("movido-para-topo");
-    }
-  }
-
-  handleLayoutChange(mobileMediaQuery);
-  mobileMediaQuery.addEventListener("change", handleLayoutChange);
 });
-
-// LÓGICA PARA O MODO ESCURO ________________________________________________________________________________________

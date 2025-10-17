@@ -397,12 +397,11 @@ body.dark-mode .grupo-form input::placeholder,
   color: var(--cor-texto-principal-dark);
 }
 
+body.dark-mode .grupo-form select option {
+  color: var(--cor-fundo-elemento-dark);
+}
+
 body.dark-mode .grupo-form select:invalid,
 .grupo-form input[type="date"]:invalid {
   color: var(--cor-texto-principal-dark);
-}
-
-.caixa {
-  background-color: red;
-  color: red;
 }

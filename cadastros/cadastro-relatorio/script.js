@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const inputData = document.getElementById("data");
   const botaoCancelar = document.querySelector(".btn-cancelar");
 
-  // --- LÓGICA DO ACCORDION ---
   const accordionHeaders = document.querySelectorAll(".accordion-header");
   accordionHeaders.forEach((header) => {
     header.addEventListener("click", (event) => {
@@ -36,7 +35,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // --- LÓGICA DOS MÚLTIPLOS BOTÕES DE STATUS ---
   const todosBotoesStatus = document.querySelectorAll(".botoes-status");
   todosBotoesStatus.forEach((container) => {
     const inputEscondido = form.elements[container.dataset.inputName];
@@ -53,13 +51,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // --- LÓGICA DE EDIÇÃO ---
   const urlParams = new URLSearchParams(window.location.search);
   const relatorioId = urlParams.get("id");
   const isEditMode = Boolean(relatorioId);
-  if (!isEditMode) {
-    inputData.valueAsDate = new Date();
-  } else {
+
+  if (isEditMode) {
     const titulo = document.querySelector(".titulo");
     if (titulo) titulo.textContent = "Editar Ficha de Evolução";
     document.querySelector(".btn-enviar").textContent = "SALVAR ALTERAÇÕES";
@@ -70,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     if (relatorioParaEditar) {
       Object.keys(relatorioParaEditar).forEach((key) => {
-        if (form.elements[key]) {
+        if (form.elements[key] && key !== "residenteId") {
           form.elements[key].value = relatorioParaEditar[key];
         }
       });
@@ -92,6 +88,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
     }
+  } else {
+    inputData.valueAsDate = new Date();
   }
 
   // --- Popula a lista de Residentes ---
@@ -107,7 +105,17 @@ document.addEventListener("DOMContentLoaded", function () {
         )
       );
     });
+
+    if (isEditMode) {
+      const relatorioParaEditar = carregarRelatorios().find(
+        (r) => r.id == relatorioId
+      );
+      if (relatorioParaEditar) {
+        selectResidente.value = relatorioParaEditar.residenteId;
+      }
+    }
   }
+
   // --- Popula a lista de Medicamentos ---
   const selectMedicamento = document.getElementById("medicamento");
   if (selectMedicamento) {
@@ -133,7 +141,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const formData = new FormData(form);
     const dadosFicha = Object.fromEntries(formData.entries());
 
-    // --- LÓGICA DE MEDICAÇÃO  ---
     const medicamentoSelecionado = dadosFicha.medicamento;
     const medicacaoConfirmada = dadosFicha.hasOwnProperty("foi-medicado");
 
