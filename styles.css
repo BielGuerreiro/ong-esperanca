@@ -18,13 +18,13 @@
 }
 
 body.dark-mode {
-  --main-color: #82c0f0;
-  --cor-borda: #33394b;
-  --cor-fundo-pagina: #121212;
-  --cor-fundo-elemento: #1e1e1e;
-  --cor-texto-principal: #e0e0e0;
-  --cor-texto-secundario: #b0b0b0;
-  --cor-sombra: rgba(0, 0, 0, 0.4);
+  --main-color-dark: #75afdc;
+  --cor-borda-dark: #72757e;
+  --cor-fundo-pagina-dark: #464646;
+  --cor-fundo-elemento-dark: #1e1e1e;
+  --cor-texto-principal-dark: #ffffff;
+  --cor-texto-secundario-dark: #b0b0b0;
+  --cor-sombra-dark: rgba(0, 0, 0, 0.4);
 }
 
 #btn-menu-flyout,
@@ -771,14 +771,12 @@ input:checked + .slider:before {
     width: 100%;
     height: 100%;
     z-index: 2000;
-    /* Começa invisível */
     visibility: hidden;
     opacity: 0;
     transition: visibility 0s 0.3s, opacity 0.3s ease;
   }
 
   .flyout-container.ativo {
-    /* Fica visível quando a classe 'ativo' é adicionada */
     visibility: visible;
     opacity: 1;
     transition: opacity 0.3s ease;
@@ -1336,4 +1334,86 @@ input:checked + .slider:before {
     justify-content: flex-end;
     gap: 8px;
   }
+}
+
+body.dark-mode {
+  background-color: var(--cor-fundo-pagina-dark);
+}
+
+body.dark-mode .bem-vindo h2 {
+  color: var(--cor-texto-principal-dark);
+}
+
+body.dark-mode .header1,
+body.dark-mode .header2 {
+  background-color: var(--cor-fundo-elemento-dark);
+  border-color: var(--cor-borda-dark);
+}
+
+body.dark-mode .header2 {
+  background-color: var(--cor-fundo-elemento-dark) !important;
+  border-top: 1px solid var(--cor-borda);
+}
+
+body.dark-mode .menu-header li {
+  color: var(--cor-texto-principal-dark);
+}
+
+body.dark-mode .menu-header li.menu-ativo {
+  color: var(--cor-texto-principal-dark);
+  background-color: #77c4ff75;
+}
+
+body.dark-mode .header1 h1 {
+  color: var(--cor-texto-principal-dark);
+}
+
+body.dark-mode .container-geral {
+  background-color: var(--cor-fundo-pagina-dark);
+}
+
+body.dark-mode .box {
+  background-color: var(--cor-fundo-elemento-dark);
+}
+
+body.dark-mode .ficha {
+  background-color: var(--cor-fundo-elemento-dark);
+}
+
+body.dark-mode .opcao-config {
+  background-color: var(--cor-fundo-elemento-dark);
+}
+
+body.dark-mode .opcao-config i {
+  color: #fff;
+}
+
+body.dark-mode .ficha table th {
+  color: var(--cor-texto-principal-dark);
+  border-bottom: 1px solid var(--cor-borda-dark);
+}
+
+body.dark-mode .ficha table td {
+  color: var(--cor-texto-principal-dark);
+  border-bottom: 1px solid var(--cor-borda-dark);
+}
+
+body.dark-mode .flyout-content {
+  background-color: var(--cor-fundo-pagina-dark);
+}
+
+body.dark-mode .flyout-header h2 {
+  color: var(--cor-texto-principal-dark);
+}
+
+body.dark-mode .flyout-close {
+  color: var(--main-color);
+}
+
+body.dark-mode #flyout-links-container a {
+  color: var(--cor-texto-principal-dark);
+}
+
+body.dark-mode #flyout-links-container a:hover {
+  color: #000;
 }

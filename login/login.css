@@ -5,6 +5,16 @@
   --cor-sucesso: #28a745;
 }
 
+body.dark-mode {
+  --main-color-dark: #75afdc;
+  --cor-borda-dark: #72757e;
+  --cor-fundo-pagina-dark: #464646;
+  --cor-fundo-elemento-dark: #1e1e1e;
+  --cor-texto-principal-dark: #ffffff;
+  --cor-texto-secundario-dark: #b0b0b0;
+  --cor-sombra-dark: rgba(0, 0, 0, 0.4);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -37,8 +47,10 @@ body {
 }
 
 .logo {
-  width: 80px;
+  width: 150px;
   margin-bottom: 20px;
+  border-radius: 13px;
+  box-shadow: 0 0 8px #fff;
 }
 
 h1 {
@@ -123,4 +135,17 @@ button:hover {
   cursor: pointer;
   font-size: 24px;
   color: var(--secondary-color);
+}
+
+/* mod escuro ++________________________________________________________________________________________________________ */
+body.dark-mode {
+  background-color: var(--cor-fundo-pagina-dark);
+}
+
+body.dark-mode .login-box {
+  background-color: var(--cor-fundo-elemento-dark);
+}
+
+body.dark-mode .grupo-form label {
+  color: var(--cor-texto-principal-dark);
 }

@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let usuarioParaRedefinir = null;
 
-  // --- FUNÇÕES DE DADOS ---
   function carregarFuncionarios() {
     return JSON.parse(sessionStorage.getItem("listaFuncionarios") || "[]");
   }
@@ -25,7 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // ==========================================================
   function criarFuncionarioDeTeste() {
     let funcionarios = carregarFuncionarios();
-    // Verifica se o usuário de teste já existe para não criar duplicatas
     const testeExiste = funcionarios.some((f) => f.cpf === "11111111111");
 
     if (!testeExiste) {
@@ -42,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("Funcionário de teste criado:", funcionarioTeste);
     }
   }
-  // Cria o usuário de teste assim que a página carrega
+
   criarFuncionarioDeTeste();
 
   function mostrarEtapa(indice) {
@@ -51,10 +49,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // --- LÓGICA DO BOTÃO "VERIFICAR" (ETAPA 1) ---
+  // LÓGICA DO BOTÃO "VERIFICAR" _____________________________________________________________________________________
   btnVerificar.addEventListener("click", () => {
     divMensagem.style.display = "none";
-    const cpf = inputCpf.value.replace(/\D/g, ""); // Remove pontos e traços
+    const cpf = inputCpf.value.replace(/\D/g, "");
     const email = inputEmail.value;
 
     if (!cpf || !email) {
@@ -69,26 +67,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (funcionarioEncontrado) {
       usuarioParaRedefinir = funcionarioEncontrado;
-      mostrarEtapa(1); // Vai para a etapa 2
+      mostrarEtapa(1);
     } else {
       mostrarMensagem("CPF ou E-mail não encontrado no sistema.", "erro");
     }
   });
 
-  // --- LÓGICA DO FORMULÁRIO "SUBMIT" (ETAPA 2) ---
+  //  LÓGICA DO FORMULÁRIO "SUBMIT" ___________________________________________________________________________________________________________ ---
   form.addEventListener("submit", function (event) {
     event.preventDefault();
-    // ... (resto da lógica de salvar a nova senha)
   });
 
-  // --- Botão Voltar ---
   botoesVoltar.forEach((botao) => {
     botao.addEventListener("click", () => {
       window.location.href = "../index.html";
     });
   });
 
-  // ... (Cole as funções de apoio completas aqui: iniciarToggleSenha, mostrarMensagem, etc.)
   function iniciarToggleSenha(inputId, toggleId) {
     const input = document.getElementById(inputId);
     const toggle = document.getElementById(toggleId);
@@ -102,6 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   }
+
   function mostrarMensagem(texto, tipo) {
     divMensagem.textContent = texto;
     divMensagem.className = tipo;

@@ -18,6 +18,16 @@
   --cor-borda: #dce8f6;
 }
 
+body.dark-mode {
+  --main-color-dark: #75afdc;
+  --cor-borda-dark: #72757e;
+  --cor-fundo-pagina-dark: #464646;
+  --cor-fundo-elemento-dark: #1e1e1e;
+  --cor-texto-principal-dark: #ffffff;
+  --cor-texto-secundario-dark: #b0b0b0;
+  --cor-sombra-dark: rgba(0, 0, 0, 0.4);
+}
+
 body {
   background-color: var(--cor-fundo-input);
   display: flex;
@@ -47,6 +57,7 @@ main {
   margin-bottom: 20px;
 }
 
+/* descobrir da onde que é esse titulo 2 */
 .titulo2 {
   color: var(--main-color);
   font-size: 25px;
@@ -120,6 +131,14 @@ main {
 .grupo-form select:invalid,
 .grupo-form input[type="date"]:invalid {
   color: var(--cor-texto-inputs);
+}
+
+#obs-pedagogica {
+  color: #000000;
+}
+
+#obs-pedagogica::placeholder {
+  color: rgba(0, 0, 0, 0.7);
 }
 
 textarea {
@@ -356,4 +375,34 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .navegacao-form button {
     width: 100%;
   }
+}
+
+/* mod escuro ++________________________________________________________________________________________________________ */
+body.dark-mode {
+  background-color: var(--cor-fundo-pagina-dark);
+}
+
+body.dark-mode .container-formulario {
+  background-color: var(--cor-fundo-elemento-dark);
+}
+
+body.dark-mode .grupo-form input,
+.grupo-form select,
+.grupo-form textarea {
+  color: var(--cor-texto-principal-dark);
+}
+
+body.dark-mode .grupo-form input::placeholder,
+.grupo-form textarea::placeholder {
+  color: var(--cor-texto-principal-dark);
+}
+
+body.dark-mode .grupo-form select:invalid,
+.grupo-form input[type="date"]:invalid {
+  color: var(--cor-texto-principal-dark);
+}
+
+.caixa {
+  background-color: red;
+  color: red;
 }

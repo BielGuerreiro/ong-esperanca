@@ -9,6 +9,16 @@
   --cor-sucesso: #28a745;
 }
 
+body.dark-mode {
+  --main-color-dark: #75afdc;
+  --cor-borda-dark: #72757e;
+  --cor-fundo-pagina-dark: #464646;
+  --cor-fundo-elemento-dark: #1e1e1e;
+  --cor-texto-principal-dark: #ffffff;
+  --cor-texto-secundario-dark: #b0b0b0;
+  --cor-sombra-dark: rgba(0, 0, 0, 0.4);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -53,10 +63,10 @@ main {
 
 /* --- ESTILOS PARA AS ETAPAS --- */
 .etapa-form {
-  display: none; /* Todas as etapas começam escondidas */
+  display: none;
 }
 .etapa-form.ativo {
-  display: block; /* A etapa com a classe 'ativo' será exibida */
+  display: block;
 }
 
 .grupo-form {
@@ -123,11 +133,10 @@ main {
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
-  background-color: var(
-    --main-color
-  ); /* Todos os botões principais agora são azuis */
+  background-color: var(--main-color);
   color: white;
 }
+
 .navegacao-form button:hover {
   background-color: #5a9ed1;
 }
@@ -159,4 +168,30 @@ main {
   display: block;
   background-color: var(--cor-vermelho-claro);
   color: #a72d39;
+}
+
+/* mod escuro ++________________________________________________________________________________________________________ */
+body.dark-mode {
+  background-color: var(--cor-fundo-pagina-dark);
+}
+
+body.dark-mode .container-formulario {
+  background-color: var(--cor-fundo-elemento-dark);
+}
+
+body.dark-mode .grupo-form label {
+  color: var(--cor-texto-principal-dark);
+}
+
+body.dark-mode .navegacao-form .btn-cancelar {
+  background-color: var(--cor-texto-principal-dark);
+}
+
+body.dark-mode .navegacao-form button:hover {
+  color: #000;
+}
+
+body.dark-mode .navegacao-form .btn-cancelar:hover {
+  color: var(--cor-texto-principal-dark);
+  background-color: #000;
 }

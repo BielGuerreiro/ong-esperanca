@@ -25,14 +25,11 @@ function definirCategoria(idade) {
 }
 
 // Funções Globais_______________________________________________________________________________
-/*
-  ... (suas funções calcularIdade e definirCategoria ficam aqui) ...
-*/
 
-// NOVA FUNÇÃO PARA SAUDAÇÃO DINÂMICA
+// FUNÇÃO PARA SAUDAÇÃO DINÂMICA
 function atualizarSaudacao() {
   const elementoSaudacao = document.getElementById("mensagem-saudacao");
-  if (!elementoSaudacao) return; // Se não encontrar o elemento, não faz nada
+  if (!elementoSaudacao) return;
 
   const horaAtual = new Date().getHours();
   let saudacao = "";
@@ -47,7 +44,7 @@ function atualizarSaudacao() {
 
   // Futuramente, você pode pegar o nome do usuário logado da memória
   // Ex: const nomeUsuario = sessionStorage.getItem("usuarioLogado") || "Usuário";
-  const nomeUsuario = "Usuário"; // Por enquanto, usamos um nome padrão
+  const nomeUsuario = "Usuário";
 
   elementoSaudacao.textContent = `Olá, ${saudacao}, ${nomeUsuario}!`;
 }
@@ -217,14 +214,11 @@ function iniciarPaginaResidentes() {
     sessionStorage.getItem("listaResidentes") || "[]"
   );
 
-  // Pega os containers dos DOIS layouts
   const tabelaBodyDesktop = document.getElementById("lista-residentes-body");
   const listaBodyMobile = document.getElementById("lista-residentes-nova-body");
 
-  // Se os containers não existirem, não faz nada.
   if (!tabelaBodyDesktop || !listaBodyMobile) return;
 
-  // Limpa ambos os containers
   tabelaBodyDesktop.innerHTML = "";
   listaBodyMobile.innerHTML = "";
 
@@ -241,7 +235,6 @@ function iniciarPaginaResidentes() {
         <a href="#" class="btn-acao-icone btn-excluir" data-id="${residente.id}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
       `;
 
-      // --- 1. Constrói a linha da TABELA para o DESKTOP ---
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${nomeCompleto}</td>
@@ -252,7 +245,6 @@ function iniciarPaginaResidentes() {
       `;
       tabelaBodyDesktop.appendChild(tr);
 
-      // --- 2. Constrói o item da LISTA para o CELULAR ---
       const li = document.createElement("li");
       li.innerHTML = `
         <span class="residente-nome">${nomeCompleto}</span>
@@ -262,23 +254,19 @@ function iniciarPaginaResidentes() {
       listaBodyMobile.appendChild(li);
     });
   } else {
-    // Mensagem de "vazio" para ambos os layouts
     tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum residente cadastrado.</td></tr>`;
     listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum residente cadastrado.</li>`;
   }
 
-  // A lógica de exclusão precisa ser anexada a um container pai comum para funcionar nos dois layouts
   const paginaResidentes = document.getElementById("pagina-residentes");
 
-  // Adiciona um listener inteligente que funciona para ambos os layouts
   paginaResidentes.addEventListener("click", function (event) {
     const botaoExcluir = event.target.closest(".btn-excluir");
-    if (!botaoExcluir) return; // Se não clicou no botão de excluir, ignora
+    if (!botaoExcluir) return;
 
     event.preventDefault();
     const idParaExcluir = botaoExcluir.dataset.id;
 
-    // Encontra o nome do residente, seja na tabela (<tr>) ou na lista (<li>)
     const itemPai = botaoExcluir.closest("tr") || botaoExcluir.closest("li");
     const nomeDoResidente = itemPai.querySelector(
       "td:first-child, .residente-nome"
@@ -366,7 +354,6 @@ function iniciarPaginaFuncionarios() {
       listaBodyMobile.appendChild(li);
     });
   } else {
-    // Mensagem de "vazio" para ambos os layouts
     tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum funcionário cadastrado.</td></tr>`;
     listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum funcionário cadastrado.</li>`;
   }
@@ -508,6 +495,7 @@ function iniciarPaginaResponsaveis() {
   ela exibe o horário, o residente, o medicamento e o status (Pendente ou Administrado),
   junto com os botões de editar e excluir, e ativa a função de exclusão.
 */
+
 function iniciarPaginaMedicamentos() {
   const listaResidentes = JSON.parse(
     sessionStorage.getItem("listaResidentes") || "[]"
@@ -603,6 +591,7 @@ function iniciarPaginaMedicamentos() {
 }
 
 // sessao atividades  -_____________________________________________________________________________________________________
+
 /*
   Esta função inicializa a página de Atividades. Ela contém uma sub-função 'renderizarTabela' 
   que é responsável por ler os agendamentos de atividades e construir a tabela na tela, 
@@ -610,6 +599,7 @@ function iniciarPaginaMedicamentos() {
   funcionalidade do botão de excluir, que ao ser clicado, remove o item e redesenha a 
   tabela para refletir a mudança instantaneamente.
 */
+
 function iniciarPaginaAtividades() {
   const listaAgendamentos = JSON.parse(
     sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
@@ -699,12 +689,14 @@ function iniciarPaginaAtividades() {
 }
 
 // sessao relatorio   -_____________________________________________________________________________________________________
+
 /*
   Esta função inicializa a página de Relatórios. Ela lê a lista de relatórios diários 
   e de residentes para poder construir a tabela de registros salvos, mostrando a data, 
   o residente, o responsável pelo registro, o medicamento e seu status. Assim como as 
   outras, ela também cria os botões de ação e ativa a funcionalidade de exclusão.
-*/
+  */
+
 function iniciarPaginaRelatorios() {
   const listaRelatorios = JSON.parse(
     sessionStorage.getItem("listaRelatoriosDiarios") || "[]"
@@ -867,7 +859,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const paginaAlvoId = this.dataset.pagina;
       if (!paginaAlvoId) return;
 
-      document.body.className = "";
+      for (let cls of document.body.classList) {
+        if (cls.endsWith("-ativa")) {
+          document.body.classList.remove(cls);
+        }
+      }
       document.body.classList.add(paginaAlvoId + "-ativa");
 
       const paginaAlvo = document.getElementById(paginaAlvoId);
@@ -1019,45 +1015,3 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // LÓGICA PARA O MODO ESCURO ________________________________________________________________________________________
-
-document.addEventListener("DOMContentLoaded", () => {
-  const darkModeToggle = document.getElementById("dark-mode-toggle");
-  const body = document.body;
-
-  const aplicarTema = (tema) => {
-    const textoDoSwitch = document.getElementById("dark-mode-text");
-    const iconeDoSwitch = document.querySelector(".opcao-dark-mode .bx");
-
-    if (tema === "dark") {
-      body.classList.add("dark-mode");
-      darkModeToggle.checked = true;
-      textoDoSwitch.textContent = "Modo Claro";
-      iconeDoSwitch.classList.replace("bx-moon", "bx-sun");
-    } else {
-      body.classList.remove("dark-mode");
-      darkModeToggle.checked = false;
-      textoDoSwitch.textContent = "Modo Escuro";
-      iconeDoSwitch.classList.replace("bx-sun", "bx-moon");
-    }
-  };
-
-  const temaSalvo = localStorage.getItem("theme");
-
-  if (temaSalvo) {
-    aplicarTema(temaSalvo);
-  } else {
-    aplicarTema("light");
-  }
-
-  darkModeToggle.addEventListener("change", () => {
-    let novoTema;
-    if (darkModeToggle.checked) {
-      novoTema = "dark";
-    } else {
-      novoTema = "light";
-    }
-
-    aplicarTema(novoTema);
-    localStorage.setItem("theme", novoTema);
-  });
-});
