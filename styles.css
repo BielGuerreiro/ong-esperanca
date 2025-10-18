@@ -1369,7 +1369,7 @@ body.dark-mode .header2 {
 }
 
 body.dark-mode .menu-header li {
-  color: var(--cor-texto-principal-dark);
+  color: var(--main-color);
 }
 
 body.dark-mode .menu-header li.menu-ativo {

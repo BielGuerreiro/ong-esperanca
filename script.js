@@ -24,9 +24,7 @@ function definirCategoria(idade) {
   return "Idoso";
 }
 
-// Funções Globais_______________________________________________________________________________
-
-// FUNÇÃO PARA SAUDAÇÃO DINÂMICA
+// FUNÇÃO PARA SAUDAÇÃO DINÂMICA _________________________________________________________________________________
 function atualizarSaudacao() {
   const elementoSaudacao = document.getElementById("mensagem-saudacao");
   if (!elementoSaudacao) return;
@@ -42,11 +40,39 @@ function atualizarSaudacao() {
     saudacao = "Boa noite";
   }
 
-  // Futuramente, você pode pegar o nome do usuário logado da memória
-  // Ex: const nomeUsuario = sessionStorage.getItem("usuarioLogado") || "Usuário";
   const nomeUsuario = "Usuário";
 
   elementoSaudacao.textContent = `Olá, ${saudacao}, ${nomeUsuario}!`;
+}
+
+// barra de pesquisa universal _______________________________________________________________________________________
+function configurarBusca(
+  inputId,
+  listaContainerId,
+  itemSelector,
+  displayStyle = ""
+) {
+  const inputBusca = document.getElementById(inputId);
+  const listaContainer = document.getElementById(listaContainerId);
+
+  if (!inputBusca || !listaContainer) {
+    return;
+  }
+
+  inputBusca.addEventListener("input", function () {
+    const termoBusca = this.value.toLowerCase();
+    const todosOsItens = listaContainer.querySelectorAll(itemSelector);
+
+    todosOsItens.forEach((item) => {
+      const textoDoItem = item.textContent.toLowerCase();
+
+      if (textoDoItem.includes(termoBusca)) {
+        item.style.display = displayStyle;
+      } else {
+        item.style.display = "none";
+      }
+    });
+  });
 }
 
 // tabela dashboard ______________________________________________________________________________________________________________
@@ -976,6 +1002,58 @@ document.addEventListener("DOMContentLoaded", function () {
   iniciarPaginaAtividades();
   iniciarPaginaRelatorios();
   iniciarPaginaAdm();
+
+  configurarBusca("busca-residentes-desktop", "lista-residentes-body", "tr");
+  configurarBusca(
+    "busca-residentes-mobile",
+    "lista-residentes-nova-body",
+    "li",
+    "grid"
+  );
+
+  // --- Buscas para a página de FUNCIONÁRIOS ---
+  configurarBusca(
+    "busca-funcionarios-desktop",
+    "lista-funcionarios-body",
+    "tr"
+  );
+  configurarBusca(
+    "busca-funcionarios-mobile",
+    "lista-funcionarios-nova-body",
+    "li",
+    "grid"
+  );
+
+  // --- Buscas para a página de RELATÓRIOS ---
+  configurarBusca("busca-relatorios-desktop", "lista-relatorios-body", "tr");
+  configurarBusca(
+    "busca-relatorios-mobile",
+    "lista-relatorios-nova-body",
+    "li",
+    "grid"
+  );
+
+  // --- Buscas para a página de ATIVIDADES ---
+  configurarBusca("busca-atividades-desktop", "lista-atividades-body", "tr");
+  configurarBusca(
+    "busca-atividades-mobile",
+    "lista-atividades-nova-body",
+    "li",
+    "grid"
+  );
+
+  // --- Buscas para a página de MEDICAMENTOS ---
+  configurarBusca(
+    "busca-medicamentos-desktop",
+    "lista-medicamentos-body",
+    "tr"
+  );
+  configurarBusca(
+    "busca-medicamentos-mobile",
+    "lista-medicamentos-nova-body",
+    "li",
+    "grid"
+  );
 
   const urlParams = new URLSearchParams(window.location.search);
   const paginaDestino = urlParams.get("pagina");
