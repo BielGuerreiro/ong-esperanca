@@ -26,13 +26,13 @@
           <div id="etapa-1" class="etapa-form ativo">
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
-                <label for="primeiro-nome"
+                <label for="primeiro_nome"
                   >Primeiro nome <span class="obrigatorio">*</span></label
                 >
                 <input
                   type="text"
-                  id="primeiro-nome"
-                  name="primeiro-nome"
+                  id="primeiro_nome"
+                  name="primeiro_nome"
                   placeholder="Digite o nome"
                   required
                 />
@@ -64,10 +64,10 @@
                 />
               </div>
               <div class="grupo-form campo-expandir">
-                <label for="nascimento"
+                <label for="data_nascimento"
                   >Data de nascimento <span class="obrigatorio">*</span></label
                 >
-                <input type="date" id="nascimento" name="nascimento" required />
+                <input type="date" id="data_nascimento" name="data_nascimento" required />
               </div>
             </div>
             <div class="linha-form">
@@ -256,10 +256,10 @@
                 />
               </div>
               <div class="grupo-form campo-expandir">
-                <label for="admissao"
+                <label for="data_admissao"
                   >Data de admissão <span class="obrigatorio">*</span></label
                 >
-                <input type="date" id="admissao" name="admissao" required />
+                <input type="date" id="data_admissao" name="data_admissao" required />
               </div>
             </div>
             <div class="linha-form">
@@ -284,10 +284,10 @@
               </div>
 
               <div class="grupo-form campo-expandir">
-                <label for="nivel-acesso"
+                <label for="nivel_acesso"
                   >Nível de Acesso <span class="obrigatorio">*</span></label
                 >
-                <select id="nivel-acesso" name="nivel-acesso" required>
+                <select id="nivel_acesso" name="nivel_acesso" required>
                   <option value="" disabled selected>Selecionar</option>
                   <option value="funcionario">Funcionário</option>
                   <option value="gerente">Gerente</option>
@@ -302,9 +302,9 @@
                 >
                 <select id="turno" name="turno" required>
                   <option value="" disabled selected>Selecionar turno</option>
-                  <option value="manha">Manhã (06:00 - 14:00)</option>
-                  <option value="tarde">Tarde (14:00 - 22:00)</option>
-                  <option value="noite">Noite (22:00 - 06:00)</option>
+                  <option value="Manhã (06:00 - 14:00)">Manhã (06:00 - 14:00)</option>
+                  <option value="Tarde (14:00 - 22:00)">Tarde (14:00 - 22:00)</option>
+                  <option value="Noite (22:00 - 06:00)">Noite (22:00 - 06:00)</option>
                 </select>
               </div>
             </div>
@@ -324,8 +324,8 @@
                 ></div>
                 <input
                   type="hidden"
-                  name="residentes_vinculados_ids"
-                  id="residentes_vinculados_ids"
+                  name="residentes_sob_cuidados"
+                  id="residentes_sob_cuidados"
                 />
               </div>
             </div>
@@ -338,6 +338,17 @@
                 placeholder="Adicione observações sobre o funcionário..."
               ></textarea>
             </div>
+            <div class="linha-form">
+            <div class="grupo-form campo-expandir">
+              <label for="status">Status <span class="obrigatorio">*</span></label>
+              <select id="status" name="status" required>
+                <option value="Ativo" selected>Ativo</option>
+                <option value="Inativo">Inativo</option>
+                <option value="Pendente">Folga</option>
+              </select>
+            </div>
+          </div>
+
             <div class="navegacao-form">
               <button type="submit" class="btn-enviar">CADASTRAR &rarr;</button>
               <button type="button" class="btn-voltar">&larr; VOLTAR</button>

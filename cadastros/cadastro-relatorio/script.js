@@ -1,77 +1,121 @@
-// ===== CAMADA DE DADOS (Funções para carregar e salvar no sessionStorage) _______________________________________________________________________________
-/*
-  Este bloco contém funções de "ajuda" para gerenciar os dados. Elas são responsáveis 
-  por carregar ('carregar') da memória do navegador (sessionStorage) as listas de 
-  relatórios, residentes e tratamentos, e também por salvar ('salvar') essas listas 
-  de volta na memória após qualquer alteração.
-*/
-function carregarRelatorios() {
-  return JSON.parse(sessionStorage.getItem("listaRelatoriosDiarios") || "[]");
-}
-function salvarRelatorios(lista) {
-  sessionStorage.setItem("listaRelatoriosDiarios", JSON.stringify(lista));
-}
-function carregarResidentes() {
-  return JSON.parse(sessionStorage.getItem("listaResidentes") || "[]");
-}
-function carregarTratamentos() {
-  return JSON.parse(sessionStorage.getItem("listaTratamentos") || "[]");
+// ========================== FUNÇÕES DE INTEGRAÇÃO COM BACKEND ==========================
+async function carregarRelatorios() {
+  try {
+    const response = await fetch("http://localhost:3000/relatorio");
+    if (!response.ok) throw new Error("Erro ao buscar relatórios");
+    return await response.json();
+  } catch (error) {
+    console.error("Erro ao carregar relatórios:", error);
+    alert("Erro ao carregar lista de relatórios.");
+    return [];
+  }
 }
 
-// ===== CÓDIGO PRINCIPAL DA PÁGINA _______________________________________________________________________________
-/*
-  Este é o motor da página, executado quando o HTML termina de carregar. Ele coordena 
-  todas as funcionalidades do formulário, como detectar o modo de edição, preencher 
-  as listas de seleção e definir o que acontece ao salvar ou cancelar.
-*/
-document.addEventListener("DOMContentLoaded", function () {
+async function salvarRelatorios(dadosRelatorio, isEditMode = false, id = null) {
+  try {
+    const url = isEditMode
+      ? `http://localhost:3000/relatorio/${id}` // PUT para editar
+      : "http://localhost:3000/relatorio"; // POST para criar
+
+    const method = isEditMode ? "PUT" : "POST";
+
+    const response = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dadosRelatorio),
+    });
+
+    if (!response.ok) throw new Error("Erro ao salvar relatório");
+
+    return await response.json();
+  } catch (error) {
+    console.error("Erro ao salvar relatório:", error);
+    alert("Erro ao salvar os dados do relatório.");
+  }
+}
+
+async function carregarResidentes() {
+  try {
+    const response = await fetch("http://localhost:3000/criancas");
+    if (!response.ok) throw new Error("Erro ao buscar residentes");
+    return await response.json();
+  } catch (error) {
+    console.error("Erro ao carregar residentes:", error);
+    alert("Erro ao carregar lista de residentes.");
+    return [];
+  }
+}
+
+async function carregarTratamentos() {
+  try {
+    const response = await fetch("http://localhost:3000/medicamentos");
+    if (!response.ok) throw new Error("Erro ao buscar tratamentos");
+    return await response.json();
+  } catch (error) {
+    console.error("Erro ao carregar tratamentos:", error);
+    alert("Erro ao carregar lista de tratamentos.");
+    return [];
+  }
+}
+
+// ========================== CÓDIGO PRINCIPAL DA PÁGINA ==========================
+document.addEventListener("DOMContentLoaded", async function () {
   const form = document.getElementById("form-relatorio");
-  const selectResidente = document.getElementById("residenteId");
+   const selectRelatorio = document.getElementById("id_relatorio");
+  const selectResidente = document.getElementById("id_residente");
   const selectMedicamento = document.getElementById("medicamento");
   const inputDataRelatorio = document.getElementById("data");
   const botaoSubmit = document.querySelector(".btn-enviar");
   const botaoCancelar = document.querySelector(".btn-cancelar");
 
-  // --- LÓGICA DE EDIÇÃO (ADICIONADA) _______________________________________________________________________________
-  /*
-    Esta seção ativa o "Modo de Edição". Ela verifica se a URL da página contém um ID. 
-    Se um ID for encontrado, o script altera a interface (título e botão), busca os 
-    dados daquele relatório específico na memória e preenche os campos do formulário,
-    incluindo o estado correto do checkbox de medicação.
-  */
   const urlParams = new URLSearchParams(window.location.search);
-  const relatorioId = urlParams.get("id");
+  const relatorioId = urlParams.get("id_relatorio");
   const isEditMode = Boolean(relatorioId);
 
+  // ========================== MODO DE EDIÇÃO ==========================
   if (isEditMode) {
     const titulo = document.querySelector("h2");
     if (titulo) titulo.textContent = "Editar Registro Diário";
     if (botaoSubmit) botaoSubmit.textContent = "SALVAR ALTERAÇÕES";
 
-    const listaRelatorios = carregarRelatorios();
-    const relatorioParaEditar = listaRelatorios.find(
-      (r) => r.id == relatorioId
-    );
+    const listaRelatorios = await carregarRelatorios();
+    const relatorioParaEditar = listaRelatorios.find((r) => r.id_relatorio == relatorioId);
 
     if (relatorioParaEditar) {
       Object.keys(relatorioParaEditar).forEach((key) => {
-        const campo = form.elements[key];
-        if (campo) {
-          if (campo.type === "checkbox" && key === "foi-medicado") {
-            // Pula, pois será tratado abaixo
-          } else {
-            campo.value = relatorioParaEditar[key];
-          }
-        }
+  const campo = form.elements[key];
+  if (campo) {
+    if (campo.type === "checkbox" && key === "foi-medicado") return;
+
+    // ✅ Formata a data para YYYY-MM-DD
+    if (key === "data") {
+  const dataBruta = relatorioParaEditar[key];
+
+  if (dataBruta && dataBruta !== "0000-00-00" && !isNaN(new Date(dataBruta))) {
+    // Se vier no formato ISO (2025-10-21T00:00:00.000Z) ou YYYY-MM-DD
+    const dataObj = new Date(dataBruta);
+    const dataIso = dataObj.toISOString().split("T")[0];
+    campo.value = dataIso;
+  } else {
+    // Se vier inválida, preenche com a data atual
+    const hoje = new Date().toISOString().split("T")[0];
+    campo.value = hoje;
+    }
+  }
+}
       });
+
+      selectResidente.value = relatorioParaEditar.id_residente;
+  selectResidente.dispatchEvent(new Event("change")); // ✅ força o carregamento
+
       const foiMedicadoCheckbox = document.getElementById("foi-medicado");
       if (foiMedicadoCheckbox) {
         foiMedicadoCheckbox.checked =
-          relatorioParaEditar.statusMedicacao === "Medicado";
+          relatorioParaEditar.medicacao_confirmada === "Medicado";
       }
     }
   } else {
-    // Define a data atual APENAS se estiver criando um novo relatório
+    // Define data atual ao criar novo relatório
     if (inputDataRelatorio) {
       const hoje = new Date();
       const ano = hoje.getFullYear();
@@ -81,98 +125,100 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Popula a lista de seleção de RESIDENTES_______________________________________________________________________________
-  /*
-    Este trecho é responsável por preencher o campo de seleção "Para qual Residente?". 
-    Ele busca a lista de todos os residentes cadastrados e cria uma opção no menu 
-    dropdown para cada um, facilitando a criação do relatório para o residente correto.
-  */
+  // ========================== POPULAR SELECT DE RESIDENTES ==========================
   if (selectResidente) {
-    const listaResidentes = carregarResidentes();
+    const listaResidentes = await carregarResidentes();
     selectResidente.innerHTML =
       '<option value="" disabled selected>Selecione um residente</option>';
     listaResidentes.forEach((residente) => {
       const option = new Option(
-        `${residente["primeiro-nome"]} ${residente.sobrenome}`,
+        `${residente["primeiro_nome"]} ${residente.sobrenome}`,
         residente.id
       );
       selectResidente.appendChild(option);
     });
   }
 
-  // Popula a lista de seleção de MEDICAMENTOS_______________________________________________________________________________
-  /*
-    Esta parte do código preenche o campo de seleção "Medicamento Administrado". 
-    Ela busca a lista de todos os tratamentos agendados e cria uma opção no menu 
-    dropdown para cada um, mostrando o nome e a dosagem do medicamento.
-  */
-  if (selectMedicamento) {
-    const listaTratamentos = carregarTratamentos();
-    listaTratamentos.forEach((tratamento) => {
-      const option = new Option(
-        `${tratamento.medicamento} (${tratamento.dosagem})`,
-        tratamento.medicamento
-      );
-      selectMedicamento.appendChild(option);
-    });
+  // ========================== POPULAR SELECT DE MEDICAMENTOS ==========================
+  if (selectResidente && selectMedicamento) {
+  selectResidente.addEventListener("change", async function () {
+    const id_residente = this.value;
+    if (!id_residente) return;
+
+    // Limpa as opções anteriores
+    selectMedicamento.innerHTML = '<option value="">Carregando...</option>';
+
+    try {
+      const response = await fetch(`http://localhost:3000/medicamentos/${id_residente}`);
+      if (!response.ok) throw new Error("Erro ao buscar medicamentos do residente");
+      const listaMedicamentos = await response.json();
+
+      selectMedicamento.innerHTML = "";
+
+      if (listaMedicamentos.length === 0) {
+        selectMedicamento.innerHTML =
+          '<option value="">Nenhum medicamento destinado</option>';
+      } else {
+        selectMedicamento.innerHTML =
+          '<option value="" disabled selected>Selecione um medicamento</option>';
+
+        listaMedicamentos.forEach((m) => {
+          const option = new Option(
+            `${m.medicamento} (${m.dosagem})`,
+            m.medicamento
+          );
+          selectMedicamento.appendChild(option);
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao carregar medicamentos:", error);
+      selectMedicamento.innerHTML =
+        '<option value="">Erro ao carregar medicamentos</option>';
+    }
+  });
+}
+
+  // ========================== ENVIO DO FORMULÁRIO ==========================
+  form.addEventListener("submit", async function (event) {
+  event.preventDefault();
+
+  if (!form.checkValidity()) {
+    alert("Preencha os campos obrigatórios.");
+    return;
   }
 
-  // --- LÓGICA DE ENVIO DO FORMULÁRIO (AGORA UNIFICADA) _______________________________________________________________________________
-  /*
-    Este bloco define a ação principal do formulário. Ao salvar, ele valida os campos, 
-    coleta os dados e processa o status da medicação com base no checkbox. Em seguida, 
-    verifica se está em "Modo de Edição" para ATUALIZAR um relatório existente ou CRIAR 
-    um novo. No final, exibe um alerta de sucesso e redireciona o usuário.
-  */
-  form.addEventListener("submit", function (event) {
-    event.preventDefault();
-    if (!form.checkValidity()) {
-      alert("Preencha os campos obrigatórios.");
-      return;
-    }
+  const formData = new FormData(form);
+  const dadosRelatorio = Object.fromEntries(formData.entries());
 
-    const listaRelatorios = carregarRelatorios();
-    const formData = new FormData(form);
-    const dadosRelatorio = Object.fromEntries(formData.entries());
+  // ✅ Define corretamente o valor booleano para o banco
+const foiMedicado = document.getElementById("foi-medicado")?.checked;
 
-    if (dadosRelatorio.medicamento && dadosRelatorio.medicamento !== "") {
-      dadosRelatorio.statusMedicacao = dadosRelatorio["foi-medicado"]
-        ? "Medicado"
-        : "Não Medicado";
-    } else {
-      dadosRelatorio.statusMedicacao = "N/A";
-    }
-    delete dadosRelatorio["foi-medicado"];
+// Se houver medicamento selecionado
+if (dadosRelatorio.medicamento && dadosRelatorio.medicamento !== "") {
+  dadosRelatorio.medicacao_confirmada = foiMedicado ? 1 : 0; // ✅ Booleano numérico
+} else {
+  dadosRelatorio.medicacao_confirmada = null; // ✅ Nenhuma medicação registrada
+}
 
-    if (isEditMode) {
-      // SE ESTIVER EM MODO DE EDIÇÃO
-      const index = listaRelatorios.findIndex((r) => r.id == relatorioId);
-      if (index !== -1) {
-        listaRelatorios[index] = {
-          ...dadosRelatorio,
-          id: parseInt(relatorioId),
-        };
-        salvarRelatorios(listaRelatorios);
-        alert("Registro atualizado com sucesso!");
-      }
-    } else {
-      // SE FOR UM NOVO CADASTRO
-      dadosRelatorio.id = Date.now();
-      listaRelatorios.push(dadosRelatorio);
-      salvarRelatorios(listaRelatorios);
-      alert("Registro diário salvo com sucesso!");
-    }
+// Remove o campo checkbox do envio
+delete dadosRelatorio["foi-medicado"];
 
+
+  try {
+    await salvarRelatorios(dadosRelatorio, isEditMode, relatorioId);
+    alert("Registro salvo com sucesso!");
     const origem = urlParams.get("origem") || "pagina-relatorios";
     window.location.href = `../../index.html?pagina=${origem}`;
-  });
+  } catch (error) {
+    console.error("Erro ao salvar o relatório:", error);
+    alert("Não foi possível salvar o relatório.");
+  }
+});
 
-  // Lógica do botão Cancelar_______________________________________________________________________________
-  /*
-    Esta seção ativa o botão "Cancelar". Ao ser clicado, exibe uma mensagem pedindo 
-    confirmação ao usuário. Se confirmado, a operação é cancelada e o usuário é 
-    redirecionado de volta para a página de relatórios, sem salvar nenhuma informação.
-  */
+
+  
+
+  // ========================== BOTÃO CANCELAR ==========================
   if (botaoCancelar) {
     botaoCancelar.addEventListener("click", function () {
       if (confirm("Tem certeza que deseja cancelar o registro?")) {
