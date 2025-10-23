@@ -1,0 +1,151 @@
+:root {
+  --main-color: #75afdc;
+  --secondary-color: #7e7e7e;
+  --cor-vermelho-claro: #ffd2d2;
+  --cor-sucesso: #28a745;
+}
+
+body.dark-mode {
+  --main-color-dark: #75afdc;
+  --cor-borda-dark: #72757e;
+  --cor-fundo-pagina-dark: #464646;
+  --cor-fundo-elemento-dark: #1e1e1e;
+  --cor-texto-principal-dark: #ffffff;
+  --cor-texto-secundario-dark: #b0b0b0;
+  --cor-sombra-dark: rgba(0, 0, 0, 0.4);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: #333;
+}
+
+.login-container {
+  width: 100%;
+  padding: 20px;
+}
+
+.login-box {
+  max-width: 400px;
+  margin: 0 auto;
+  background-color: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px B30px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.logo {
+  width: 150px;
+  margin-bottom: 20px;
+  border-radius: 13px;
+  box-shadow: 0 0 8px #fff;
+}
+
+h1 {
+  color: var(--main-color);
+  margin-bottom: 30px;
+  font-weight: 700;
+}
+
+.grupo-form {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.grupo-form label {
+  display: block;
+  color: var(--secondary-color);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.grupo-form input {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.2s;
+}
+
+.grupo-form input:focus {
+  outline: none;
+  border-color: var(--main-color);
+  box-shadow: 0 0 0 3px rgba(117, 175, 220, 0.3);
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--main-color);
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #5a9ed1;
+}
+
+#mensagem-feedback {
+  margin-top: 20px;
+  font-weight: 500;
+  padding: 12px;
+  border-radius: 8px;
+  display: none;
+}
+
+#mensagem-feedback.sucesso {
+  display: block;
+  background-color: #e9f7ec;
+  color: var(--cor-sucesso);
+}
+
+#mensagem-feedback.erro {
+  display: block;
+  background-color: var(--cor-vermelho-claro);
+  color: #a72d39;
+}
+
+.senha-container {
+  position: relative;
+}
+
+#toggle-senha {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(15%);
+  cursor: pointer;
+  font-size: 24px;
+  color: var(--secondary-color);
+}
+
+/* mod escuro ++________________________________________________________________________________________________________ */
+body.dark-mode {
+  background-color: var(--cor-fundo-pagina-dark);
+}
+
+body.dark-mode .login-box {
+  background-color: var(--cor-fundo-elemento-dark);
+}
+
+body.dark-mode .grupo-form label {
+  color: var(--cor-texto-principal-dark);
+}

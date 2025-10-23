@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Controle de Estoque - ONG Esperança</title>
+    <link rel="stylesheet" href="estoque.css" />
+    <link rel="shortcut icon" href="/img/logo.png" type="image/x-icon" />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <main>
+      <div class="titulo-container">
+        <a href="../index.html?pagina=pagina-adm" class="btn-voltar"
+          >&larr; Voltar para Administração</a
+        >
+        <h1>Controle de Estoque de Medicamentos</h1>
+      </div>
+
+      <div class="layout-duas-colunas">
+        <div class="coluna-esquerda">
+          <div class="ficha-container">
+            <div class="ficha">
+              <div class="ficha-header">
+                <h3>Adicionar/Atualizar Medicamento</h3>
+              </div>
+              <form id="form-add-estoque" class="form-estoque">
+                <div class="grupo-form">
+                  <label for="nome-medicamento-estoque"
+                    >Nome do Medicamento</label
+                  >
+                  <input
+                    type="text"
+                    id="nome-medicamento-estoque"
+                    placeholder="Ex: Paracetamol 500mg"
+                    required
+                  />
+                </div>
+                <div class="grupo-form">
+                  <label for="quantidade-add-estoque"
+                    >Quantidade a Adicionar</label
+                  >
+                  <input
+                    type="number"
+                    id="quantidade-add-estoque"
+                    placeholder="Ex: 50"
+                    required
+                    min="1"
+                  />
+                </div>
+                <button type="submit" class="btn-enviar-estoque">
+                  Adicionar ao Estoque
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="ficha-container">
+            <div class="ficha">
+              <div class="ficha-header">
+                <h3>Distribuição do Estoque</h3>
+              </div>
+              <div class="grafico-estoque-container">
+                <canvas id="grafico-estoque"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="coluna-direita">
+          <div class="ficha-container">
+            <div class="ficha">
+              <div class="ficha-header">
+                <h3>Estoque Atual</h3>
+              </div>
+              <div class="lista-container">
+                <table class="tabela-estoque">
+                  <thead>
+                    <tr>
+                      <th>Medicamento</th>
+                      <th>Quantidade</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lista-estoque-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="estoque.js"></script>
+    <script src="../theme-manager.js" defer></script>
+  </body>
+</html>

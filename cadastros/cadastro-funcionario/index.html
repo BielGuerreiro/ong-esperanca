@@ -242,7 +242,20 @@
           <!-- terceira parte ________________________________________________________________________ -->
           <div id="etapa-3" class="etapa-form">
             <div class="titulo2">Dados Profissionais e de Acesso</div>
+
             <div class="linha-form">
+              <div class="grupo-form campo-expandir">
+                <label for="numero-registro"
+                  >Número de Registro (gerado automaticamente)</label
+                >
+                <input
+                  type="text"
+                  id="numero-registro"
+                  name="id"
+                  readonly
+                  placeholder="Será gerado ao salvar"
+                />
+              </div>
               <div class="grupo-form campo-expandir">
                 <label for="cargo"
                   >Cargo <span class="obrigatorio">*</span></label
@@ -255,6 +268,9 @@
                   required
                 />
               </div>
+            </div>
+
+            <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="data_admissao"
                   >Data de admissão <span class="obrigatorio">*</span></label
@@ -276,13 +292,11 @@
                   pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
                   title="Mínimo 8 caracteres, com maiúscula, minúscula, número e caractere especial."
                 />
-
                 <i
                   class="bx bx-eye-slash toggle-senha"
                   id="toggle-senha-funcionario"
                 ></i>
               </div>
-
               <div class="grupo-form campo-expandir">
                 <label for="nivel_acesso"
                   >Nível de Acesso <span class="obrigatorio">*</span></label
@@ -357,6 +371,10 @@
         </form>
       </div>
     </main>
+
+    <div id="alert-container"></div>
+
     <script src="script.js"></script>
+    <script src="../../theme-manager.js" defer></script>
   </body>
 </html>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // ========================== FUNÇÕES DE INTEGRAÇÃO COM BACKEND ==========================
 async function carregarRelatorios() {
   try {
@@ -68,16 +69,72 @@ document.addEventListener("DOMContentLoaded", async function () {
   const botaoSubmit = document.querySelector(".btn-enviar");
   const botaoCancelar = document.querySelector(".btn-cancelar");
 
+=======
+function carregarRelatorios() {
+  return JSON.parse(sessionStorage.getItem("listaRelatoriosDiarios") || "[]");
+}
+function salvarRelatorios(lista) {
+  sessionStorage.setItem("listaRelatoriosDiarios", JSON.stringify(lista));
+}
+function carregarResidentes() {
+  return JSON.parse(sessionStorage.getItem("listaResidentes") || "[]");
+}
+function carregarTratamentos() {
+  return JSON.parse(sessionStorage.getItem("listaTratamentos") || "[]");
+}
+
+// ===== CÓDIGO PRINCIPAL DA PÁGINA _______________________________________________________________________________
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("form-relatorio");
+  const selectResidente = document.getElementById("residenteId");
+  const inputData = document.getElementById("data");
+  const botaoCancelar = document.querySelector(".btn-cancelar");
+
+  const accordionHeaders = document.querySelectorAll(".accordion-header");
+  accordionHeaders.forEach((header) => {
+    header.addEventListener("click", (event) => {
+      event.preventDefault();
+
+      header.classList.toggle("active");
+      const content = header.nextElementSibling;
+      if (content.style.maxHeight) {
+        content.style.maxHeight = null;
+        content.style.padding = "0 18px";
+      } else {
+        content.style.padding = "18px";
+        content.style.maxHeight = content.scrollHeight + "px";
+      }
+    });
+  });
+
+  const todosBotoesStatus = document.querySelectorAll(".botoes-status");
+  todosBotoesStatus.forEach((container) => {
+    const inputEscondido = form.elements[container.dataset.inputName];
+    container.querySelectorAll(".btn-status").forEach((botao) => {
+      botao.addEventListener("click", function () {
+        container
+          .querySelectorAll(".btn-status")
+          .forEach((b) => b.classList.remove("selecionado"));
+        this.classList.add("selecionado");
+        if (inputEscondido) {
+          inputEscondido.value = this.dataset.value;
+        }
+      });
+    });
+  });
+
+>>>>>>> 68eb7771a93aa7a3808d8f946c93607c4aa2b6e3
   const urlParams = new URLSearchParams(window.location.search);
   const relatorioId = urlParams.get("id_relatorio");
   const isEditMode = Boolean(relatorioId);
 
   // ========================== MODO DE EDIÇÃO ==========================
   if (isEditMode) {
-    const titulo = document.querySelector("h2");
-    if (titulo) titulo.textContent = "Editar Registro Diário";
-    if (botaoSubmit) botaoSubmit.textContent = "SALVAR ALTERAÇÕES";
+    const titulo = document.querySelector(".titulo");
+    if (titulo) titulo.textContent = "Editar Ficha de Evolução";
+    document.querySelector(".btn-enviar").textContent = "SALVAR ALTERAÇÕES";
 
+<<<<<<< HEAD
     const listaRelatorios = await carregarRelatorios();
     const relatorioParaEditar = listaRelatorios.find((r) => r.id_relatorio == relatorioId);
 
@@ -103,6 +160,17 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   }
 }
+=======
+    const listaRelatorios = carregarRelatorios();
+    const relatorioParaEditar = listaRelatorios.find(
+      (r) => r.id == relatorioId
+    );
+    if (relatorioParaEditar) {
+      Object.keys(relatorioParaEditar).forEach((key) => {
+        if (form.elements[key] && key !== "residenteId") {
+          form.elements[key].value = relatorioParaEditar[key];
+        }
+>>>>>>> 68eb7771a93aa7a3808d8f946c93607c4aa2b6e3
       });
 
       selectResidente.value = relatorioParaEditar.id_residente;
@@ -113,8 +181,21 @@ document.addEventListener("DOMContentLoaded", async function () {
         foiMedicadoCheckbox.checked =
           relatorioParaEditar.medicacao_confirmada === "Medicado";
       }
+      todosBotoesStatus.forEach((container) => {
+        const inputName = container.dataset.inputName;
+        const valorSalvo = relatorioParaEditar[inputName];
+        if (valorSalvo) {
+          const botaoParaSelecionar = container.querySelector(
+            `.btn-status[data-value="${valorSalvo}"]`
+          );
+          if (botaoParaSelecionar) {
+            botaoParaSelecionar.classList.add("selecionado");
+          }
+        }
+      });
     }
   } else {
+<<<<<<< HEAD
     // Define data atual ao criar novo relatório
     if (inputDataRelatorio) {
       const hoje = new Date();
@@ -126,19 +207,42 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   // ========================== POPULAR SELECT DE RESIDENTES ==========================
+=======
+    inputData.valueAsDate = new Date();
+  }
+
+  // --- Popula a lista de Residentes ---
+>>>>>>> 68eb7771a93aa7a3808d8f946c93607c4aa2b6e3
   if (selectResidente) {
     const listaResidentes = await carregarResidentes();
     selectResidente.innerHTML =
       '<option value="" disabled selected>Selecione um residente</option>';
     listaResidentes.forEach((residente) => {
+<<<<<<< HEAD
       const option = new Option(
         `${residente["primeiro_nome"]} ${residente.sobrenome}`,
         residente.id
+=======
+      selectResidente.appendChild(
+        new Option(
+          `${residente["primeiro-nome"]} ${residente.sobrenome}`,
+          residente.id
+        )
+>>>>>>> 68eb7771a93aa7a3808d8f946c93607c4aa2b6e3
       );
-      selectResidente.appendChild(option);
     });
+
+    if (isEditMode) {
+      const relatorioParaEditar = carregarRelatorios().find(
+        (r) => r.id == relatorioId
+      );
+      if (relatorioParaEditar) {
+        selectResidente.value = relatorioParaEditar.residenteId;
+      }
+    }
   }
 
+<<<<<<< HEAD
   // ========================== POPULAR SELECT DE MEDICAMENTOS ==========================
   if (selectResidente && selectMedicamento) {
   selectResidente.addEventListener("change", async function () {
@@ -202,6 +306,60 @@ if (dadosRelatorio.medicamento && dadosRelatorio.medicamento !== "") {
 
 // Remove o campo checkbox do envio
 delete dadosRelatorio["foi-medicado"];
+=======
+  // --- Popula a lista de Medicamentos ---
+  const selectMedicamento = document.getElementById("medicamento");
+  if (selectMedicamento) {
+    const listaTratamentos = carregarTratamentos();
+    listaTratamentos.forEach((tratamento) => {
+      const option = new Option(
+        `${tratamento.medicamento} (${tratamento.dosagem})`,
+        tratamento.medicamento
+      );
+      selectMedicamento.appendChild(option);
+    });
+  }
+
+  // --- LÓGICA DE ENVIO DO FORMULÁRIO ---
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    if (!form.checkValidity()) {
+      alert("Por favor, preencha os campos obrigatórios (*).");
+      return;
+    }
+
+    const listaRelatorios = carregarRelatorios();
+    const formData = new FormData(form);
+    const dadosFicha = Object.fromEntries(formData.entries());
+
+    const medicamentoSelecionado = dadosFicha.medicamento;
+    const medicacaoConfirmada = dadosFicha.hasOwnProperty("foi-medicado");
+
+    if (medicamentoSelecionado && medicamentoSelecionado !== "") {
+      if (medicacaoConfirmada) {
+        dadosFicha.statusMedicacao = "Medicado";
+      } else {
+        dadosFicha.statusMedicacao = "Não Tomado";
+      }
+    } else {
+      dadosFicha.statusMedicacao = "N/A";
+    }
+    delete dadosFicha["foi-medicado"];
+
+    if (isEditMode) {
+      const index = listaRelatorios.findIndex((r) => r.id == relatorioId);
+      if (index !== -1) {
+        listaRelatorios[index] = { ...listaRelatorios[index], ...dadosFicha };
+        salvarRelatorios(listaRelatorios);
+        alert("Ficha de Evolução atualizada com sucesso!");
+      }
+    } else {
+      dadosFicha.id = Date.now();
+      listaRelatorios.push(dadosFicha);
+      salvarRelatorios(listaRelatorios);
+      alert("Ficha de Evolução salva com sucesso!");
+    }
+>>>>>>> 68eb7771a93aa7a3808d8f946c93607c4aa2b6e3
 
 
   try {
@@ -215,13 +373,18 @@ delete dadosRelatorio["foi-medicado"];
   }
 });
 
+<<<<<<< HEAD
 
   
 
   // ========================== BOTÃO CANCELAR ==========================
+=======
+>>>>>>> 68eb7771a93aa7a3808d8f946c93607c4aa2b6e3
   if (botaoCancelar) {
-    botaoCancelar.addEventListener("click", function () {
-      if (confirm("Tem certeza que deseja cancelar o registro?")) {
+    botaoCancelar.addEventListener("click", () => {
+      if (
+        confirm("Deseja cancelar? As informações não salvas serão perdidas.")
+      ) {
         window.location.href = "../../index.html?pagina=pagina-relatorios";
       }
     });

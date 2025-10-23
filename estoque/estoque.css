@@ -1,0 +1,170 @@
+:root {
+  --main-color: #75afdc;
+  --secondary-color: #7e7e7e;
+  --cor-borda: #dce8f6;
+}
+
+body.dark-mode {
+  --main-color-dark: #75afdc;
+  --cor-borda-dark: #72757e;
+  --cor-fundo-pagina-dark: #464646;
+  --cor-fundo-elemento-dark: #1e1e1e;
+  --cor-texto-principal-dark: #ffffff;
+  --cor-texto-secundario-dark: #b0b0b0;
+  --cor-sombra-dark: rgba(0, 0, 0, 0.4);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #f0f2f5;
+  color: #333;
+}
+
+main {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.titulo-container {
+  margin-bottom: 30px;
+}
+.titulo-container h1 {
+  color: var(--main-color);
+  font-size: 32px;
+}
+.btn-voltar {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--secondary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+.btn-voltar:hover {
+  text-decoration: underline;
+}
+
+.layout-duas-colunas {
+  display: flex;
+  gap: 30px;
+}
+.coluna-esquerda {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+.coluna-direita {
+  flex: 2;
+}
+
+.ficha-container {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+.ficha-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.ficha-header h3 {
+  font-size: 18px;
+  color: #333;
+}
+
+.form-estoque,
+.lista-container,
+.grafico-estoque-container {
+  padding: 20px;
+}
+
+.grupo-form {
+  margin-bottom: 15px;
+}
+
+.grupo-form label {
+  display: block;
+  color: var(--secondary-color);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.grupo-form input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.btn-enviar-estoque {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--main-color);
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.tabela-estoque {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabela-estoque th,
+.tabela-estoque td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.tabela-estoque th {
+  background-color: #f8f9fa;
+  font-weight: 500;
+  color: #555;
+}
+
+/* resonsivo celuarl ___________________________________________________________________________________________________ */
+@media (max-width: 850px) {
+  .layout-duas-colunas {
+    flex-direction: column;
+  }
+
+  main {
+    margin: 20px auto;
+  }
+}
+
+/* mod escuro ++________________________________________________________________________________________________________ */
+body.dark-mode {
+  background-color: var(--cor-fundo-pagina-dark);
+}
+
+body.dark-mode .ficha-container {
+  background-color: var(--cor-fundo-elemento-dark);
+}
+
+body.dark-mode .grupo-form label {
+  color: var(--cor-texto-principal-dark);
+}
+
+body.dark-mode .ficha-header h3 {
+  color: var(--cor-texto-principal-dark);
+}
+
+body.dark-mode.tabela-estoque th,
+.tabela-estoque td {
+  color: var(--cor-texto-principal-dark);
+}

@@ -1,3 +1,4 @@
+
 // ===== FUNÇÕES GLOBAIS DE APOIO _______________________________________________________________________________
 
 // 🔹 Buscar todos os funcionários
@@ -11,6 +12,7 @@ async function carregarFuncionarios() {
     alert("Erro ao carregar lista de funcionários.");
     return [];
   }
+
 }
 
 // 🔹 Criar ou atualizar um funcionário
@@ -96,8 +98,8 @@ function iniciarToggleSenha(inputId, toggleId) {
   }
 }
 
-// ===== CÓDIGO PRINCIPAL DA PÁGINA _______________________________________________________________________________
 
+//  CÓDIGO PRINCIPAL __________________________________________________________________________
 document.addEventListener("DOMContentLoaded", async function () {
   const form = document.getElementById("form-funcionario");
   const etapas = document.querySelectorAll(".etapa-form");
@@ -107,7 +109,9 @@ document.addEventListener("DOMContentLoaded", async function () {
   const botaoSubmit = document.querySelector(".btn-enviar");
   let etapaAtual = 0;
 
+
   // --- Seletores para a lógica de Tags ---
+
   const selectResidenteMultiplo = document.getElementById("residente-select");
   const tagsContainer = document.getElementById("residentes-selecionados-container");
   const hiddenInputIds = document.getElementById("residentes_sob_cuidados");
@@ -165,7 +169,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   // 🔹 Carrega lista de residentes do backend
   const listaResidentes = await carregarResidentes();
 
-  // --- Lógica de Edição ---
  // --- Lógica de Edição ---
 const urlParams = new URLSearchParams(window.location.search);
 const funcionarioId = urlParams.get("id");
@@ -254,6 +257,7 @@ form.addEventListener("submit", async function (event) {
   // --- Lógica de Navegação ---
   function mostrarEtapa(i) {
     etapas.forEach((e, idx) => e.classList.toggle("ativo", idx === i));
+    etapaAtual = i;
   }
 
   botoesProximo.forEach((b) =>
@@ -323,6 +327,7 @@ form.addEventListener("submit", async function (event) {
       this.value = "";
     });
   }
+
 
   // --- Inicialização ---
   configurarValidacaoDatas();

@@ -31,23 +31,6 @@ router.get('/', (req, res) => {
   })
 })
 
-// Busca criança por ID
-router.get('/:id', (req, res) => {
-  const { id } = req.params
-  const sql = 'SELECT * FROM crianca WHERE id = ?'
-  
-  connection.query(sql, [id], (err, results) => {
-    if (err) {
-      console.error(err)
-      return res.status(500).send('Erro ao buscar criança')
-    }
-    if (results.length === 0) {
-      return res.status(404).send('Criança não encontrada')
-    }
-    res.json(results[0])
-  })
-})
-
 //Busca crianças por nome
 router.get('/nome/:nome', (req, res) => {
   const { nome } = req.params
@@ -66,7 +49,22 @@ router.get('/nome/:nome', (req, res) => {
   })
 })
 
-
+// Busca criança por ID
+router.get('/:id', (req, res) => {
+  const { id } = req.params
+  const sql = 'SELECT * FROM crianca WHERE id = ?'
+  
+  connection.query(sql, [id], (err, results) => {
+    if (err) {
+      console.error(err)
+      return res.status(500).send('Erro ao buscar criança')
+    }
+    if (results.length === 0) {
+      return res.status(404).send('Criança não encontrada')
+    }
+    res.json(results[0])
+  })
+})
 
 // Cria nova criança
 
@@ -75,70 +73,163 @@ router.post('/', (req, res) => {
   const {
     primeiro_nome, sobrenome, CPF, documento, descricao, sexo,
     data_nascimento, etnia, alergias, numero_SUS, PCD,
-    data_entrada, data_saida, tipo_sanguineo, cep, rua,numero, bairro, cidade, uf, complemento, frequenta_escola, doencas, vacinas
-  } = req.body
+    data_entrada, data_saida, tipo_sanguineo, cep, rua, numero, bairro, cidade, uf, complemento,
+    frequenta_escola, nome_escola, rua_escola, numero_escola, bairro_escola,
+    possui_responsavel, responsavel_primeiro_nome, responsavel_sobrenome, responsavel_nascimento,
+    responsavel_cpf, responsavel_sexo, responsavel_parentesco, responsavel_telefone,
+    endereco_responsavel_igual, responsavel_cep, responsavel_rua, responsavel_numero,
+    responsavel_bairro, responsavel_cidade, responsavel_uf, responsavel_complemento,
+    doencas, vacinas
+  } = req.body;
 
-  if (!primeiro_nome || !sobrenome) {
-    return res.status(400).send('Campos obrigatórios não preenchidos.')
-  }
-
-  const sql = `INSERT INTO crianca (
-    primeiro_nome, sobrenome, CPF, documento, descricao, sexo,
-    data_nascimento, etnia, alergias, numero_SUS, PCD,
-    data_entrada, data_saida, tipo_sanguineo, cep, rua, numero, bairro, cidade, uf, complemento, frequenta_escola, doencas, vacinas
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  const sql = `
+    INSERT INTO crianca (
+      primeiro_nome, sobrenome, CPF, documento, descricao, sexo,
+      data_nascimento, etnia, alergias, numero_SUS, PCD,
+      data_entrada, data_saida, tipo_sanguineo, cep, rua, numero, bairro, cidade, uf, complemento,
+      frequenta_escola, nome_escola, rua_escola, numero_escola, bairro_escola,
+      possui_responsavel, responsavel_primeiro_nome, responsavel_sobrenome, responsavel_nascimento,
+      responsavel_cpf, responsavel_sexo, responsavel_parentesco, responsavel_telefone,
+      endereco_responsavel_igual, responsavel_cep, responsavel_rua, responsavel_numero,
+      responsavel_bairro, responsavel_cidade, responsavel_uf, responsavel_complemento,
+      doencas, vacinas
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
   const values = [
     primeiro_nome, sobrenome, CPF, documento, descricao, sexo,
     data_nascimento, etnia, alergias, numero_SUS, PCD,
-    data_entrada, data_saida, tipo_sanguineo, cep, rua, numero, bairro, cidade, uf, complemento, frequenta_escola, doencas, vacinas
-  ]
+    data_entrada, data_saida, tipo_sanguineo, cep, rua, numero, bairro, cidade, uf, complemento,
+    frequenta_escola, nome_escola, rua_escola, numero_escola, bairro_escola,
+    possui_responsavel, responsavel_primeiro_nome, responsavel_sobrenome, responsavel_nascimento,
+    responsavel_cpf, responsavel_sexo, responsavel_parentesco, responsavel_telefone,
+    endereco_responsavel_igual, responsavel_cep, responsavel_rua, responsavel_numero,
+    responsavel_bairro, responsavel_cidade, responsavel_uf, responsavel_complemento,
+    doencas, vacinas
+  ];
 
   connection.query(sql, values, (err, results) => {
     if (err) {
-      console.error(err)
-      return res.status(500).send('Erro ao cadastrar criança')
+      console.error(err);
+      return res.status(500).send('Erro ao cadastrar criança');
     }
-    res.status(201).json({
-      message: 'Criança cadastrada com sucesso!',
-      id: results.insertId
-    })
-  })
-})
+    res.status(201).json({ message: 'Criança cadastrada com sucesso!', id: results.insertId });
+  });
+});
+
 
 //Atualiza criança
 router.put('/:id', (req, res) => {
-  const { id } = req.params
+  const { id } = req.params;
   const {
     primeiro_nome, sobrenome, CPF, documento, descricao, sexo,
     data_nascimento, etnia, alergias, numero_SUS, PCD,
-    data_entrada, data_saida, tipo_sanguineo, cep, rua, numero, bairro, cidade, uf, complemento, frequenta_escola, doencas, vacinas
-  } = req.body
+    data_entrada, data_saida, tipo_sanguineo, cep, rua, numero, bairro, cidade, uf, complemento,
+    frequenta_escola, nome_escola, rua_escola, numero_escola, bairro_escola,
+    possui_responsavel, responsavel_primeiro_nome, responsavel_sobrenome, responsavel_nascimento,
+    responsavel_cpf, responsavel_sexo, responsavel_parentesco, responsavel_telefone,
+    endereco_responsavel_igual, responsavel_cep, responsavel_rua, responsavel_numero,
+    responsavel_bairro, responsavel_cidade, responsavel_uf, responsavel_complemento,
+    doencas, vacinas
+  } = req.body;
 
-  const sql = `UPDATE crianca SET 
-    primeiro_nome = ?, sobrenome = ?, CPF = ?, documento = ?,
-    descricao = ?, sexo = ?, data_nascimento = ?, etnia = ?,
-    alergias = ?, numero_SUS = ?, PCD = ?, data_entrada = ?,
-    data_saida = ?, tipo_sanguineo = ?, cep = ?, rua = ?, numero = ?, bairro = ?, cidade = ?, uf = ?, complemento = ?, frequenta_escola = ?, doencas = ?, vacinas = ?
-    WHERE id = ?`
+  const sql = `
+    UPDATE crianca SET 
+      primeiro_nome=?, sobrenome=?, CPF=?, documento=?, descricao=?, sexo=?, data_nascimento=?, etnia=?, alergias=?, numero_SUS=?, PCD=?,
+      data_entrada=?, data_saida=?, tipo_sanguineo=?, cep=?, rua=?, numero=?, bairro=?, cidade=?, uf=?, complemento=?,
+      frequenta_escola=?, nome_escola=?, rua_escola=?, numero_escola=?, bairro_escola=?,
+      possui_responsavel=?, responsavel_primeiro_nome=?, responsavel_sobrenome=?, responsavel_nascimento=?,
+      responsavel_cpf=?, responsavel_sexo=?, responsavel_parentesco=?, responsavel_telefone=?,
+      endereco_responsavel_igual=?, responsavel_cep=?, responsavel_rua=?, responsavel_numero=?,
+      responsavel_bairro=?, responsavel_cidade=?, responsavel_uf=?, responsavel_complemento=?,
+      doencas=?, vacinas=?
+    WHERE id=?`;
 
   const values = [
     primeiro_nome, sobrenome, CPF, documento, descricao, sexo,
     data_nascimento, etnia, alergias, numero_SUS, PCD,
-    data_entrada, data_saida, tipo_sanguineo, cep, rua, numero, bairro, cidade, uf, complemento, frequenta_escola, doencas, vacinas, id
-  ]
+    data_entrada, data_saida, tipo_sanguineo, cep, rua, numero, bairro, cidade, uf, complemento,
+    frequenta_escola, nome_escola, rua_escola, numero_escola, bairro_escola,
+    possui_responsavel, responsavel_primeiro_nome, responsavel_sobrenome, responsavel_nascimento,
+    responsavel_cpf, responsavel_sexo, responsavel_parentesco, responsavel_telefone,
+    endereco_responsavel_igual, responsavel_cep, responsavel_rua, responsavel_numero,
+    responsavel_bairro, responsavel_cidade, responsavel_uf, responsavel_complemento,
+    doencas, vacinas, id
+  ];
 
   connection.query(sql, values, (err, results) => {
     if (err) {
-      console.error(err)
-      return res.status(500).send('Erro ao atualizar criança')
+      console.error(err);
+      return res.status(500).send('Erro ao atualizar criança');
     }
     if (results.affectedRows === 0) {
-      return res.status(404).send('Criança não encontrada')
+      return res.status(404).send('Criança não encontrada');
     }
-    res.json({ message: 'Criança atualizada com sucesso!' })
-  })
-})
+    res.json({ message: 'Criança atualizada com sucesso!' });
+  });
+});
+
+
+// Atualiza apenas dados escolares
+router.put('/:id/escola', (req, res) => {
+  const { id } = req.params;
+  const {
+    frequenta_escola,
+    nome_escola,
+    rua_escola,
+    numero_escola,
+    bairro_escola
+  } = req.body;
+
+  const sql = `
+    UPDATE crianca SET 
+      frequenta_escola = ?, 
+      nome_escola = ?, 
+      rua_escola = ?, 
+      numero_escola = ?, 
+      bairro_escola = ?
+    WHERE id = ?`;
+
+  const values = [
+    frequenta_escola,
+    nome_escola,
+    rua_escola,
+    numero_escola,
+    bairro_escola,
+    id
+  ];
+
+  connection.query(sql, values, (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Erro ao atualizar informações escolares');
+    }
+    if (results.affectedRows === 0) {
+      return res.status(404).send('Criança não encontrada');
+    }
+    res.json({ message: 'Informações escolares atualizadas com sucesso!' });
+  });
+});
+
+// Retorna apenas dados escolares
+router.get('/:id/escola', (req, res) => {
+  const { id } = req.params;
+  const sql = `
+    SELECT frequenta_escola, nome_escola, rua_escola, numero_escola, bairro_escola
+    FROM crianca
+    WHERE id = ?`;
+
+  connection.query(sql, [id], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Erro ao buscar dados escolares');
+    }
+    if (results.length === 0) {
+      return res.status(404).send('Criança não encontrada');
+    }
+    res.json(results[0]);
+  });
+});
+
 
 //Excluir criança
 router.delete('/:id', (req, res) => {

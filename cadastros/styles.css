@@ -18,6 +18,16 @@
   --cor-borda: #dce8f6;
 }
 
+body.dark-mode {
+  --main-color-dark: #75afdc;
+  --cor-borda-dark: #72757e;
+  --cor-fundo-pagina-dark: #464646;
+  --cor-fundo-elemento-dark: #1e1e1e;
+  --cor-texto-principal-dark: #ffffff;
+  --cor-texto-secundario-dark: #b0b0b0;
+  --cor-sombra-dark: rgba(0, 0, 0, 0.4);
+}
+
 body {
   background-color: var(--cor-fundo-input);
   display: flex;
@@ -47,6 +57,7 @@ main {
   margin-bottom: 20px;
 }
 
+/* descobrir da onde que é esse titulo 2 */
 .titulo2 {
   color: var(--main-color);
   font-size: 25px;
@@ -89,12 +100,10 @@ main {
   flex-grow: 1;
 }
 
-/* ÚNICO: Estilo de título que só existia no CSS do Residente */
 #etapa-3 h3 {
   color: var(--cor-texto-label);
 }
 
-/* 1. ESTILO PADRÃO (Define a cor do TEXTO DEPOIS de digitado/selecionado) */
 .grupo-form input,
 .grupo-form select,
 .grupo-form textarea {
@@ -122,6 +131,14 @@ main {
 .grupo-form select:invalid,
 .grupo-form input[type="date"]:invalid {
   color: var(--cor-texto-inputs);
+}
+
+#obs-pedagogica {
+  color: #000000;
+}
+
+#obs-pedagogica::placeholder {
+  color: rgba(0, 0, 0, 0.7);
 }
 
 textarea {
@@ -267,7 +284,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 .btn-status.selecionado {
   background-color: var(--cor-principal);
-  color: white;
+  color: rgb(0, 0, 0);
   border-color: var(--cor-principal);
 }
 
@@ -286,24 +303,105 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   font-weight: normal;
 }
 
+.accordion {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.accordion-item {
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.accordion-header {
+  width: 100%;
+  background-color: #f8f9fa;
+  border: none;
+  padding: 18px;
+  text-align: left;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--main-color);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.accordion-header:hover {
+  background-color: #e9ecef;
+}
+
+.accordion-header.active {
+  background-color: #e9ecef;
+}
+
+.accordion-header::after {
+  content: "\\02795";
+  font-size: 13px;
+  color: var(--secondary-color);
+}
+
+.accordion-header.active::after {
+  content: "\\2796";
+}
+
+.accordion-content {
+  padding: 0 18px;
+  background-color: white;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+}
+
+/* reponsivo para celular __________________________________________________________________________________________________ */
 @media (max-width: 850px) {
-  /* Faz com que as linhas do formulário empilhem seus itens verticalmente */
   .linha-form {
     flex-direction: column;
-    gap: 0; /* Remove o espaçamento lateral, já que agora estão empilhados */
+    gap: 0;
   }
 
-  /* Garante que todos os grupos de formulário ocupem a largura total */
   .grupo-form {
     width: 100%;
   }
 
-  /* Ajusta o alinhamento dos botões para o centro e define uma largura máxima */
   .navegacao-form {
     align-items: center;
   }
 
   .navegacao-form button {
-    width: 100%; /* Botões ocupam a largura total do container */
+    width: 100%;
   }
+}
+
+/* mod escuro ++________________________________________________________________________________________________________ */
+body.dark-mode {
+  background-color: var(--cor-fundo-pagina-dark);
+}
+
+body.dark-mode .container-formulario {
+  background-color: var(--cor-fundo-elemento-dark);
+}
+
+body.dark-mode .grupo-form input,
+.grupo-form select,
+.grupo-form textarea {
+  color: var(--cor-texto-principal-dark);
+}
+
+body.dark-mode .grupo-form input::placeholder,
+.grupo-form textarea::placeholder {
+  color: var(--cor-texto-principal-dark);
+}
+
+body.dark-mode .grupo-form select option {
+  color: var(--cor-fundo-elemento-dark);
+}
+
+body.dark-mode .grupo-form select:invalid,
+.grupo-form input[type="date"]:invalid {
+  color: var(--cor-texto-principal-dark);
 }

@@ -94,9 +94,13 @@ document.addEventListener("DOMContentLoaded", async function () {
       const response = await fetch(`http://localhost:3000/medicamentos/${tratamentoId}`);
       if (!response.ok) throw new Error("Erro ao buscar tratamento para edição");
 
+<<<<<<< HEAD
       const tratamentoParaEditar = await response.json();
 
       // Preenche os campos do formulário
+=======
+    if (tratamentoParaEditar) {
+>>>>>>> 68eb7771a93aa7a3808d8f946c93607c4aa2b6e3
       Object.keys(tratamentoParaEditar).forEach((key) => {
   const campo = form.elements[key];
   if (campo) {
@@ -140,8 +144,41 @@ document.addEventListener("DOMContentLoaded", async function () {
     alert("Erro ao carregar lista de residentes.");
   }
 
+<<<<<<< HEAD
   // --- LÓGICA DE SALVAR (CRIAR OU EDITAR) ------------------------------------
   form.addEventListener("submit", async function (event) {
+=======
+  // Popula a seleção de RESIDENTES_______________________________________________________________________________
+  /*
+    Este trecho de código é responsável por preencher o campo de seleção "Para qual Residente?". 
+    Ele busca a lista de todos os residentes cadastrados e cria uma opção no menu dropdown 
+    para cada um deles, facilitando a vinculação do tratamento ao residente correto.
+  */
+  const listaResidentes = carregarResidentes();
+  if (selectResidente) {
+    if (!isEditMode) {
+      selectResidente.innerHTML =
+        '<option value="" disabled selected>Selecione um residente</option>';
+    }
+    listaResidentes.forEach((residente) => {
+      const option = new Option(
+        `${residente["primeiro-nome"]} ${residente.sobrenome}`,
+        residente.id
+      );
+      selectResidente.appendChild(option);
+    });
+  }
+
+  // --- LÓGICA DE SALVAR (UNIFICADA PARA CRIAR E EDITAR) _______________________________________________________________________________
+  /*
+    Este bloco define a ação principal do formulário. Quando o botão de salvar é clicado, 
+    ele primeiro valida se os campos obrigatórios foram preenchidos. Depois, verifica se 
+    está em "Modo de Edição" para decidir se deve ATUALIZAR um tratamento existente ou 
+    CRIAR um novo (com status "Pendente"). Após salvar, exibe um alerta de sucesso e 
+    redireciona o usuário de volta para a lista de medicamentos.
+  */
+  form.addEventListener("submit", function (event) {
+>>>>>>> 68eb7771a93aa7a3808d8f946c93607c4aa2b6e3
     event.preventDefault();
 
     if (!form.checkValidity()) {
@@ -153,6 +190,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const formData = new FormData(form);
     const dadosTratamento = Object.fromEntries(formData.entries());
 
+<<<<<<< HEAD
     try {
       let response;
       if (isEditMode) {
@@ -182,6 +220,30 @@ document.addEventListener("DOMContentLoaded", async function () {
       console.error("Erro ao salvar tratamento:", error);
       alert("Erro ao salvar tratamento no banco de dados.");
     }
+=======
+    if (isEditMode) {
+      const index = listaTratamentos.findIndex((t) => t.id == tratamentoId);
+      if (index !== -1) {
+        const tratamentoExistente = listaTratamentos[index];
+        listaTratamentos[index] = {
+          ...tratamentoExistente,
+          ...dadosTratamento,
+          id: parseInt(tratamentoId),
+        };
+        salvarTratamentos(listaTratamentos);
+        alert("Tratamento atualizado com sucesso!");
+      }
+    } else {
+      dadosTratamento.id = Date.now();
+      dadosTratamento.status = "Pendente";
+      listaTratamentos.push(dadosTratamento);
+      salvarTratamentos(listaTratamentos);
+      alert("Tratamento cadastrado com sucesso!");
+    }
+
+    const origem = urlParams.get("origem") || "pagina-medicamentos";
+    window.location.href = `../../index.html?pagina=${origem}`;
+>>>>>>> 68eb7771a93aa7a3808d8f946c93607c4aa2b6e3
   });
 
   // --- BOTÃO CANCELAR --------------------------------------------------------
@@ -195,6 +257,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   // Lógica do botão Cancelar_______________________________________________________________________________
+
   /*
     Esta parte do código adiciona a funcionalidade ao botão "Cancelar". Ao ser clicado,
     ele exibe uma caixa de diálogo pedindo confirmação. Se o usuário confirmar, ele 

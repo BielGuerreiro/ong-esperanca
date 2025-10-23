@@ -51,11 +51,6 @@
             <span class="texto-lado">Residentes</span>
           </li>
 
-          <li data-pagina="pagina-responsavel" class="item-menu-desktop">
-            <i class="bx bx-user"></i>
-            <span class="texto-lado">Responsavel</span>
-          </li>
-
           <li data-pagina="pagina-funcionarios" class="item-menu-desktop">
             <i class="bx bx-user"></i>
             <span class="texto-lado">Funcionarios</span>
@@ -78,6 +73,7 @@
             <i class="bx bx-clipboard"></i
             ><span class="texto-lado">Relatórios</span>
           </li>
+
           <li data-pagina="pagina-adm" class="item-menu-desktop">
             <i class="bx bx-cog"></i
             ><span class="texto-lado">Administração</span>
@@ -115,11 +111,12 @@
             </div>
           </div>
 
-          <div class="ficha-container">
+          <div class="ficha-container-dashboard">
             <div class="ficha">
               <div class="ficha-header">
                 <h2>Análise Individual de Residentes</h2>
               </div>
+
               <div class="dashboard-container">
                 <div class="lista-residentes-dashboard">
                   <ul id="residentes-chart-list"></ul>
@@ -180,7 +177,11 @@
           <div class="residentes-mobile-view">
             <div class="search-bar-container">
               <i class="bx bx-search"></i>
-              <input type="search" placeholder="Procure por um residente" />
+              <input
+                type="search"
+                id="busca-residentes-mobile"
+                placeholder="Procure por um residente"
+              />
             </div>
 
             <a
@@ -238,7 +239,11 @@
           <div class="funcionarios-mobile-view">
             <div class="search-bar-container">
               <i class="bx bx-search"></i>
-              <input type="search" placeholder="Procure por um funcionário" />
+              <input
+                type="search"
+                id="busca-funcionarios-mobile"
+                placeholder="Procure por um funcionário"
+              />
             </div>
 
             <a
@@ -261,67 +266,6 @@
         </div>
 
         <!-- Final sessao funcionario  _______________________________________________________________________ -->
-
-        <!-- comeco sessao responsavel   ______________________________________________________________________________ -->
-        <div id="pagina-responsavel" class="pagina-conteudo">
-          <div class="titulo">
-            <h2>Ficha de Responsáveis</h2>
-          </div>
-
-          <div class="ficha-container">
-            <div class="ficha">
-              <div class="ficha-header">
-                <h2>Lista de Responsáveis</h2>
-                <a
-                  href="cadastros/cadastro-responsavel/index.html?origem=pagina-responsavel"
-                  class="btn-nova-ficha item-gerente"
-                  >Novo Responsável +</a
-                >
-              </div>
-              <div class="lista-residentes-container">
-                <table class="tabela-responsaveis">
-                  <thead>
-                    <tr>
-                      <th>Responsável</th>
-                      <th>Idade</th>
-                      <th>Categoria</th>
-                      <th>Parentesco</th>
-                      <th>Residente Vinculado</th>
-                      <th>Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody id="lista-responsaveis-body"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div class="responsaveis-mobile-view">
-            <div class="search-bar-container">
-              <i class="bx bx-search"></i>
-              <input type="search" placeholder="Procure por um responsável" />
-            </div>
-
-            <a
-              href="cadastros/cadastro-responsavel/index.html?origem=pagina-responsavel"
-              class="btn-adicionar-mobile item-gerente"
-            >
-              <i class="bx bx-user-plus bx-flip-horizontal"></i>
-              <span>Adicionar responsável</span>
-            </a>
-
-            <div class="lista-responsaveis-nova">
-              <div class="lista-header-responsaveis">
-                <span>Responsável</span>
-                <span>Parentesco</span>
-                <span>Ações</span>
-              </div>
-              <ul id="lista-responsaveis-nova-body"></ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- Final sessao responsavel   _______________________________________________________________________ -->
 
         <!-- comeco sessao medicamento  ______________________________________________________________________________ -->
 
@@ -349,7 +293,6 @@
                       <th>Medicamento</th>
                       <th>Dosagem</th>
                       <th>Tipo/Forma</th>
-                      <th>Status</th>
                       <th>Ações</th>
                     </tr>
                   </thead>
@@ -362,7 +305,11 @@
           <div class="medicamentos-mobile-view">
             <div class="search-bar-container">
               <i class="bx bx-search"></i>
-              <input type="search" placeholder="Procure por um medicamento" />
+              <input
+                type="search"
+                id="busca-medicamentos-mobile"
+                placeholder="Procure por um medicamento"
+              />
             </div>
 
             <a
@@ -423,7 +370,11 @@
           <div class="atividades-mobile-view">
             <div class="search-bar-container">
               <i class="bx bx-search"></i>
-              <input type="search" placeholder="Procure por uma atividade" />
+              <input
+                type="search"
+                id="busca-atividades-mobile"
+                placeholder="Procure por uma atividade"
+              />
             </div>
 
             <a
@@ -487,6 +438,7 @@
               <i class="bx bx-search"></i>
               <input
                 type="search"
+                id="busca-relatorios-mobile"
                 placeholder="Procure por data ou residente"
               />
             </div>
@@ -505,7 +457,6 @@
                 <span>Residente</span>
                 <span>Ações</span>
               </div>
-
               <ul id="lista-relatorios-nova-body">
                 <!--exemplo de item 
                 <li>
@@ -537,6 +488,16 @@
             <h2>Configurações</h2>
 
             <div class="configuracoes-opcoes">
+              <a href="bater-ponto/ponto.html" class="opcao-config">
+                <i class="bx bx-clock-2"></i>
+                <span>Bater Ponto</span>
+              </a>
+
+              <a href="estoque/index.html" class="opcao-config">
+                <i class="bx bx-pill"></i>
+                <span>Estoque</span>
+              </a>
+
               <div class="opcao-config opcao-dark-mode">
                 <i class="bx bx-moon"></i>
                 <span id="dark-mode-text">Modo Escuro</span>
@@ -546,17 +507,16 @@
                 </label>
               </div>
 
-              <a href="#" class="opcao-config">
-                <i class="bx bx-pill"></i>
-                <span>Estoque</span>
-              </a>
-
-              <a href="#" class="opcao-config">
+              <a href="redefinir-senha/index.html" class="opcao-config">
                 <i class="bx bx-lock"></i>
                 <span>Alterar Senha</span>
               </a>
 
-              <a href="#" id="btn-logout" class="opcao-config opcao-perigo">
+              <a
+                href="login/index.html"
+                id="btn-logout"
+                class="opcao-config opcao-logout"
+              >
                 <i class="fa-solid fa-right-from-bracket"></i>
                 <span>Sair da conta</span>
               </a>
@@ -580,5 +540,6 @@
     </div>
 
     <script src="script.js"></script>
+    <script src="theme-manager.js" defer></script>
   </body>
 </html>

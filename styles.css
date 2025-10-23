@@ -18,13 +18,13 @@
 }
 
 body.dark-mode {
-  --main-color: #82c0f0; /* Um azul um pouco mais claro para contraste */
-  --cor-borda: #33394b;
-  --cor-fundo-pagina: #121212;
-  --cor-fundo-elemento: #1e1e1e;
-  --cor-texto-principal: #e0e0e0;
-  --cor-texto-secundario: #b0b0b0;
-  --cor-sombra: rgba(0, 0, 0, 0.4);
+  --main-color-dark: #75afdc;
+  --cor-borda-dark: #72757e;
+  --cor-fundo-pagina-dark: #464646;
+  --cor-fundo-elemento-dark: #1e1e1e;
+  --cor-texto-principal-dark: #ffffff;
+  --cor-texto-secundario-dark: #b0b0b0;
+  --cor-sombra-dark: rgba(0, 0, 0, 0.4);
 }
 
 #btn-menu-flyout,
@@ -33,7 +33,6 @@ body.dark-mode {
 }
 .residentes-mobile-view,
 .relatorios-mobile-view,
-.responsaveis-mobile-view,
 .funcionarios-mobile-view,
 .medicamentos-mobile-view,
 .atividades-mobile-view {
@@ -277,7 +276,6 @@ body {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  text-decoration: none;
   color: white;
   font-size: 18px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -460,6 +458,10 @@ body {
   margin-top: 30px;
 }
 
+.ficha-container-dashboard {
+  margin-top: 10px;
+}
+
 .ficha {
   position: relative;
   background-color: white;
@@ -505,7 +507,6 @@ body {
 
 .acao-ver-ficha {
   color: var(--main-color);
-  text-decoration: none;
   font-weight: bold;
 }
 
@@ -580,7 +581,6 @@ body {
   border-radius: 12px;
   background-color: white;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  text-decoration: none;
   font-size: 18px;
   font-weight: 500;
   color: var(--secondary-color);
@@ -598,20 +598,20 @@ body {
   color: #555;
 }
 
-.opcao-config.opcao-perigo {
+.opcao-config.opcao-logout {
   background-color: var(--cor-vermelho-claro);
 }
 
-.opcao-config.opcao-perigo span {
+.opcao-config.opcao-logout span {
   color: #555;
   font-weight: bold;
 }
 
-.opcao-config.opcao-perigo i {
+.opcao-config.opcao-logout i {
   color: var(--cor-vermelho-escuro);
 }
 
-/* --- Container da Opção na tela de ADM --- */
+/*  modo escuro _____________________________________________________________________________________________________________________ */
 .opcao-dark-mode {
   display: flex;
   align-items: center;
@@ -694,10 +694,8 @@ input:checked + .slider:before {
 
 /* responsivo de celular __________________________________________________________________________________ */
 @media (max-width: 850px) {
-  .header1 {
-    display: none;
-  }
-
+  .header1,
+  .ficha-container-dashboard,
   .coluna-desktop {
     display: none;
   }
@@ -770,14 +768,12 @@ input:checked + .slider:before {
     width: 100%;
     height: 100%;
     z-index: 2000;
-    /* Começa invisível */
     visibility: hidden;
     opacity: 0;
     transition: visibility 0s 0.3s, opacity 0.3s ease;
   }
 
   .flyout-container.ativo {
-    /* Fica visível quando a classe 'ativo' é adicionada */
     visibility: visible;
     opacity: 1;
     transition: opacity 0.3s ease;
@@ -845,7 +841,6 @@ input:checked + .slider:before {
     align-items: center;
     padding: 15px;
     border-radius: 10px;
-    text-decoration: none;
     color: #333;
     font-size: 18px;
     font-weight: 500;
@@ -879,7 +874,7 @@ input:checked + .slider:before {
     top: 0;
     left: 0;
     right: 0;
-    height: 180px;
+    height: 190px;
     z-index: -1;
     background-color: var(--main-color);
   }
@@ -889,12 +884,17 @@ input:checked + .slider:before {
     background: white;
   }
 
+  /* teste de container  */
   body.pagina-dashboard-ativa {
-    background: var(--main-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
 
   body.pagina-dashboard-ativa .container-geral {
-    margin-top: 3vh;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   .bem-vindo.movido-para-topo {
@@ -921,16 +921,25 @@ input:checked + .slider:before {
     font-size: clamp(1.3rem, 7vw, 35px);
   }
 
+  .box {
+    min-height: 100px;
+    max-width: 330px;
+  }
+
+  .box h3 {
+    font-size: 40px;
+  }
+
+  .box p {
+    font-size: 24px;
+  }
+
   /* container da ficha de cadastro _____________________________________________________________________________________________________________________________ */
 
   body.pagina-residentes-ativa .titulo,
   body.pagina-residentes-ativa .residentes-desktop-view,
   body.pagina-relatorios-ativa .titulo,
   body.pagina-relatorios-ativa .ficha-container,
-  body.pagina-responsavel-ativa .titulo,
-  body.pagina-responsavel-ativa .ficha-container,
-  body.pagina-responsavel-ativa .titulo,
-  body.pagina-responsavel-ativa .ficha-container,
   body.pagina-funcionarios-ativa .titulo,
   body.pagina-funcionarios-ativa .ficha-container,
   body.pagina-medicamentos-ativa .titulo,
@@ -942,8 +951,6 @@ input:checked + .slider:before {
 
   body.pagina-residentes-ativa .residentes-mobile-view,
   body.pagina-relatorios-ativa .relatorios-mobile-view,
-  body.pagina-responsavel-ativa .responsaveis-mobile-view,
-  body.pagina-responsavel-ativa .responsaveis-mobile-view,
   body.pagina-funcionarios-ativa .funcionarios-mobile-view,
   body.pagina-medicamentos-ativa .medicamentos-mobile-view,
   body.pagina-atividades-ativa .atividades-mobile-view {
@@ -982,7 +989,6 @@ input:checked + .slider:before {
     padding: 15px;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    text-decoration: none;
     color: #333;
     font-weight: 500;
     font-size: 16px;
@@ -1137,75 +1143,6 @@ input:checked + .slider:before {
 
   .relatorio-acoes .btn-acao:hover {
     color: var(--main-color);
-  }
-
-  /* parte do mostrador dos responsaveis criado _________________________________________________________________ */
-
-  .lista-responsaveis-nova {
-    margin-left: -18px;
-    margin-right: -18px;
-  }
-
-  .lista-header-responsaveis {
-    display: grid;
-    grid-template-columns: 2fr 1.5fr 1fr;
-    padding: 0 12px 10px 12px;
-    color: var(--main-color);
-    font-size: 14px;
-    font-weight: bold;
-  }
-
-  .lista-header-responsaveis span:nth-child(2) {
-    text-align: center;
-  }
-  .lista-header-responsaveis span:nth-child(3) {
-    text-align: right;
-  }
-
-  #lista-responsaveis-nova-body {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  #lista-responsaveis-nova-body li {
-    display: grid;
-    grid-template-columns: 2fr 1.5fr 1fr;
-    align-items: center;
-    padding: 15px 12px;
-    border-radius: 10px;
-  }
-
-  #lista-responsaveis-nova-body li:nth-child(odd) {
-    background-color: #eaf2fa;
-  }
-  #lista-responsaveis-nova-body li:nth-child(even) {
-    background-color: rgba(245, 245, 245, 0.836);
-  }
-
-  .responsavel-nome {
-    font-weight: bold;
-    color: #333;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 0;
-  }
-
-  .responsavel-parentesco {
-    text-align: center;
-    color: var(--secondary-color);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 0;
-  }
-
-  .responsavel-acoes {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
   }
 
   /* parte do mostrador dos funcionarios criado _________________________________________________________________ */
@@ -1410,4 +1347,86 @@ input:checked + .slider:before {
     justify-content: flex-end;
     gap: 8px;
   }
+}
+
+body.dark-mode {
+  background-color: var(--cor-fundo-pagina-dark);
+}
+
+body.dark-mode .bem-vindo h2 {
+  color: var(--cor-texto-principal-dark);
+}
+
+body.dark-mode .header1,
+body.dark-mode .header2 {
+  background-color: var(--cor-fundo-elemento-dark);
+  border-color: var(--cor-borda-dark);
+}
+
+body.dark-mode .header2 {
+  background-color: var(--cor-fundo-elemento-dark) !important;
+  border-top: 1px solid var(--cor-borda);
+}
+
+body.dark-mode .menu-header li {
+  color: var(--main-color);
+}
+
+body.dark-mode .menu-header li.menu-ativo {
+  color: var(--cor-texto-principal-dark);
+  background-color: #77c4ff75;
+}
+
+body.dark-mode .header1 h1 {
+  color: var(--cor-texto-principal-dark);
+}
+
+body.dark-mode .container-geral {
+  background-color: var(--cor-fundo-pagina-dark);
+}
+
+body.dark-mode .box {
+  background-color: var(--cor-fundo-elemento-dark);
+}
+
+body.dark-mode .ficha {
+  background-color: var(--cor-fundo-elemento-dark);
+}
+
+body.dark-mode .opcao-config {
+  background-color: var(--cor-fundo-elemento-dark);
+}
+
+body.dark-mode .opcao-config i {
+  color: #fff;
+}
+
+body.dark-mode .ficha table th {
+  color: var(--cor-texto-principal-dark);
+  border-bottom: 1px solid var(--cor-borda-dark);
+}
+
+body.dark-mode .ficha table td {
+  color: var(--cor-texto-principal-dark);
+  border-bottom: 1px solid var(--cor-borda-dark);
+}
+
+body.dark-mode .flyout-content {
+  background-color: var(--cor-fundo-pagina-dark);
+}
+
+body.dark-mode .flyout-header h2 {
+  color: var(--cor-texto-principal-dark);
+}
+
+body.dark-mode .flyout-close {
+  color: var(--main-color);
+}
+
+body.dark-mode #flyout-links-container a {
+  color: var(--cor-texto-principal-dark);
+}
+
+body.dark-mode #flyout-links-container a:hover {
+  color: #000;
 }

@@ -24,10 +24,11 @@ function definirCategoria(idade) {
   return "Idoso";
 }
 
-// NOVA FUNÇÃO PARA SAUDAÇÃO DINÂMICA
+// FUNÇÃO PARA SAUDAÇÃO DINÂMICA _________________________________________________________________________________
+
 function atualizarSaudacao() {
   const elementoSaudacao = document.getElementById("mensagem-saudacao");
-  if (!elementoSaudacao) return; // Se não encontrar o elemento, não faz nada
+  if (!elementoSaudacao) return;
 
   const horaAtual = new Date().getHours();
   let saudacao = "";
@@ -40,20 +41,41 @@ function atualizarSaudacao() {
     saudacao = "Boa noite";
   }
 
-  // Futuramente, você pode pegar o nome do usuário logado da memória
-  // Ex: const nomeUsuario = sessionStorage.getItem("usuarioLogado") || "Usuário";
-  const nomeUsuario = "Usuário"; // Por enquanto, usamos um nome padrão
+  const nomeUsuario = "Usuário";
 
   elementoSaudacao.textContent = `Olá, ${saudacao}, ${nomeUsuario}!`;
 }
 
 
-// Funções Globais_______________________________________________________________________________
-/*
-  ... (suas funções calcularIdade e definirCategoria ficam aqui) ...
-*/
+// barra de pesquisa universal _______________________________________________________________________________________
+function configurarBusca(
+  inputId,
+  listaContainerId,
+  itemSelector,
+  displayStyle = ""
+) {
+  const inputBusca = document.getElementById(inputId);
+  const listaContainer = document.getElementById(listaContainerId);
 
+  if (!inputBusca || !listaContainer) {
+    return;
+  }
 
+  inputBusca.addEventListener("input", function () {
+    const termoBusca = this.value.toLowerCase();
+    const todosOsItens = listaContainer.querySelectorAll(itemSelector);
+
+    todosOsItens.forEach((item) => {
+      const textoDoItem = item.textContent.toLowerCase();
+
+      if (textoDoItem.includes(termoBusca)) {
+        item.style.display = displayStyle;
+      } else {
+        item.style.display = "none";
+      }
+    });
+  });
+}
 
 // tabela dashboard ______________________________________________________________________________________________________________
 /*
@@ -257,6 +279,7 @@ async function iniciarPaginaResidentes() {
     const resposta = await fetch("http://localhost:3000/criancas"); // <-- rota do backend
     const listaResidentes = await resposta.json();
 
+
     // Pega os containers dos DOIS layouts
     const tabelaBodyDesktop = document.getElementById("lista-residentes-body");
     const listaBodyMobile = document.getElementById("lista-residentes-nova-body");
@@ -267,6 +290,7 @@ async function iniciarPaginaResidentes() {
     tabelaBodyDesktop.innerHTML = "";
     listaBodyMobile.innerHTML = "";
 
+
     if (listaResidentes.length > 0) {
       listaResidentes.forEach((residente) => {
         const idade = calcularIdade(residente.data_nascimento);
@@ -275,6 +299,7 @@ async function iniciarPaginaResidentes() {
         const sexoFormatado = residente.sexo
           ? residente.sexo.charAt(0).toUpperCase() + residente.sexo.slice(1)
           : "N/A";
+
 
         const acoesHTML = `
           <a href="cadastros/cadastro-residente/index.html?id=${residente.id}&origem=pagina-residentes" 
@@ -310,6 +335,7 @@ async function iniciarPaginaResidentes() {
     } else {
       tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum residente cadastrado.</td></tr>`;
       listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum residente cadastrado.</li>`;
+
     }
 
     // 🔹 Listener de exclusão (funciona em desktop e mobile)
@@ -406,7 +432,21 @@ function definirHorario(turno) {
 
 
     listaFuncionarios.forEach((funcionario) => {
-      const nomeCompleto = `${funcionario.primeiro_nome || ""} ${funcionario.sobrenome || ""}`.trim();
+
+      const nomeCompleto = `${funcionario["primeiro-nome"]} ${funcionario.sobrenome}`;
+
+      function definirHorario(turno) {
+        switch (turno) {
+          case "manha":
+            return "06:00 - 14:00";
+          case "tarde":
+            return "14:00 - 22:00";
+          case "noite":
+            return "22:00 - 06:00";
+          default:
+            return "N/A";
+        }
+      }
       const horario = definirHorario(funcionario.turno);
       const status = funcionario.status ? funcionario.status.toLowerCase() : "pendente";
       let classeStatus = "";
@@ -609,10 +649,12 @@ async function iniciarPaginaResponsaveis() {
   ela exibe o horário, o residente, o medicamento e o status (Pendente ou Administrado),
   junto com os botões de editar e excluir, e ativa a função de exclusão.
 */
+
 async function iniciarPaginaMedicamentos() {
   try {
     const resposta = await fetch("http://localhost:3000/medicamentos");
     const listaMedicamentos = await resposta.json();
+
 
     const tabelaBodyDesktop = document.getElementById("lista-medicamentos-body");
     if (!tabelaBodyDesktop) return;
@@ -629,9 +671,11 @@ async function iniciarPaginaMedicamentos() {
         ? new Date(med.validade).toLocaleDateString("pt-BR")
         : "N/A";
 
+
       const status = med.status || "Pendente";
       const classeStatus = `status-${status.toLowerCase()}`;
       const statusHTML = `<span class="status ${classeStatus}">${status}</span>`;
+
 
       const acoesHTML = `
         <a href="cadastros/cadastro-medicamento/index.html?id=${med.id}&origem=pagina-medicamentos" 
@@ -645,7 +689,9 @@ async function iniciarPaginaMedicamentos() {
 
       // 🧠 Ordem corrigida das colunas
       const tr = document.createElement("tr");
+
       tr.innerHTML = `
+
         <td>${med.horario || "N/A"}</td>
         <td>${nomeResidente || "N/A"}</td>
         <td>${med.medicamento || "N/A"}</td>
@@ -660,12 +706,14 @@ async function iniciarPaginaMedicamentos() {
   } catch (error) {
     console.error("Erro ao carregar medicamentos:", error);
   }
+
 }
 
 
 
 
 // sessao atividades  -_____________________________________________________________________________________________________
+
 /*
   Esta função inicializa a página de Atividades. Ela contém uma sub-função 'renderizarTabela' 
   que é responsável por ler os agendamentos de atividades e construir a tabela na tela, 
@@ -673,11 +721,13 @@ async function iniciarPaginaMedicamentos() {
   funcionalidade do botão de excluir, que ao ser clicado, remove o item e redesenha a 
   tabela para refletir a mudança instantaneamente.
 */
+
 async function iniciarPaginaAtividades() {
   try {
     // 🔹 1. Busca a lista direto do backend
     const resposta = await fetch("http://localhost:3000/atividades");
     const listaAgendamentos = await resposta.json();
+
 
     const tabelaBodyDesktop = document.getElementById("lista-atividades-body");
     const listaBodyMobile = document.getElementById("lista-atividades-nova-body");
@@ -776,11 +826,13 @@ async function iniciarPaginaAtividades() {
 
 
 // sessao relatorio   -_____________________________________________________________________________________________________
+
 /*
   Esta função inicializa a página de Relatórios. Ela lê a lista de relatórios diários 
   e de residentes para poder construir a tabela de registros salvos, mostrando a data, 
   o residente, o responsável pelo registro, o medicamento e seu status. Assim como as 
   outras, ela também cria os botões de ação e ativa a funcionalidade de exclusão.
+
 */
 async function iniciarPaginaRelatorios() {
   try {
@@ -789,6 +841,7 @@ async function iniciarPaginaRelatorios() {
       fetch("http://localhost:3000/relatorio").then((res) => res.json()),
       fetch("http://localhost:3000/criancas").then((res) => res.json()),
     ]);
+
 
     const tabelaBodyDesktop = document.getElementById("lista-relatorios-body");
     const listaBodyMobile = document.getElementById("lista-relatorios-nova-body");
@@ -809,9 +862,6 @@ async function iniciarPaginaRelatorios() {
         const dataFormatada =relatorio.data && relatorio.data !== "0000-00-00"
           ? new Date(relatorio.data.replace(/-/g, "/")).toLocaleDateString("pt-BR")
           : "Sem data";
-
-
-
         // 🔹 Corrigido o link de edição (id certo e query correta)
         const acoesHTML = `
           <a href="cadastros/cadastro-relatorio/index.html?id_relatorio=${relatorio.id_relatorio}&origem=pagina-relatorios" 
@@ -903,23 +953,40 @@ async function iniciarPaginaRelatorios() {
   o redireciona para a página de login.
 */
 function iniciarPaginaAdm() {
-  const botaoLogout = document.getElementById("btn-logout");
+  const botaoLoginLogout = document.getElementById("btn-logout");
+  if (!botaoLoginLogout) return;
 
-  if (botaoLogout) {
-    botaoLogout.addEventListener("click", function (event) {
-      event.preventDefault(); // Impede o comportamento padrão do link
+  const iconeBotao = botaoLoginLogout.querySelector("i");
+  const textoBotao = botaoLoginLogout.querySelector("span");
 
-      if (confirm("Tem certeza que deseja sair da sua conta?")) {
-        // Limpa todos os dados salvos na sessão
-        sessionStorage.clear();
+  function configurarBotao() {
+    const usuarioLogado = sessionStorage.getItem("usuarioLogado");
 
-        // Redireciona para a página de login
-        alert("Você foi desconectado com sucesso.");
-        // ATENÇÃO: Coloque aqui o nome correto da sua página de login
-        window.location.href = "login.html";
-      }
-    });
+    if (usuarioLogado) {
+      botaoLoginLogout.classList.add("opcao-logout");
+      textoBotao.textContent = "Sair da conta";
+      iconeBotao.className = "fa-solid fa-right-from-bracket";
+      botaoLoginLogout.href = "#";
+      botaoLoginLogout.addEventListener("click", handleLogout);
+    } else {
+      botaoLoginLogout.classList.remove("opcao-logout");
+      textoBotao.textContent = "Fazer Login";
+      iconeBotao.className = "bx bx-user-hexagon";
+      botaoLoginLogout.href = "login/index.html";
+      botaoLoginLogout.removeEventListener("click", handleLogout);
+    }
   }
+
+  const handleLogout = function (event) {
+    event.preventDefault();
+    if (confirm("Tem certeza que deseja sair da sua conta?")) {
+      sessionStorage.clear();
+      alert("Você foi desconectado com sucesso.");
+      configurarBotao();
+    }
+  };
+
+  configurarBotao();
 }
 
 // document da pagina principal ___________________________________________________________________________________
@@ -947,7 +1014,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const paginaAlvoId = this.dataset.pagina;
       if (!paginaAlvoId) return;
 
-      document.body.className = "";
+      for (let cls of document.body.classList) {
+        if (cls.endsWith("-ativa")) {
+          document.body.classList.remove(cls);
+        }
+      }
       document.body.classList.add(paginaAlvoId + "-ativa");
 
       const paginaAlvo = document.getElementById(paginaAlvoId);
@@ -1033,13 +1104,33 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     };
 
-    // Adiciona os eventos
     btnMenuFlyout.addEventListener("click", abrirFlyout);
     flyoutBackdrop.addEventListener("click", fecharFlyout);
     flyoutClose.addEventListener("click", fecharFlyout);
 
     popularMenuFlyout();
   }
+
+  // --- TEXTO DE BOAS-VINDAS NO RESPONSIVO _________________________________________________________________________
+  const bemVindoEl = document.querySelector("#pagina-dashboard .bem-vindo");
+  const containerOriginal = document.querySelector("#pagina-dashboard");
+  const bodyEl = document.body;
+  const mobileMediaQuery = window.matchMedia("(max-width: 850px)");
+
+  function handleLayoutChange(e) {
+    if (!bemVindoEl || !containerOriginal) return;
+
+    if (e.matches) {
+      bodyEl.appendChild(bemVindoEl);
+      bemVindoEl.classList.add("movido-para-topo");
+    } else {
+      containerOriginal.prepend(bemVindoEl);
+      bemVindoEl.classList.remove("movido-para-topo");
+    }
+  }
+
+  handleLayoutChange(mobileMediaQuery);
+  mobileMediaQuery.addEventListener("change", handleLayoutChange);
 
   // iniciacao __________________________________________________________________________________________________
   iniciarPaginaDashboard();
@@ -1050,6 +1141,58 @@ document.addEventListener("DOMContentLoaded", function () {
   iniciarPaginaAtividades();
   iniciarPaginaRelatorios();
   iniciarPaginaAdm();
+
+  configurarBusca("busca-residentes-desktop", "lista-residentes-body", "tr");
+  configurarBusca(
+    "busca-residentes-mobile",
+    "lista-residentes-nova-body",
+    "li",
+    "grid"
+  );
+
+  // --- Buscas para a página de FUNCIONÁRIOS ---
+  configurarBusca(
+    "busca-funcionarios-desktop",
+    "lista-funcionarios-body",
+    "tr"
+  );
+  configurarBusca(
+    "busca-funcionarios-mobile",
+    "lista-funcionarios-nova-body",
+    "li",
+    "grid"
+  );
+
+  // --- Buscas para a página de RELATÓRIOS ---
+  configurarBusca("busca-relatorios-desktop", "lista-relatorios-body", "tr");
+  configurarBusca(
+    "busca-relatorios-mobile",
+    "lista-relatorios-nova-body",
+    "li",
+    "grid"
+  );
+
+  // --- Buscas para a página de ATIVIDADES ---
+  configurarBusca("busca-atividades-desktop", "lista-atividades-body", "tr");
+  configurarBusca(
+    "busca-atividades-mobile",
+    "lista-atividades-nova-body",
+    "li",
+    "grid"
+  );
+
+  // --- Buscas para a página de MEDICAMENTOS ---
+  configurarBusca(
+    "busca-medicamentos-desktop",
+    "lista-medicamentos-body",
+    "tr"
+  );
+  configurarBusca(
+    "busca-medicamentos-mobile",
+    "lista-medicamentos-nova-body",
+    "li",
+    "grid"
+  );
 
   const urlParams = new URLSearchParams(window.location.search);
   const paginaDestino = urlParams.get("pagina");
@@ -1068,82 +1211,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (itemInicial) {
     itemInicial.click();
-  } else {
-    ajustarAlturaContainer(document.querySelector(".pagina-conteudo.ativa"));
   }
-
-  const paginaInicial = document.querySelector(".pagina-conteudo.ativa");
-  ajustarAlturaContainer(paginaInicial);
-
-  // texto de boas vinda no responsivo _______________________________________________________________________________________________
-  const bemVindoEl = document.querySelector("#pagina-dashboard .bem-vindo");
-  const containerOriginal = document.querySelector("#pagina-dashboard");
-  const bodyEl = document.body;
-
-  const mobileMediaQuery = window.matchMedia("(max-width: 850px)");
-
-  function handleLayoutChange(e) {
-    if (!bemVindoEl || !containerOriginal) return;
-
-    if (e.matches) {
-      bodyEl.appendChild(bemVindoEl);
-      bemVindoEl.classList.add("movido-para-topo");
-    } else {
-      containerOriginal.prepend(bemVindoEl);
-      bemVindoEl.classList.remove("movido-para-topo");
-    }
-  }
-
-  handleLayoutChange(mobileMediaQuery);
-  mobileMediaQuery.addEventListener("change", handleLayoutChange);
-});
-
-// LÓGICA PARA O MODO ESCURO ________________________________________________________________________________________
-
-// Este código deve rodar depois que a página carregou
-document.addEventListener("DOMContentLoaded", () => {
-  const darkModeToggle = document.getElementById("dark-mode-toggle");
-  const body = document.body;
-
-  // Função para aplicar o tema
-  const aplicarTema = (tema) => {
-    const textoDoSwitch = document.getElementById("dark-mode-text");
-    const iconeDoSwitch = document.querySelector(".opcao-dark-mode .bx");
-
-    if (tema === "dark") {
-      body.classList.add("dark-mode");
-      darkModeToggle.checked = true;
-      textoDoSwitch.textContent = "Modo Claro"; // Muda o texto
-      iconeDoSwitch.classList.replace("bx-moon", "bx-sun"); // Troca ícone para sol
-    } else {
-      body.classList.remove("dark-mode");
-      darkModeToggle.checked = false;
-      textoDoSwitch.textContent = "Modo Escuro"; // Volta o texto
-      iconeDoSwitch.classList.replace("bx-sun", "bx-moon"); // Troca ícone para lua
-    }
-  };
-
-  // 1. Verifica se já existe um tema salvo no navegador
-  const temaSalvo = localStorage.getItem("theme");
-
-  // Se existir, aplica o tema salvo. Senão, usa o tema padrão (claro).
-  if (temaSalvo) {
-    aplicarTema(temaSalvo);
-  } else {
-    aplicarTema("light");
-  }
-
-  // 2. Adiciona o "ouvinte" para o clique no interruptor
-  darkModeToggle.addEventListener("change", () => {
-    let novoTema;
-    if (darkModeToggle.checked) {
-      novoTema = "dark";
-    } else {
-      novoTema = "light";
-    }
-
-    // Aplica o novo tema e salva a escolha no navegador
-    aplicarTema(novoTema);
-    localStorage.setItem("theme", novoTema);
-  });
 });
