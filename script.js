@@ -25,6 +25,7 @@ function definirCategoria(idade) {
 }
 
 // FUNÇÃO PARA SAUDAÇÃO DINÂMICA _________________________________________________________________________________
+
 function atualizarSaudacao() {
   const elementoSaudacao = document.getElementById("mensagem-saudacao");
   if (!elementoSaudacao) return;
@@ -44,6 +45,7 @@ function atualizarSaudacao() {
 
   elementoSaudacao.textContent = `Olá, ${saudacao}, ${nomeUsuario}!`;
 }
+
 
 // barra de pesquisa universal _______________________________________________________________________________________
 function configurarBusca(
@@ -86,20 +88,40 @@ function configurarBusca(
 let graficoAtividades = null;
 let graficoMedicamentos = null;
 
-function iniciarPaginaDashboard() {
+async function iniciarPaginaDashboard() {
   atualizarSaudacao();
 
-  const listaResidentes = JSON.parse(
-    sessionStorage.getItem("listaResidentes") || "[]"
-  );
+  let listaResidentes = [];
+try {
+  const resposta = await fetch("http://localhost:3000/criancas");
+  if (resposta.ok) {
+    listaResidentes = await resposta.json();
+  } else {
+    console.error("Erro ao buscar residentes:", resposta.status);
+  }
+} catch (erro) {
+    console.error("Erro de conexão com o servidor:", erro);
+}
+
   const listaTratamentos = JSON.parse(
     sessionStorage.getItem("listaTratamentos") || "[]"
   );
-  const listaAtividades = JSON.parse(
-    sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
-  );
 
-  const contadorResidentesEl = document.getElementById("contador-residentes");
+
+  let listaAtividades = [];
+try {
+  const respostaAtividades = await fetch("http://localhost:3000/atividades");
+  if (respostaAtividades.ok) {
+    listaAtividades = await respostaAtividades.json();
+  } else {
+    console.error("Erro ao buscar atividades:", respostaAtividades.status);
+  }
+} catch (erro) {
+  console.error("Erro de conexão com o servidor de atividades:", erro);
+}
+
+
+  const contadorResidentesEl = document.getElementById("total-residentes");
   const contadorMedicamentosEl = document.getElementById(
     "contador-medicamentos-pendentes"
   );
@@ -115,24 +137,40 @@ function iniciarPaginaDashboard() {
     contadorResidentesEl.textContent = listaResidentes.length;
   }
   if (contadorMedicamentosEl) {
-    const pendentes = listaTratamentos.filter(
-      (t) => t.status === "Pendente"
-    ).length;
-    contadorMedicamentosEl.textContent = pendentes;
+  try {
+    const respostaMedicamentos = await fetch("http://localhost:3000/medicamentos/count");
+    if (respostaMedicamentos.ok) {
+      const dados = await respostaMedicamentos.json();
+      contadorMedicamentosEl.textContent = dados.total ?? dados.count ?? 0;
+    } else {
+      console.error("Erro ao buscar contagem de medicamentos:", respostaMedicamentos.status);
+      contadorMedicamentosEl.textContent = "0";
+    }
+  } catch (erro) {
+    console.error("Erro de conexão com o servidor de medicamentos:", erro);
+    contadorMedicamentosEl.textContent = "0";
   }
+}
+
   if (contadorAtividadesEl) {
-    const hoje = new Date().toISOString().split("T")[0];
-    const deHoje = listaAtividades.filter(
-      (a) => a.data === hoje && a.status === "Agendada"
-    ).length;
-    contadorAtividadesEl.textContent = deHoje;
+  try {
+    const respostaCount = await fetch("http://localhost:3000/atividades/count");
+    if (respostaCount.ok) {
+      const dados = await respostaCount.json();
+      contadorAtividadesEl.textContent = dados.total; // ← mostra o número total de atividades
+    } else {
+      console.error("Erro ao buscar contagem de atividades:", respostaCount.status);
+    }
+  } catch (erro) {
+    console.error("Erro de conexão com o servidor de atividades:", erro);
   }
+}
 
   if (listaResidentesDashboard) {
     listaResidentesDashboard.innerHTML = "";
     listaResidentes.forEach((residente) => {
       const li = document.createElement("li");
-      li.textContent = `${residente["primeiro-nome"]} ${residente.sobrenome}`;
+      li.textContent = `${residente["primeiro_nome"]} ${residente.sobrenome}`;
       li.dataset.id = residente.id;
       listaResidentesDashboard.appendChild(li);
     });
@@ -235,83 +273,112 @@ function iniciarPaginaDashboard() {
 */
 // Substitua TODA a sua função 'iniciarPaginaResidentes' por esta:
 
-function iniciarPaginaResidentes() {
-  const listaResidentes = JSON.parse(
-    sessionStorage.getItem("listaResidentes") || "[]"
-  );
+async function iniciarPaginaResidentes() {
+  try {
+    // 🔹 1. Busca a lista direto do banco de dados via backend
+    const resposta = await fetch("http://localhost:3000/criancas"); // <-- rota do backend
+    const listaResidentes = await resposta.json();
 
-  const tabelaBodyDesktop = document.getElementById("lista-residentes-body");
-  const listaBodyMobile = document.getElementById("lista-residentes-nova-body");
 
-  if (!tabelaBodyDesktop || !listaBodyMobile) return;
+    // Pega os containers dos DOIS layouts
+    const tabelaBodyDesktop = document.getElementById("lista-residentes-body");
+    const listaBodyMobile = document.getElementById("lista-residentes-nova-body");
 
-  tabelaBodyDesktop.innerHTML = "";
-  listaBodyMobile.innerHTML = "";
+    if (!tabelaBodyDesktop || !listaBodyMobile) return;
 
-  if (listaResidentes.length > 0) {
-    listaResidentes.forEach((residente) => {
-      const idade = calcularIdade(residente.nascimento);
-      const categoria = definirCategoria(idade);
-      const nomeCompleto = `${residente["primeiro-nome"]} ${residente.sobrenome}`;
-      const sexoFormatado = residente.sexo
-        ? residente.sexo.charAt(0).toUpperCase() + residente.sexo.slice(1)
-        : "N/A";
-      const acoesHTML = `
-        <a href="cadastros/cadastro-residente/index.html?id=${residente.id}&origem=pagina-residentes" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
-        <a href="#" class="btn-acao-icone btn-excluir" data-id="${residente.id}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
-      `;
+    // Limpa ambos os containers
+    tabelaBodyDesktop.innerHTML = "";
+    listaBodyMobile.innerHTML = "";
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${nomeCompleto}</td>
-        <td>${idade}</td>
-        <td>${sexoFormatado}</td>
-        <td>${categoria}</td>
-        <td class="acoes">${acoesHTML}</td>
-      `;
-      tabelaBodyDesktop.appendChild(tr);
 
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <span class="residente-nome">${nomeCompleto}</span>
-        <span class="residente-idade">${idade}</span>
-        <div class="residente-acoes">${acoesHTML}</div>
-      `;
-      listaBodyMobile.appendChild(li);
-    });
-  } else {
-    tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum residente cadastrado.</td></tr>`;
-    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum residente cadastrado.</li>`;
-  }
+    if (listaResidentes.length > 0) {
+      listaResidentes.forEach((residente) => {
+        const idade = calcularIdade(residente.data_nascimento);
+        const categoria = definirCategoria(idade);
+        const nomeCompleto = `${residente.primeiro_nome} ${residente.sobrenome}`;
+        const sexoFormatado = residente.sexo
+          ? residente.sexo.charAt(0).toUpperCase() + residente.sexo.slice(1)
+          : "N/A";
 
-  const paginaResidentes = document.getElementById("pagina-residentes");
 
-  paginaResidentes.addEventListener("click", function (event) {
-    const botaoExcluir = event.target.closest(".btn-excluir");
-    if (!botaoExcluir) return;
+        const acoesHTML = `
+          <a href="cadastros/cadastro-residente/index.html?id=${residente.id}&origem=pagina-residentes" 
+             class="btn-acao-icone btn-editar" title="Editar Ficha">
+             <i class='bx bxs-pencil'></i>
+          </a>
+          <a href="#" class="btn-acao-icone btn-excluir" 
+             data-id="${residente.id}" title="Excluir Ficha">
+             <i class='bx bx-trash-alt'></i>
+          </a>
+        `;
 
-    event.preventDefault();
-    const idParaExcluir = botaoExcluir.dataset.id;
+        // Linha para o layout Desktop
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${nomeCompleto}</td>
+          <td>${idade}</td>
+          <td>${sexoFormatado}</td>
+          <td>${categoria}</td>
+          <td class="acoes">${acoesHTML}</td>
+        `;
+        tabelaBodyDesktop.appendChild(tr);
 
-    const itemPai = botaoExcluir.closest("tr") || botaoExcluir.closest("li");
-    const nomeDoResidente = itemPai.querySelector(
-      "td:first-child, .residente-nome"
-    ).textContent;
+        // Item para o layout Mobile
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span class="residente-nome">${nomeCompleto}</span>
+          <span class="residente-idade">${idade}</span>
+          <div class="residente-acoes">${acoesHTML}</div>
+        `;
+        listaBodyMobile.appendChild(li);
+      });
+    } else {
+      tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum residente cadastrado.</td></tr>`;
+      listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum residente cadastrado.</li>`;
 
-    if (
-      confirm(
-        `Tem certeza que deseja excluir o residente "${nomeDoResidente}"?`
-      )
-    ) {
-      const novaLista = JSON.parse(
-        sessionStorage.getItem("listaResidentes") || "[]"
-      ).filter((residente) => residente.id != idParaExcluir);
-      sessionStorage.setItem("listaResidentes", JSON.stringify(novaLista));
-      alert("Residente excluído com sucesso!");
-      iniciarPaginaResidentes();
     }
-  });
+
+    // 🔹 Listener de exclusão (funciona em desktop e mobile)
+    const paginaResidentes = document.getElementById("pagina-residentes");
+
+    paginaResidentes.addEventListener("click", async function (event) {
+      const botaoExcluir = event.target.closest(".btn-excluir");
+      if (!botaoExcluir) return; // Se não clicou no botão de excluir, ignora
+
+      event.preventDefault();
+      const idParaExcluir = botaoExcluir.dataset.id;
+
+      // Encontra o nome do residente
+      const itemPai = botaoExcluir.closest("tr") || botaoExcluir.closest("li");
+      const nomeDoResidente = itemPai.querySelector("td:first-child, .residente-nome").textContent;
+
+      if (confirm(`Tem certeza que deseja excluir o residente "${nomeDoResidente}"?`)) {
+        try {
+          const response = await fetch(`http://localhost:3000/criancas/${idParaExcluir}`, {
+            method: "DELETE",
+          });
+
+          if (!response.ok) {
+            throw new Error("Erro ao excluir residente no servidor");
+          }
+
+          const result = await response.json();
+          alert(result.message || "Residente excluído com sucesso!");
+
+          // Recarrega a lista atualizada
+          await iniciarPaginaResidentes();
+        } catch (error) {
+          console.error("Erro ao excluir residente:", error);
+          alert("Falha ao excluir residente!");
+        }
+      }
+    });
+  } catch (error) {
+    console.error("Erro ao carregar residentes:", error);
+  }
 }
+
+
 
 // tabela funcionario ______________________________________________________________________________________________________________
 /*
@@ -320,23 +387,52 @@ function iniciarPaginaResidentes() {
   informações como nome, turno, e status de cada um. Ela também cria os links 
   corretos para a edição de cada ficha e ativa a funcionalidade do botão de excluir.
 */
-function iniciarPaginaFuncionarios() {
-  const listaFuncionarios = JSON.parse(
-    sessionStorage.getItem("listaFuncionarios") || "[]"
-  );
-
+async function iniciarPaginaFuncionarios() {
   const tabelaBodyDesktop = document.getElementById("lista-funcionarios-body");
-  const listaBodyMobile = document.getElementById(
-    "lista-funcionarios-nova-body"
-  );
+  const listaBodyMobile = document.getElementById("lista-funcionarios-nova-body");
 
   if (!tabelaBodyDesktop || !listaBodyMobile) return;
 
   tabelaBodyDesktop.innerHTML = "";
   listaBodyMobile.innerHTML = "";
 
-  if (listaFuncionarios.length > 0) {
+  try {
+    const response = await fetch("http://localhost:3000/funcionarios");
+    if (!response.ok) throw new Error("Erro ao carregar funcionários");
+    const listaFuncionarios = await response.json();
+
+    if (listaFuncionarios.length === 0) {
+      tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum funcionário cadastrado.</td></tr>`;
+      listaBodyMobile.innerHTML = `<li style="display: block; text-align: center;">Nenhum funcionário cadastrado.</li>`;
+      return;
+    }
+
+    // Função para converter turno em horário
+function definirHorario(turno) {
+  if (!turno) return "N/A";
+
+  // Se já vier algo como "Manhã (06:00 - 14:00)", extrai o range
+  const textoOriginal = String(turno);
+  const jaTemHorario = textoOriginal.match(/\b\d{2}:\d{2}\s*-\s*\d{2}:\d{2}\b/);
+  if (jaTemHorario) return jaTemHorario[0];
+
+  // Normaliza para comparar sem acentos
+  const t = textoOriginal
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase()
+    .trim();
+
+  if (t.includes("Manhã (06:00 - 14:00)")) return "06:00 - 14:00";
+  if (t.includes("Tarde (14:00 - 22:00)")) return "14:00 - 22:00";
+  if (t.includes("Noite (22:00 - 06:00)")) return "22:00 - 06:00";
+
+  return "N/A";
+}
+
+
     listaFuncionarios.forEach((funcionario) => {
+
       const nomeCompleto = `${funcionario["primeiro-nome"]} ${funcionario.sobrenome}`;
 
       function definirHorario(turno) {
@@ -352,25 +448,52 @@ function iniciarPaginaFuncionarios() {
         }
       }
       const horario = definirHorario(funcionario.turno);
-      const status = funcionario.status || "Pendente";
-      const classeStatus = `status-${status.toLowerCase()}`;
-      const statusHTML = `<span class="status ${classeStatus}">${status}</span>`;
+      const status = funcionario.status ? funcionario.status.toLowerCase() : "pendente";
+      let classeStatus = "";
 
-      const acoesHTML = `
-        <a href="cadastros/cadastro-funcionario/index.html?id=${funcionario.id}&origem=pagina-funcionarios" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
-        <a href="#" class="btn-acao-icone btn-excluir" data-id="${funcionario.id}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
-      `;
+      switch (status) {
+        case "trabalhando":
+        case "ativo":
+          classeStatus = "status-trabalhando"; // Verde
+          break;
+        case "folga":
+          classeStatus = "status-folga"; // Cinza
+          break;
+        case "falta":
+        case "inativo":
+          classeStatus = "status-falta"; // Vermelho
+          break;
+        default:
+          classeStatus = "status-pendente"; // Amarelo
+          break;
+      }
 
+
+      const statusHTML = `<span class="status ${classeStatus}">${funcionario.status || "Pendente"}</span>`;
+
+    const acoesHTML = `
+      <a href="cadastros/cadastro-funcionario/index.html?id=${funcionario.id}&origem=pagina-funcionarios" 
+        class="btn-acao-icone btn-editar" title="Editar Ficha">
+        <i class='bx bxs-pencil'></i>
+      </a>
+      <a href="#" class="btn-acao-icone btn-excluir" data-id="${funcionario.id}" title="Excluir Ficha">
+        <i class='bx bx-trash-alt'></i>
+      </a>
+    `;
+
+
+      // Linha da tabela desktop
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${horario}</td>
         <td>${nomeCompleto}</td>
-        <td>${funcionario.id.toString().slice(-4)}</td>
+        <td>${String(funcionario.id).slice(-4)}</td>
         <td>${statusHTML}</td>
         <td class="acoes">${acoesHTML}</td>
       `;
       tabelaBodyDesktop.appendChild(tr);
 
+      // Item da lista mobile
       const li = document.createElement("li");
       li.innerHTML = `
         <span class="funcionario-nome">${nomeCompleto}</span>
@@ -379,41 +502,35 @@ function iniciarPaginaFuncionarios() {
       `;
       listaBodyMobile.appendChild(li);
     });
-  } else {
-    tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum funcionário cadastrado.</td></tr>`;
-    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum funcionário cadastrado.</li>`;
+
+    // Excluir funcionário
+    const paginaFuncionarios = document.getElementById("pagina-funcionarios");
+    paginaFuncionarios.addEventListener("click", async function (event) {
+      const botaoExcluir = event.target.closest(".btn-excluir");
+      if (!botaoExcluir) return;
+
+      event.preventDefault();
+      const idParaExcluir = botaoExcluir.dataset.id;
+      const nomeDoFuncionario = botaoExcluir
+        .closest("tr, li")
+        .querySelector("td:nth-child(2), .funcionario-nome").textContent;
+
+      if (confirm(`Tem certeza que deseja excluir o funcionário "${nomeDoFuncionario}"?`)) {
+        const resp = await fetch(`http://localhost:3000/funcionarios/${idParaExcluir}`, { method: "DELETE" });
+        if (resp.ok) {
+          alert("Funcionário excluído com sucesso!");
+          iniciarPaginaFuncionarios();
+        } else {
+          alert("Erro ao excluir funcionário.");
+        }
+      }
+    });
+  } catch (error) {
+    console.error("Erro ao carregar funcionários:", error);
   }
-
-  const paginaFuncionarios = document.getElementById("pagina-funcionarios");
-
-  paginaFuncionarios.addEventListener("click", function (event) {
-    const botaoExcluir = event.target.closest(".btn-excluir");
-    if (!botaoExcluir) return;
-
-    event.preventDefault();
-    const idParaExcluir = botaoExcluir.dataset.id;
-
-    const itemPai = botaoExcluir.closest("tr") || botaoExcluir.closest("li");
-    const nomeDoFuncionario = itemPai.querySelector(
-      "td:nth-child(2), .funcionario-nome"
-    ).textContent;
-
-    if (
-      confirm(
-        `Tem certeza que deseja excluir o funcionário "${nomeDoFuncionario}"?`
-      )
-    ) {
-      const novaLista = JSON.parse(
-        sessionStorage.getItem("listaFuncionarios") || "[]"
-      ).filter((func) => func.id != idParaExcluir);
-
-      sessionStorage.setItem("listaFuncionarios", JSON.stringify(novaLista));
-      alert("Funcionário excluído com sucesso!");
-
-      iniciarPaginaFuncionarios();
-    }
-  });
 }
+
+
 
 // tabela responsavel  ______________________________________________________________________________________________________________
 /*
@@ -422,70 +539,78 @@ function iniciarPaginaFuncionarios() {
   vinculado a qual responsável. Assim como as outras, ela também cria os botões 
   de ação (editar/excluir) e ativa a funcionalidade de exclusão.
 */
-function iniciarPaginaResponsaveis() {
-  const listaResponsaveis = JSON.parse(
-    sessionStorage.getItem("listaResponsaveis") || "[]"
-  );
-  const listaResidentes = JSON.parse(
-    sessionStorage.getItem("listaResidentes") || "[]"
-  );
-
+async function iniciarPaginaResponsaveis() {
   const tabelaBodyDesktop = document.getElementById("lista-responsaveis-body");
-  const listaBodyMobile = document.getElementById(
-    "lista-responsaveis-nova-body"
-  );
+  const listaBodyMobile = document.getElementById("lista-responsaveis-nova-body");
 
   if (!tabelaBodyDesktop || !listaBodyMobile) return;
 
   tabelaBodyDesktop.innerHTML = "";
   listaBodyMobile.innerHTML = "";
 
-  if (listaResponsaveis.length > 0) {
-    listaResponsaveis.forEach((responsavel) => {
-      const idade = calcularIdade(responsavel.nascimento);
-      const categoria = definirCategoria(idade);
-      const nomeCompleto = `${responsavel["primeiro-nome"]} ${responsavel.sobrenome}`;
-      const parentesco = responsavel.parentesco;
+  try {
+    // Busca responsáveis e residentes direto do backend
+    const respostaResponsaveis = await fetch("http://localhost:3000/responsaveis");
+    const respostaResidentes = await fetch("http://localhost:3000/criancas");
 
-      const residenteVinculado = listaResidentes.find(
-        (r) => r.id == responsavel.residenteId
-      );
-      const nomeResidente = residenteVinculado
-        ? `${residenteVinculado["primeiro-nome"]} ${residenteVinculado.sobrenome}`
-        : "Não encontrado";
+    if (!respostaResponsaveis.ok || !respostaResidentes.ok)
+      throw new Error("Erro ao buscar dados do servidor.");
 
-      const acoesHTML = `
-        <a href="cadastros/cadastro-responsavel/index.html?id=${responsavel.id}&origem=pagina-responsavel" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
-        <a href="#" class="btn-acao-icone btn-excluir" data-id="${responsavel.id}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
-      `;
+    const listaResponsaveis = await respostaResponsaveis.json();
+    const listaResidentes = await respostaResidentes.json();
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${nomeCompleto}</td>
-        <td>${idade}</td>
-        <td>${categoria}</td>
-        <td>${parentesco}</td>
-        <td>${nomeResidente}</td>
-        <td class="acoes">${acoesHTML}</td>
-      `;
-      tabelaBodyDesktop.appendChild(tr);
+    if (listaResponsaveis.length > 0) {
+      listaResponsaveis.forEach((responsavel) => {
+        const idade = calcularIdade(responsavel.data_nascimento);
+        const categoria = definirCategoria(idade);
+        const nomeCompleto = `${responsavel.nome || responsavel.primeiro_nome || ""} ${responsavel.sobrenome || ""}`.trim();
+        const parentesco = responsavel.parentesco || "—";
 
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <span class="responsavel-nome">${nomeCompleto}</span>
-        <span class="responsavel-parentesco">${parentesco}</span>
-        <div class="responsavel-acoes">${acoesHTML}</div>
-      `;
-      listaBodyMobile.appendChild(li);
-    });
-  } else {
-    tabelaBodyDesktop.innerHTML = `<td colspan="6" style="text-align:center;">Nenhum responsável cadastrado.</td>`;
-    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum responsável cadastrado.</li>`;
+        // Vincula o residente
+        const residenteVinculado = listaResidentes.find(
+          (r) => r.id == responsavel.id_crianca
+        );
+        const nomeResidente = residenteVinculado
+          ? `${residenteVinculado.primeiro_nome} ${residenteVinculado.sobrenome}`
+          : "Não encontrado";
+
+        const acoesHTML = `
+          <a href="cadastros/cadastro-responsavel/index.html?id=${responsavel.id}&origem=pagina-responsavel" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
+          <a href="#" class="btn-acao-icone btn-excluir" data-id="${responsavel.id}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
+        `;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${nomeCompleto}</td>
+          <td>${idade}</td>
+          <td>${categoria}</td>
+          <td>${parentesco}</td>
+          <td>${nomeResidente}</td>
+          <td class="acoes">${acoesHTML}</td>
+        `;
+        tabelaBodyDesktop.appendChild(tr);
+
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span class="responsavel-nome">${nomeCompleto}</span>
+          <span class="responsavel-parentesco">${parentesco}</span>
+          <div class="responsavel-acoes">${acoesHTML}</div>
+        `;
+        listaBodyMobile.appendChild(li);
+      });
+    } else {
+      tabelaBodyDesktop.innerHTML = `<td colspan="6" style="text-align:center;">Nenhum responsável cadastrado.</td>`;
+      listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum responsável cadastrado.</li>`;
+    }
+  } catch (erro) {
+    console.error("Erro ao carregar responsáveis:", erro);
+    tabelaBodyDesktop.innerHTML = `<td colspan="6" style="text-align:center; color:red;">Erro ao carregar responsáveis.</td>`;
   }
 
+  // --- Ações de excluir ---
   const paginaResponsaveis = document.getElementById("pagina-responsavel");
 
-  paginaResponsaveis.addEventListener("click", function (event) {
+  paginaResponsaveis.addEventListener("click", async function (event) {
     const botaoExcluir = event.target.closest(".btn-excluir");
     if (!botaoExcluir) return;
 
@@ -497,22 +622,25 @@ function iniciarPaginaResponsaveis() {
       "td:first-child, .responsavel-nome"
     ).textContent;
 
-    if (
-      confirm(
-        `Tem certeza que deseja excluir o responsável "${nomeDoResponsavel}"?`
-      )
-    ) {
-      const novaLista = JSON.parse(
-        sessionStorage.getItem("listaResponsaveis") || "[]"
-      ).filter((resp) => resp.id != idParaExcluir);
-
-      sessionStorage.setItem("listaResponsaveis", JSON.stringify(novaLista));
-      alert("Responsável excluído com sucesso!");
-
-      iniciarPaginaResponsaveis();
+    if (confirm(`Tem certeza que deseja excluir o responsável "${nomeDoResponsavel}"?`)) {
+      try {
+        const resposta = await fetch(`http://localhost:3000/responsaveis/${idParaExcluir}`, {
+          method: "DELETE",
+        });
+        if (resposta.ok) {
+          alert("Responsável excluído com sucesso!");
+          iniciarPaginaResponsaveis();
+        } else {
+          alert("Erro ao excluir o responsável.");
+        }
+      } catch (erro) {
+        console.error("Erro ao excluir:", erro);
+        alert("Falha ao excluir o responsável.");
+      }
     }
   });
 }
+
 
 // sessao medicamento -_____________________________________________________________________________________________________
 /*
@@ -522,89 +650,67 @@ function iniciarPaginaResponsaveis() {
   junto com os botões de editar e excluir, e ativa a função de exclusão.
 */
 
-function iniciarPaginaMedicamentos() {
-  const listaResidentes = JSON.parse(
-    sessionStorage.getItem("listaResidentes") || "[]"
-  );
-  const listaTratamentos = JSON.parse(
-    sessionStorage.getItem("listaTratamentos") || "[]"
-  );
+async function iniciarPaginaMedicamentos() {
+  try {
+    const resposta = await fetch("http://localhost:3000/medicamentos");
+    const listaMedicamentos = await resposta.json();
 
-  const tabelaBodyDesktop = document.getElementById("lista-medicamentos-body");
-  const listaBodyMobile = document.getElementById(
-    "lista-medicamentos-nova-body"
-  );
 
-  if (!tabelaBodyDesktop || !listaBodyMobile) return;
+    const tabelaBodyDesktop = document.getElementById("lista-medicamentos-body");
+    if (!tabelaBodyDesktop) return;
+    tabelaBodyDesktop.innerHTML = "";
 
-  tabelaBodyDesktop.innerHTML = "";
-  listaBodyMobile.innerHTML = "";
+    if (listaMedicamentos.length === 0) {
+      tabelaBodyDesktop.innerHTML = `<tr><td colspan="8" style="text-align:center;">Nenhum medicamento cadastrado.</td></tr>`;
+      return;
+    }
 
-  if (listaTratamentos.length > 0) {
-    listaTratamentos.forEach((tratamento) => {
-      const residente = listaResidentes.find(
-        (r) => r.id == tratamento.residenteId
-      );
-      const nomeResidente = residente
-        ? `${residente["primeiro-nome"]} ${residente.sobrenome}`
-        : "Não encontrado";
+    listaMedicamentos.forEach((med) => {
+      const nomeResidente = `${med.primeiro_nome || ""} ${med.sobrenome || ""}`.trim();
+      const validadeFormatada = med.validade
+        ? new Date(med.validade).toLocaleDateString("pt-BR")
+        : "N/A";
+
+
+      const status = med.status || "Pendente";
+      const classeStatus = `status-${status.toLowerCase()}`;
+      const statusHTML = `<span class="status ${classeStatus}">${status}</span>`;
+
 
       const acoesHTML = `
-        <a href="cadastros/cadastro-medicamento/index.html?id=${tratamento.id}&origem=pagina-medicamentos" class="btn-acao-icone btn-editar" title="Editar Agendamento"><i class='bx bxs-pencil'></i></a>
-        <a href="#" class="btn-acao-icone btn-excluir" data-id="${tratamento.id}" title="Excluir Agendamento"><i class='bx bx-trash-alt'></i></a>
+        <a href="cadastros/cadastro-medicamento/index.html?id=${med.id}&origem=pagina-medicamentos" 
+           class="btn-acao-icone btn-editar" title="Editar Medicamento">
+           <i class='bx bxs-pencil'></i>
+        </a>
+        <a href="#" class="btn-acao-icone btn-excluir" data-id="${med.id}" title="Excluir Medicamento">
+           <i class='bx bx-trash-alt'></i>
+        </a>
       `;
 
+      // 🧠 Ordem corrigida das colunas
       const tr = document.createElement("tr");
 
       tr.innerHTML = `
-        <td>${tratamento.horario}</td>
-        <td>${nomeResidente}</td>
-        <td>${tratamento.medicamento}</td>
-        <td>${tratamento.dosagem}</td>
-        <td>${tratamento.tipo || "N/A"}</td>
+
+        <td>${med.horario || "N/A"}</td>
+        <td>${nomeResidente || "N/A"}</td>
+        <td>${med.medicamento || "N/A"}</td>
+        <td>${med.dosagem || "N/A"}</td>
+        <td>${med.tipo || "N/A"}</td>
+        <td>${med.frequencia || "N/A"}</td>
+        <td>${statusHTML}</td>
         <td class="acoes">${acoesHTML}</td>
       `;
       tabelaBodyDesktop.appendChild(tr);
-
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <span class="medicamento-residente">${nomeResidente}</span>
-        <span class="medicamento-nome">${tratamento.medicamento}</span>
-        <div class="medicamento-acoes">${acoesHTML}</div>
-      `;
-      listaBodyMobile.appendChild(li);
     });
-  } else {
-    tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align:center;">Nenhum tratamento agendado.</td></tr>`;
-    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum tratamento agendado.</li>`;
+  } catch (error) {
+    console.error("Erro ao carregar medicamentos:", error);
   }
 
-  const paginaMedicamentos = document.getElementById("pagina-medicamentos");
-  paginaMedicamentos.addEventListener("click", function (event) {
-    const botaoExcluir = event.target.closest(".btn-excluir");
-    if (!botaoExcluir) return;
-
-    event.preventDefault();
-    const idParaExcluir = botaoExcluir.dataset.id;
-    const nomeDoMedicamento =
-      JSON.parse(sessionStorage.getItem("listaTratamentos")).find(
-        (t) => t.id == idParaExcluir
-      )?.medicamento || "este agendamento";
-
-    if (
-      confirm(
-        `Tem certeza que deseja excluir o agendamento do medicamento "${nomeDoMedicamento}"?`
-      )
-    ) {
-      const novaLista = JSON.parse(
-        sessionStorage.getItem("listaTratamentos") || "[]"
-      ).filter((t) => t.id != idParaExcluir);
-      sessionStorage.setItem("listaTratamentos", JSON.stringify(novaLista));
-      alert("Agendamento excluído com sucesso!");
-      iniciarPaginaMedicamentos();
-    }
-  });
 }
+
+
+
 
 // sessao atividades  -_____________________________________________________________________________________________________
 
@@ -616,93 +722,108 @@ function iniciarPaginaMedicamentos() {
   tabela para refletir a mudança instantaneamente.
 */
 
-function iniciarPaginaAtividades() {
-  const listaAgendamentos = JSON.parse(
-    sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
-  );
+async function iniciarPaginaAtividades() {
+  try {
+    // 🔹 1. Busca a lista direto do backend
+    const resposta = await fetch("http://localhost:3000/atividades");
+    const listaAgendamentos = await resposta.json();
 
-  const tabelaBodyDesktop = document.getElementById("lista-atividades-body");
-  const listaBodyMobile = document.getElementById("lista-atividades-nova-body");
 
-  if (!tabelaBodyDesktop || !listaBodyMobile) return;
+    const tabelaBodyDesktop = document.getElementById("lista-atividades-body");
+    const listaBodyMobile = document.getElementById("lista-atividades-nova-body");
+    if (!tabelaBodyDesktop || !listaBodyMobile) return;
 
-  tabelaBodyDesktop.innerHTML = "";
-  listaBodyMobile.innerHTML = "";
+    // Limpa os containers
+    tabelaBodyDesktop.innerHTML = "";
+    listaBodyMobile.innerHTML = "";
 
-  if (listaAgendamentos.length > 0) {
+    if (listaAgendamentos.length === 0) {
+      tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align:center;">Nenhuma atividade agendada.</td></tr>`;
+      listaBodyMobile.innerHTML = `<li style="display:block; text-align:center; color: var(--secondary-color);">Nenhuma atividade agendada.</li>`;
+      return;
+    }
+
     listaAgendamentos.forEach((agendamento) => {
       const status = agendamento.status || "Agendada";
       const classeStatus = `status-${status.toLowerCase()}`;
       const statusHTML = `<span class="status ${classeStatus}">${status}</span>`;
 
-      const dataFormatada = new Date(
-        agendamento.data + "T00:00:00"
-      ).toLocaleDateString("pt-BR");
+      const dataFormatada = agendamento.data ? new Date(agendamento.data).toLocaleDateString("pt-BR") : "N/A";
+      const horarioFormatado = agendamento.horario || "N/A";
+      const nomeAtividade = agendamento.nome_atividade || "N/A";
+      const duracao = agendamento.duracao || "N/A";
 
       const acoesHTML = `
-        <a href="cadastros/cadastro-atividade/index.html?id=${agendamento.id}&origem=pagina-atividades" class="btn-acao-icone btn-editar" title="Editar Atividade"><i class='bx bxs-pencil'></i></a>
-        <a href="#" class="btn-acao-icone btn-excluir" data-id="${agendamento.id}" title="Excluir Atividade"><i class='bx bx-trash-alt'></i></a>
+        <a href="cadastros/cadastro-atividade/index.html?id=${agendamento.id}&origem=pagina-atividades" 
+           class="btn-acao-icone btn-editar" title="Editar Atividade">
+           <i class='bx bxs-pencil'></i>
+        </a>
+        <a href="#" class="btn-acao-icone btn-excluir" data-id="${agendamento.id}" title="Excluir Atividade">
+           <i class='bx bx-trash-alt'></i>
+        </a>
       `;
 
+      // Linha Desktop
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${dataFormatada}</td>
-        <td>${agendamento.horario}</td>
-        <td>${agendamento["nome-atividade"]}</td>
-        <td>${agendamento.duracao || "N/A"}</td>
+        <td>${horarioFormatado}</td>
+        <td>${nomeAtividade}</td>
+        <td>${duracao}</td>
         <td>${statusHTML}</td>
         <td class="acoes">${acoesHTML}</td>
       `;
       tabelaBodyDesktop.appendChild(tr);
 
+      // Item Mobile
       const li = document.createElement("li");
       li.innerHTML = `
         <div class="atividade-data-hora">
-            <span class="data">${dataFormatada}</span>
-            <span class="hora">${agendamento.horario}</span>
+          <span class="data">${dataFormatada}</span>
+          <span class="hora">${horarioFormatado}</span>
         </div>
-        <span class="atividade-nome">${agendamento["nome-atividade"]}</span>
+        <span class="atividade-nome">${nomeAtividade}</span>
         <div class="atividade-acoes">${acoesHTML}</div>
       `;
       listaBodyMobile.appendChild(li);
     });
-  } else {
-    tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align:center;">Nenhuma atividade agendada.</td></tr>`;
-    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhuma atividade agendada.</li>`;
+
+    // 🔹 Listener de exclusão (desktop e mobile)
+    const paginaAtividades = document.getElementById("pagina-atividades");
+    paginaAtividades.addEventListener("click", async function (event) {
+      const botaoExcluir = event.target.closest(".btn-excluir");
+      if (!botaoExcluir) return;
+
+      event.preventDefault();
+      const idParaExcluir = botaoExcluir.dataset.id;
+
+      const itemPai = botaoExcluir.closest("tr") || botaoExcluir.closest("li");
+      const nomeAtividade = itemPai.querySelector("td:nth-child(3), .atividade-nome")?.textContent || "N/A";
+
+      if (confirm(`Tem certeza que deseja excluir a atividade "${nomeAtividade}"?`)) {
+        try {
+          const response = await fetch(`http://localhost:3000/atividades/${idParaExcluir}`, {
+            method: "DELETE",
+          });
+
+          if (!response.ok) throw new Error("Erro ao excluir atividade no servidor");
+
+          const result = await response.json();
+          alert(result.message || "Atividade excluída com sucesso!");
+
+          // Recarrega a lista atualizada
+          await iniciarPaginaAtividades();
+        } catch (error) {
+          console.error("Erro ao excluir atividade:", error);
+          alert("Falha ao excluir atividade!");
+        }
+      }
+    });
+  } catch (error) {
+    console.error("Erro ao carregar atividades:", error);
   }
-
-  const paginaAtividades = document.getElementById("pagina-atividades");
-
-  paginaAtividades.addEventListener("click", function (event) {
-    const botaoExcluir = event.target.closest(".btn-excluir");
-    if (!botaoExcluir) return;
-
-    event.preventDefault();
-    const idParaExcluir = botaoExcluir.dataset.id;
-    const agendamento = JSON.parse(
-      sessionStorage.getItem("listaAgendamentosAtividade")
-    ).find((ag) => ag.id == idParaExcluir);
-
-    if (
-      agendamento &&
-      confirm(
-        `Tem certeza que deseja excluir a atividade "${agendamento["nome-atividade"]}"?`
-      )
-    ) {
-      const novaLista = JSON.parse(
-        sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
-      ).filter((ag) => ag.id != idParaExcluir);
-
-      sessionStorage.setItem(
-        "listaAgendamentosAtividade",
-        JSON.stringify(novaLista)
-      );
-
-      alert("Atividade excluída com sucesso!");
-      iniciarPaginaAtividades();
-    }
-  });
 }
+
 
 // sessao relatorio   -_____________________________________________________________________________________________________
 
@@ -711,100 +832,118 @@ function iniciarPaginaAtividades() {
   e de residentes para poder construir a tabela de registros salvos, mostrando a data, 
   o residente, o responsável pelo registro, o medicamento e seu status. Assim como as 
   outras, ela também cria os botões de ação e ativa a funcionalidade de exclusão.
-  */
 
-function iniciarPaginaRelatorios() {
-  const listaRelatorios = JSON.parse(
-    sessionStorage.getItem("listaRelatoriosDiarios") || "[]"
-  );
-  const listaResidentes = JSON.parse(
-    sessionStorage.getItem("listaResidentes") || "[]"
-  );
+*/
+async function iniciarPaginaRelatorios() {
+  try {
+    // 🔹 Busca os relatórios e residentes do backend
+    const [listaRelatorios, listaResidentes] = await Promise.all([
+      fetch("http://localhost:3000/relatorio").then((res) => res.json()),
+      fetch("http://localhost:3000/criancas").then((res) => res.json()),
+    ]);
 
-  const tabelaBodyDesktop = document.getElementById("lista-relatorios-body");
-  const listaBodyMobile = document.getElementById("lista-relatorios-nova-body");
 
-  if (!tabelaBodyDesktop || !listaBodyMobile) return;
+    const tabelaBodyDesktop = document.getElementById("lista-relatorios-body");
+    const listaBodyMobile = document.getElementById("lista-relatorios-nova-body");
+    if (!tabelaBodyDesktop || !listaBodyMobile) return;
 
-  tabelaBodyDesktop.innerHTML = "";
-  listaBodyMobile.innerHTML = "";
+    tabelaBodyDesktop.innerHTML = "";
+    listaBodyMobile.innerHTML = "";
 
-  const relatoriosOrdenados = listaRelatorios.slice().reverse();
+    const relatoriosOrdenados = listaRelatorios.slice().reverse();
 
-  if (relatoriosOrdenados.length > 0) {
-    relatoriosOrdenados.forEach((relatorio) => {
-      const residente = listaResidentes.find(
-        (r) => r.id == relatorio.residenteId
-      );
-      const nomeResidente = residente
-        ? `${residente["primeiro-nome"]} ${residente.sobrenome}`
-        : "Não encontrado";
-      const dataFormatada = new Date(
-        relatorio.data + "T00:00:00"
-      ).toLocaleDateString("pt-BR");
-      const acoesHTML = `
-        <a href="cadastros/cadastro-relatorio/index.html?id=${relatorio.id}&origem=pagina-relatorios" class="btn-acao-icone btn-editar" title="Editar Relatório"><i class='bx bxs-pencil'></i></a>
-        <a href="#" class="btn-acao-icone btn-excluir" data-id="${relatorio.id}" title="Excluir Relatório"><i class='bx bx-trash-alt'></i></a>
-      `;
+    if (relatoriosOrdenados.length > 0) {
+      relatoriosOrdenados.forEach((relatorio) => {
+        const residente = listaResidentes.find((r) => r.id == relatorio.id_residente);
+        const nomeResidente = residente
+          ? `${residente["primeiro_nome"]} ${residente.sobrenome}`
+          : "Não encontrado";
 
-      let statusHtml = relatorio.statusMedicacao || "N/A";
-      let classeStatus = "";
-      if (relatorio.statusMedicacao === "Medicado") {
-        classeStatus = "status-administrado";
-      } else if (relatorio.statusMedicacao === "Não Tomado") {
-        // <<< CORRIGIDO
-        classeStatus = "status-nao-tomado";
-      }
-      if (classeStatus) {
-        statusHtml = `<span class="status ${classeStatus}">${relatorio.statusMedicacao}</span>`;
-      }
+        const dataFormatada =relatorio.data && relatorio.data !== "0000-00-00"
+          ? new Date(relatorio.data.replace(/-/g, "/")).toLocaleDateString("pt-BR")
+          : "Sem data";
+        // 🔹 Corrigido o link de edição (id certo e query correta)
+        const acoesHTML = `
+          <a href="cadastros/cadastro-relatorio/index.html?id_relatorio=${relatorio.id_relatorio}&origem=pagina-relatorios" 
+             class="btn-acao-icone btn-editar" 
+             title="Editar Relatório">
+             <i class='bx bxs-pencil'></i>
+          </a>
+          <a href="#" class="btn-acao-icone btn-excluir" data-id="${relatorio.id_relatorio}" title="Excluir Relatório">
+            <i class='bx bx-trash-alt'></i>
+          </a>
+        `;
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${dataFormatada}</td>
-        <td>${nomeResidente}</td>
-        <td>${relatorio.medicamento || "Nenhum"}</td>
-        <td>${relatorio.responsavelNome}</td>
-        <td>${statusHtml}</td>
-        <td class="acoes">${acoesHTML}</td>
-      `;
-      tabelaBodyDesktop.appendChild(tr);
+        // 🔹 Converte o valor booleano para texto e classe
+        let statusTexto = "N/A";
+        let classeStatus = "";
 
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <span class="relatorio-data">${dataFormatada}</span>
-        <span class="relatorio-residente">${nomeResidente}</span>
-        <div class="relatorio-acoes">${acoesHTML}</div>
-      `;
-      listaBodyMobile.appendChild(li);
-    });
-  } else {
-    tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align: center;">Nenhum relatório cadastrado.</td></tr>`;
-    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum relatório cadastrado.</li>`;
-  }
+        if (relatorio.medicacao_confirmada === 1 || relatorio.medicacao_confirmada === "1") {
+          statusTexto = "Medicado";
+          classeStatus = "status-administrado";
+        } else if (relatorio.medicacao_confirmada === 0 || relatorio.medicacao_confirmada === "0") {
+          statusTexto = "Não Medicado";
+          classeStatus = "status-nao-tomado";
+        }
 
-  const paginaRelatorios = document.getElementById("pagina-relatorios");
+        const statusHtml = `<span class="status ${classeStatus}">${statusTexto}</span>`;
 
-  paginaRelatorios.addEventListener("click", function (event) {
-    const botaoExcluir = event.target.closest(".btn-excluir");
-    if (!botaoExcluir) return;
+        // 🔹 Linha da tabela (desktop)
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${dataFormatada}</td>
+          <td>${nomeResidente}</td>
+          <td>${relatorio.medicamento || "Nenhum"}</td>
+          <td>${relatorio.responsavel || "Sem responsável"}</td>
+          <td>${statusHtml}</td>
+          <td class="acoes">${acoesHTML}</td>
+        `;
+        tabelaBodyDesktop.appendChild(tr);
 
-    event.preventDefault();
-    const idParaExcluir = botaoExcluir.dataset.id;
-
-    if (confirm("Tem certeza que deseja excluir este relatório?")) {
-      let relatoriosAtuais = JSON.parse(
-        sessionStorage.getItem("listaRelatoriosDiarios") || "[]"
-      );
-      const novaLista = relatoriosAtuais.filter((r) => r.id != idParaExcluir);
-      sessionStorage.setItem(
-        "listaRelatoriosDiarios",
-        JSON.stringify(novaLista)
-      );
-      iniciarPaginaRelatorios();
+        // 🔹 Item da lista (mobile)
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span class="relatorio-data">${dataFormatada}</span>
+          <span class="relatorio-residente">${nomeResidente}</span>
+          <div class="relatorio-acoes">${acoesHTML}</div>
+        `;
+        listaBodyMobile.appendChild(li);
+      });
+    } else {
+      tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align: center;">Nenhum relatório cadastrado.</td></tr>`;
+      listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum relatório cadastrado.</li>`;
     }
-  });
+
+    // ========================== EXCLUSÃO VIA BACKEND ==========================
+    const paginaRelatorios = document.getElementById("pagina-relatorios");
+    paginaRelatorios.addEventListener("click", async function (event) {
+      const botaoExcluir = event.target.closest(".btn-excluir");
+      if (!botaoExcluir) return;
+
+      event.preventDefault();
+      const idParaExcluir = botaoExcluir.dataset.id;
+
+      if (confirm("Tem certeza que deseja excluir este relatório?")) {
+        try {
+          const response = await fetch(`http://localhost:3000/relatorio/${idParaExcluir}`, {
+            method: "DELETE",
+          });
+          if (!response.ok) throw new Error("Erro ao excluir relatório");
+          alert("Relatório excluído com sucesso!");
+          iniciarPaginaRelatorios(); // Recarrega a lista
+        } catch (error) {
+          console.error("Erro ao excluir relatório:", error);
+          alert("Não foi possível excluir o relatório.");
+        }
+      }
+    });
+  } catch (error) {
+    console.error("Erro ao carregar página de relatórios:", error);
+    alert("Erro ao carregar a lista de relatórios.");
+  }
 }
+
+
 
 // sessao adm  -_____________________________________________________________________________________________________
 /*

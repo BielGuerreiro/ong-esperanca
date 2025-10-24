@@ -1,0 +1,14 @@
+[33mcommit 802acc9b80e7acaab7274ab37360120c319a3556[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/atualizacao-backend[m[33m, [m[1;31morigin/feature/atualizacao-backend[m[33m)[m
+Author: llsabrina <sabrinaalessandra2155@gmail.com>
+Date:   Wed Oct 15 18:16:29 2025 -0300
+
+    Primeiro commit: alterações na pasta backand
+
+A	.gitignore
+A	config/database.js
+A	package.json
+A	routes/criancas_route.js
+A	routes/relatorios_route.js
+A	routes/responsaveis_route.js
+A	routes/usuarios_route.js
+A	server.js
