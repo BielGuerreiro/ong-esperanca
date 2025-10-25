@@ -47,7 +47,7 @@ html {
 
 body {
   height: auto;
-  background: var(--secondary-color);
+  background: var(--cor-cinza-fundo);
 }
 
 .logo-header {
