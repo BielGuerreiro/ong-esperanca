@@ -3,12 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Acolhe + | CAdastro Residente</title>
-
+    <title>Cadastro de Residente</title>
     <link rel="stylesheet" href="../styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="shortcut icon" href="../../img/Logos.png" type="image/x-icon" />
+    <link rel="shortcut icon" href="/img/logo.png" type="image/x-icon" />
   </head>
   <body>
     <main>
@@ -23,8 +21,8 @@
                   >Primeiro nome<span class="obrigatorio">*</span></label
                 ><input
                   type="text"
-                  id="primeiro_nome"
-                  name="primeiro_nome"
+                  id="primeiro-nome"
+                  name="primeiro-nome"
                   placeholder="Digite o nome"
                   maxlength="50"
                   required
@@ -43,14 +41,13 @@
                 />
               </div>
             </div>
-            <!-- CPF  _________________________________________________________________________________ -->
             <div class="linha-form">
-              <div class="grupo-form">
-                <label for="CPF">CPF (Opcional)</label>
+              <div class="grupo-form campo-expandir">
+                <label for="cpf">CPF (Opcional)</label>
                 <input
                   type="text"
-                  id="CPF"
-                  name="CPF"
+                  id="cpf"
+                  name="cpf"
                   placeholder="000.000.000-00"
                   maxlength="14"
                   inputmode="numeric"
@@ -63,7 +60,7 @@
                   id="documento"
                   name="documento"
                   placeholder="Digite o documento"
-                  maxlength="100"
+                  maxlength="255"
                 />
               </div>
               <div class="grupo-form campo-expandir">
@@ -80,22 +77,21 @@
 
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
-                <label for="data_nascimento"
+                <label for="nascimento"
                   >Data de nascimento <span class="obrigatorio">*</span></label
-                >
-                <input
+                ><input
                   type="date"
-                  id="data_nascimento"
-                  name="data_nascimento"
+                  id="nascimento"
+                  name="nascimento"
                   required
                 />
               </div>
               <div class="grupo-form campo-expandir">
-                <label for="numero_SUS">Número do SUS (Opcional)</label>
-                <input
+                <label for="sus">Número do SUS (Opcional)</label
+                ><input
                   type="text"
-                  id="numero_SUS"
-                  name="numero_SUS"
+                  id="sus"
+                  name="sus"
                   placeholder="Digite o número"
                   inputmode="numeric"
                   maxlength="15"
@@ -108,11 +104,11 @@
                   >Etnia <span class="obrigatorio">*</span></label
                 ><select id="etnia" name="etnia" required>
                   <option value="" disabled selected>Selecionar</option>
-                  <option value="branca">Branca(o)</option>
-                  <option value="preta">Preta(o)</option>
-                  <option value="parda">Parda(o)</option>
-                  <option value="amarela">Amarela(o) (Asiático)</option>
-                  <option value="indigena">Indígena(o)</option>
+                  <option value="branca">Branca</option>
+                  <option value="preta">Preta</option>
+                  <option value="parda">Parda</option>
+                  <option value="amarela">Amarela (Asiático)</option>
+                  <option value="indigena">Indígena</option>
                   <option value="outro">Outro</option>
                 </select>
               </div>
@@ -124,11 +120,9 @@
                   <option value="nao">Não</option>
                 </select>
               </div>
-              <!-- tipo_sanguineo _________________________________________________________________________________ -->
-
               <div class="grupo-form campo-expandir">
-                <label for="tipo_sanguineo">Tipo sanguíneo (Opcional)</label>
-                <select id="tipo_sanguineo" name="tipo_sanguineo">
+                <label for="sangue">Tipo sanguíneo (Opcional)</label
+                ><select id="sangue" name="sangue">
                   <option value="" disabled selected>Selecionar</option>
                   <option value="A+">A+</option>
                   <option value="A-">A-</option>
@@ -143,19 +137,13 @@
             </div>
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
-                <label for="data_entrada"
+                <label for="entrada"
                   >Data de entrada <span class="obrigatorio">*</span></label
-                >
-                <input
-                  type="date"
-                  id="data_entrada"
-                  name="data_entrada"
-                  required
-                />
+                ><input type="date" id="entrada" name="entrada" required />
               </div>
               <div class="grupo-form campo-expandir">
-                <label for="data_saida">Data de saída (Opcional)</label>
-                <input type="date" id="data_saida" name="data_saida" />
+                <label for="saida">Data de saída (Opcional)</label
+                ><input type="date" id="saida" name="saida" />
               </div>
             </div>
             <div class="navegacao-form">
@@ -284,11 +272,11 @@
             <div class="titulo">Informações Escolares e de Vínculo</div>
 
             <div class="grupo-form">
-              <label for="frequenta_escola"
+              <label for="frequenta-escola"
                 >Frequenta alguma escola?
                 <span class="obrigatorio">*</span></label
               >
-              <select id="frequenta_escola" name="frequenta_escola" required>
+              <select id="frequenta-escola" name="frequenta-escola" required>
                 <option value="" disabled selected>Selecionar</option>
                 <option value="nao">Não</option>
                 <option value="sim">Sim</option>
@@ -327,13 +315,13 @@
             />
 
             <div class="grupo-form">
-              <label for="possui_responsavel"
+              <label for="possui-responsavel"
                 >Possui algum responsável?
                 <span class="obrigatorio">*</span></label
               >
               <select
-                id="possui_responsavel"
-                name="possui_responsavel"
+                id="possui-responsavel"
+                name="possui-responsavel"
                 required
               >
                 <option value="" disabled selected>Selecionar</option>
@@ -454,18 +442,18 @@
               <hr style="margin: 20px 0" />
 
               <div class="grupo-form">
-                <label for="enderecoresponsavel-igual"
+                <label for="endereco-responsavel-igual"
                   >O endereço é o mesmo que o do residente?<span
                     class="obrigatorio"
                     >*</span
                   ></label
                 >
                 <select
-                  id="endereco_responsavel_igual"
-                  name="endereco_responsavel_igual"
+                  id="endereco-responsavel-igual"
+                  name="endereco-responsavel-igual"
                 >
-                  <option value="Sim" selected>Sim</option>
-                  <option value="Nao">Não</option>
+                  <option value="sim" selected>Sim</option>
+                  <option value="nao">Não</option>
                 </select>
               </div>
 
@@ -599,7 +587,7 @@
             </div>
             <div class="grupo-form">
               <label for="alergias"
-                >Possui alergias? Se sim, quais? (Opcional)</label
+                >Possui alergia? Se sim, quais? (Opcional)</label
               >
               <textarea
                 id="alergias"

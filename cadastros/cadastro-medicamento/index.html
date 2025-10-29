@@ -3,12 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Acolhe + | Cadastrar Medicamento</title>
-
+    <title>Cadastrar Medicamento</title>
     <link rel="stylesheet" href="../styles.css" />
-
-    <link rel="shortcut icon" href="../../img/Logos.png" type="image/x-icon" />
+    <link rel="shortcut icon" href="/img/logo.png" type="image/x-icon" />
   </head>
   <body>
     <main>
@@ -19,11 +16,11 @@
 
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
-                <label for="residente_id"
+                <label for="residenteId"
                   >Para qual Residente?
                   <span class="obrigatorio">*</span></label
                 >
-                <select id="residente_id" name="residente_id" required>
+                <select id="residenteId" name="residenteId" required>
                   <option value="" disabled selected>
                     Selecione um residente
                   </option>
@@ -50,10 +47,10 @@
                 >
                 <select id="tipo" name="tipo" required>
                   <option value="" disabled selected>Selecionar</option>
-                  <option value="comprimido">Comprimido</option>
-                  <option value="gotas">Gotas</option>
-                  <option value="líquido">Líquido</option>
-                  <option value="injetavel">Injetável</option>
+                  <option value="Comprimido">Comprimido</option>
+                  <option value="Gotas">Gotas</option>
+                  <option value="Líquido">Líquido</option>
+                  <option value="Injetável">Injetável</option>
                 </select>
               </div>
             </div>
@@ -63,9 +60,8 @@
                 <label for="horario"
                   >Horário Inicial <span class="obrigatorio">*</span></label
                 >
-                <input type="time" id="turno" name="turno" required />
+                <input type="time" id="horario" name="horario" required />
               </div>
-
               <div class="grupo-form campo-expandir">
                 <label for="dosagem"
                   >Dosagem <span class="obrigatorio">*</span></label

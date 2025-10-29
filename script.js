@@ -84,7 +84,6 @@ function configurarBusca(
   e medicamentos sejam gerados e exibidos na tela.
 */
 let graficoAtividades = null;
-let graficoMedicamentos = null;
 
 function iniciarPaginaDashboard() {
   atualizarSaudacao();
@@ -111,15 +110,18 @@ function iniciarPaginaDashboard() {
   );
   const graficoContainer = document.querySelector(".grafico-dashboard");
 
+  // --- Atualiza contadores ---
   if (contadorResidentesEl) {
     contadorResidentesEl.textContent = listaResidentes.length;
   }
+
   if (contadorMedicamentosEl) {
     const pendentes = listaTratamentos.filter(
       (t) => t.status === "Pendente"
     ).length;
     contadorMedicamentosEl.textContent = pendentes;
   }
+
   if (contadorAtividadesEl) {
     const hoje = new Date().toISOString().split("T")[0];
     const deHoje = listaAtividades.filter(
@@ -128,6 +130,7 @@ function iniciarPaginaDashboard() {
     contadorAtividadesEl.textContent = deHoje;
   }
 
+  // --- Monta lista de residentes ---
   if (listaResidentesDashboard) {
     listaResidentesDashboard.innerHTML = "";
     listaResidentes.forEach((residente) => {
@@ -138,88 +141,118 @@ function iniciarPaginaDashboard() {
     });
   }
 
+  // --- Clique no residente para gerar gráfico ---
   if (listaResidentesDashboard && graficoContainer) {
     listaResidentesDashboard.addEventListener("click", function (event) {
       if (event.target && event.target.nodeName === "LI") {
         const liClicado = event.target;
         const residenteId = liClicado.dataset.id;
 
+        // Ativa o residente selecionado
         listaResidentesDashboard
           .querySelectorAll("li")
           .forEach((item) => item.classList.remove("ativo"));
         liClicado.classList.add("ativo");
 
+        // Destroi gráfico anterior, se houver
         if (graficoAtividades) {
           graficoAtividades.destroy();
         }
-        if (graficoMedicamentos) {
-          graficoMedicamentos.destroy();
-        }
 
+        // Substitui o container com novo gráfico
         graficoContainer.innerHTML = `
           <div class="chart-wrapper">
-            <h2>Frequência em Atividades (últimos 6 meses)</h2>
-            <canvas id="grafico-atividades-residente"></canvas>
-          </div>
-          <div class="chart-wrapper">
-            <h2>Status dos Medicamentos de Hoje</h2>
-            <canvas id="grafico-medicamentos-residente"></canvas>
+            <h2>Desempenho do Residente (Janeiro a Dezembro)</h2>
+            <canvas id="grafico-desempenho-residente"></canvas>
           </div>
         `;
 
-        const ctxAtividades = document
-          .getElementById("grafico-atividades-residente")
+        const ctx = document
+          .getElementById("grafico-desempenho-residente")
           .getContext("2d");
-        const dadosFicticios = Array.from({ length: 6 }, () =>
-          Math.floor(Math.random() * 15)
+
+        // Dados fictícios para o exemplo
+        const meses = [
+          "Janeiro",
+          "Fevereiro",
+          "Março",
+          "Abril",
+          "Maio",
+          "Junho",
+          "Julho",
+          "Agosto",
+          "Setembro",
+          "Outubro",
+          "Novembro",
+          "Dezembro",
+        ];
+
+        const dadosRegrediu = Array.from({ length: 12 }, () =>
+          Math.floor(Math.random() * 5)
+        );
+        const dadosEstagnado = Array.from({ length: 12 }, () =>
+          Math.floor(Math.random() * 5)
+        );
+        const dadosProgresso = Array.from({ length: 12 }, () =>
+          Math.floor(Math.random() * 5)
+        );
+        const dadosSuperou = Array.from({ length: 12 }, () =>
+          Math.floor(Math.random() * 5)
         );
 
-        graficoAtividades = new Chart(ctxAtividades, {
+        graficoAtividades = new Chart(ctx, {
           type: "bar",
           data: {
-            labels: ["Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro"],
+            labels: meses,
             datasets: [
               {
-                label: "Nº de Atividades",
-                data: dadosFicticios,
-                backgroundColor: "rgba(111, 169, 228, 0.6)",
-                borderColor: "rgba(111, 169, 228, 1)",
+                label: "Regrediu",
+                data: dadosRegrediu,
+                backgroundColor: "rgba(220, 53, 69, 0.8)", // vermelho
+                borderColor: "rgba(220, 53, 69, 1)",
+                borderWidth: 1,
+              },
+              {
+                label: "Estagnado",
+                data: dadosEstagnado,
+                backgroundColor: "rgba(255, 193, 7, 0.8)", // amarelo
+                borderColor: "rgba(255, 193, 7, 1)",
+                borderWidth: 1,
+              },
+              {
+                label: "Progresso",
+                data: dadosProgresso,
+                backgroundColor: "rgba(0, 123, 255, 0.8)", // azul
+                borderColor: "rgba(0, 123, 255, 1)",
+                borderWidth: 1,
+              },
+              {
+                label: "Superou",
+                data: dadosSuperou,
+                backgroundColor: "rgba(40, 167, 69, 0.8)", // verde
+                borderColor: "rgba(40, 167, 69, 1)",
                 borderWidth: 1,
               },
             ],
           },
-          options: { responsive: true, maintainAspectRatio: false },
-        });
-
-        const ctxMedicamentos = document
-          .getElementById("grafico-medicamentos-residente")
-          .getContext("2d");
-        const tratamentosDoResidente = listaTratamentos.filter(
-          (t) => t.residenteId == residenteId
-        );
-        const administrados = tratamentosDoResidente.filter(
-          (t) => t.status !== "Pendente"
-        ).length;
-        const pendentes = tratamentosDoResidente.length - administrados;
-
-        graficoMedicamentos = new Chart(ctxMedicamentos, {
-          type: "doughnut",
-          data: {
-            labels: ["Administrados", "Pendentes"],
-            datasets: [
-              {
-                label: "Status de Medicamentos",
-                data: [administrados, pendentes],
-                backgroundColor: [
-                  "rgba(40, 167, 69, 0.7)",
-                  "rgba(255, 193, 7, 0.7)",
-                ],
-                borderColor: ["rgba(40, 167, 69, 1)", "rgba(255, 193, 7, 1)"],
-                borderWidth: 1,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Quantidade de Ocorrências",
+                },
               },
-            ],
+            },
+            plugins: {
+              legend: {
+                position: "bottom",
+              },
+            },
           },
-          options: { responsive: true, maintainAspectRatio: false },
         });
       }
     });
