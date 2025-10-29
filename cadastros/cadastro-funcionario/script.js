@@ -1,106 +1,45 @@
-
-// ===== FUNÇÕES GLOBAIS DE APOIO _______________________________________________________________________________
-
-// 🔹 Buscar todos os funcionários
-async function carregarFuncionarios() {
-  try {
-    const response = await fetch("http://localhost:3000/funcionarios");
-    if (!response.ok) throw new Error("Erro ao buscar funcionários");
-    return await response.json();
-  } catch (error) {
-    console.error("Erro ao carregar funcionários:", error);
-    alert("Erro ao carregar lista de funcionários.");
-    return [];
-  }
-
+// FUNÇÕES GLOBAIS DE APOIO ___________________________________________________________________________________________________
+function carregarFuncionarios() {
+  return JSON.parse(sessionStorage.getItem("listaFuncionarios") || "[]");
+}
+function salvarFuncionarios(lista) {
+  sessionStorage.setItem("listaFuncionarios", JSON.stringify(lista));
+}
+function carregarResidentes() {
+  return JSON.parse(sessionStorage.getItem("listaResidentes") || "[]");
 }
 
-// 🔹 Criar ou atualizar um funcionário
-async function salvarFuncionario(dadosFuncionario, isEditMode = false, id = null) {
-  try {
-    const url = isEditMode
-      ? `http://localhost:3000/funcionarios/${id}` // PUT para editar
-      : "http://localhost:3000/funcionarios"; // POST para criar
-
-    const method = isEditMode ? "PUT" : "POST";
-
-    const response = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dadosFuncionario),
-    });
-
-    if (!response.ok) throw new Error("Erro ao salvar funcionário");
-
-    return await response.json();
-  } catch (error) {
-    console.error("Erro ao salvar funcionário:", error);
-    alert("Erro ao salvar os dados do funcionário.");
-  }
-}
-
-// Buscar lista de residentes (GET /criancas)
-async function carregarResidentes() {
-  try {
-    const response = await fetch("http://localhost:3000/criancas");
-    if (!response.ok) {
-      throw new Error("Erro ao buscar residentes");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Erro ao carregar residentes:", error);
-    alert("Erro ao carregar lista de residentes.");
-    return [];
-  }
-}
-
-
-// 🔹 Excluir funcionário
-async function excluirFuncionario(id) {
-  try {
-    const response = await fetch(`http://localhost:3000/funcionarios/${id}`, {
-      method: "DELETE",
-    });
-    if (!response.ok) throw new Error("Erro ao excluir funcionário");
-    return true;
-  } catch (error) {
-    console.error("Erro ao excluir funcionário:", error);
-    alert("Erro ao excluir o funcionário.");
-    return false;
-  }
-}
-
-// 🔹 Configurar validação de datas
 function configurarValidacaoDatas() {
-  const inputsData = document.querySelectorAll('input[type="date"]');
-  inputsData.forEach((input) => {
-    input.addEventListener("change", () => {
-      const dataSelecionada = new Date(input.value);
-      const hoje = new Date();
-      if (dataSelecionada > hoje) {
-        alert("A data não pode ser no futuro!");
-        input.value = "";
-      }
-    });
-  });
+  const hoje = new Date().toISOString().split("T")[0];
+  const inputNascimento = document.getElementById("nascimento");
+  if (inputNascimento) {
+    inputNascimento.max = hoje;
+    inputNascimento.min = "1900-01-01";
+  }
+  const inputAdmissao = document.getElementById("admissao");
+  if (inputAdmissao) {
+    inputAdmissao.max = "2100-12-31";
+    inputAdmissao.min = "1900-01-01";
+  }
 }
 
-// 🔹 Mostrar/Ocultar senha
 function iniciarToggleSenha(inputId, toggleId) {
-  const input = document.getElementById(inputId);
-  const toggle = document.getElementById(toggleId);
-  if (input && toggle) {
-    toggle.addEventListener("click", () => {
-      const tipo = input.type === "password" ? "text" : "password";
-      input.type = tipo;
-      toggle.classList.toggle("ativo");
+  const inputSenha = document.getElementById(inputId);
+  const toggleIcon = document.getElementById(toggleId);
+
+  if (inputSenha && toggleIcon) {
+    toggleIcon.addEventListener("click", function () {
+      const type =
+        inputSenha.getAttribute("type") === "password" ? "text" : "password";
+      inputSenha.setAttribute("type", type);
+      this.classList.toggle("bx-eye-slash");
+      this.classList.toggle("bx-eye");
     });
   }
 }
 
-
-//  CÓDIGO PRINCIPAL __________________________________________________________________________
-document.addEventListener("DOMContentLoaded", async function () {
+//  CÓDIGO PRINCIPAL __________________________________________________________________________
+document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("form-funcionario");
   const etapas = document.querySelectorAll(".etapa-form");
   const botoesProximo = document.querySelectorAll(".btn-proximo");
@@ -109,152 +48,129 @@ document.addEventListener("DOMContentLoaded", async function () {
   const botaoSubmit = document.querySelector(".btn-enviar");
   let etapaAtual = 0;
 
-
-  // --- Seletores para a lógica de Tags ---
-
   const selectResidenteMultiplo = document.getElementById("residente-select");
-  const tagsContainer = document.getElementById("residentes-selecionados-container");
-  const hiddenInputIds = document.getElementById("residentes_sob_cuidados");
+  const tagsContainer = document.getElementById(
+    "residentes-selecionados-container"
+  );
+  const hiddenInputIds = document.getElementById("residentes_vinculados_ids");
   let idsSelecionados = [];
+  const listaResidentes = carregarResidentes();
 
-  // --- Função para formatar datas no padrão yyyy-MM-dd ---
-  function formatarDataParaInput(dataISO) {
-    if (!dataISO) return "";
-    const d = new Date(dataISO);
-    if (isNaN(d)) return "";
-    return d.toISOString().split("T")[0];
-  }
-  // --- Cria e atualiza as tags dos residentes selecionados ---
-  function atualizarTags() {
-    tagsContainer.innerHTML = "";
+  form.setAttribute("novalidate", true); //LÓGICA DE EDIÇÃO E NÚMERO DE REGISTRO _________________________________________________________________________
 
-    idsSelecionados.forEach((id) => {
-      const residente = listaResidentes.find((r) => r.id == id);
-      if (!residente) return;
+  const urlParams = new URLSearchParams(window.location.search);
+  const funcionarioId = urlParams.get("id");
+  const isEditMode = Boolean(funcionarioId);
+  const inputNumeroRegistro = document.getElementById("numero-registro");
+  const listaFuncionarios = carregarFuncionarios(); // Carrega a lista aqui para uso no novo bloco 'else'
 
-      const tag = document.createElement("div");
-      tag.className =
-        "tag-residente flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium";
-
-      tag.innerHTML = `
-        <span>${residente.primeiro_nome} ${residente.sobrenome}</span>
-        <button type="button" class="btn-remover" data-id="${id}">×</button>
-      `;
-
-      tagsContainer.appendChild(tag);
-    });
-
-    hiddenInputIds.value = idsSelecionados.join(",");
-  }
-
-  // --- Evento ao escolher um residente ---
-  selectResidenteMultiplo.addEventListener("change", () => {
-    const idSelecionado = selectResidenteMultiplo.value;
-    if (idSelecionado && !idsSelecionados.includes(idSelecionado)) {
-      idsSelecionados.push(idSelecionado);
-      atualizarTags();
+  if (isEditMode) {
+    if (inputNumeroRegistro) {
+      inputNumeroRegistro.value = funcionarioId;
+      // Torna readonly no modo edição para garantir a integridade do ID
+      inputNumeroRegistro.setAttribute("readonly", "readonly");
     }
-    selectResidenteMultiplo.value = "";
-  });
 
-  // --- Remover tag ---
-  tagsContainer.addEventListener("click", (e) => {
-    if (e.target.classList.contains("btn-remover")) {
-      const id = e.target.dataset.id;
-      idsSelecionados = idsSelecionados.filter((item) => item != id);
-      atualizarTags();
+    const titulo = document.querySelector(".titulo");
+    if (titulo) titulo.textContent = "Editar Ficha Do Funcionário";
+    if (botaoSubmit) botaoSubmit.textContent = "SALVAR ALTERAÇÕES";
+
+    const funcionarioParaEditar = listaFuncionarios.find(
+      (f) => f.id == funcionarioId
+    );
+
+    if (funcionarioParaEditar) {
+      Object.keys(funcionarioParaEditar).forEach((key) => {
+        const campo = form.elements[key];
+        if (campo && key !== "id") {
+          campo.value = funcionarioParaEditar[key];
+        }
+      });
+      if (
+        funcionarioParaEditar.residentes_vinculados_ids &&
+        typeof funcionarioParaEditar.residentes_vinculados_ids === "string"
+      ) {
+        idsSelecionados =
+          funcionarioParaEditar.residentes_vinculados_ids.split(",");
+        atualizarTags();
+      }
     }
-  });
+  } else {
+    if (inputNumeroRegistro) {
+      // MODO CADASTRO: Permite a entrada manual do número de registro
+      inputNumeroRegistro.removeAttribute("readonly");
+      inputNumeroRegistro.placeholder = "Digite o número de registro";
+    }
+  } // LÓGICA DE SALVAR (COM A VALIDAÇÃO DO RESIDENTE) _____________________________________________________________________________
 
-  // 🔹 Carrega lista de residentes do backend
-  const listaResidentes = await carregarResidentes();
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
 
- // --- Lógica de Edição ---
-const urlParams = new URLSearchParams(window.location.search);
-const funcionarioId = urlParams.get("id");
-const isEditMode = funcionarioId !== null && funcionarioId !== "";
+    let primeiroCampoInvalido = null; // 1. Validação de campo vazio
 
-if (isEditMode) {
-  console.log("✏️ Modo edição ativo | ID:", funcionarioId);
-
-  const titulo = document.querySelector(".titulo h2");
-  if (titulo) titulo.textContent = "Editar Ficha do Funcionário";
-  if (botaoSubmit) botaoSubmit.textContent = "SALVAR ALTERAÇÕES";
-
-  try {
-    // 🔹 Buscar apenas o funcionário específico
-    const response = await fetch(`http://localhost:3000/funcionarios/${funcionarioId}`);
-    if (!response.ok) throw new Error("Erro ao buscar funcionário para edição");
-    const funcionario = await response.json();
-    console.log("📋 Dados carregados para edição:", funcionario);
-
-    // 🔹 Preencher os campos do formulário
-    Object.keys(funcionario).forEach((key) => {
-      const campo = form.elements[key];
-      if (campo) {
-        if (key.toLowerCase().includes("data")) {
-          // Corrige formato de data
-          campo.value = funcionario[key] ? new Date(funcionario[key]).toISOString().split("T")[0] : "";
-        } else {
-          campo.value = funcionario[key] || "";
+    for (const campo of form.querySelectorAll("[required]")) {
+      if (campo.closest('[style*="display: none"]') === null) {
+        if (!campo.value.trim()) {
+          primeiroCampoInvalido = campo;
+          break;
         }
       }
-    });
-
-    // 🔹 Corrigir seleção do turno
-    if (form.elements["turno"]) {
-      form.elements["turno"].value = funcionario.turno || "";
     }
 
-    // 🔹 Corrigir residentes sob cuidados
-    if (funcionario.residentes_sob_cuidados) {
-      idsSelecionados = funcionario.residentes_sob_cuidados.split(",");
-      atualizarTags();
+    if (primeiroCampoInvalido) {
+      form.classList.add("form-foi-validado");
+
+      const etapaComErro = primeiroCampoInvalido.closest(".etapa-form");
+      if (etapaComErro) {
+        const indiceEtapaComErro = Array.from(etapas).indexOf(etapaComErro);
+        if (indiceEtapaComErro !== -1) {
+          mostrarEtapa(indiceEtapaComErro);
+        }
+      }
+
+      primeiroCampoInvalido.focus();
+      alert("Por favor, preencha todos os campos obrigatórios (*).");
+      return;
     }
 
-  } catch (error) {
-    console.error("❌ Erro ao carregar dados para edição:", error);
-    alert("Erro ao carregar dados do funcionário.");
-  }
-}
+    // 2. Validação de Unicidade do Número de Registro (apenas para Novo Cadastro)
+    if (!isEditMode && inputNumeroRegistro) {
+      const novoId = parseInt(inputNumeroRegistro.value);
+      if (listaFuncionarios.some((f) => parseInt(f.id) === novoId)) {
+        alert(
+          `O Número de Registro ${novoId} já existe. Por favor, escolha outro.`
+        );
+        inputNumeroRegistro.focus();
+        return;
+      }
+    } // Continua a lógica de salvar
+    // FIM das validações específicas
 
+    const formData = new FormData(form);
+    const dadosFuncionario = Object.fromEntries(formData.entries());
+    dadosFuncionario.id = parseInt(dadosFuncionario.id);
 
- // --- Lógica de Salvar ---
-form.addEventListener("submit", async function (event) {
-  event.preventDefault();
-  if (!form.checkValidity()) return;
+    if (isEditMode) {
+      const index = listaFuncionarios.findIndex((f) => f.id == funcionarioId);
+      if (index !== -1) {
+        listaFuncionarios[index] = dadosFuncionario;
+        salvarFuncionarios(listaFuncionarios);
+        alert("Cadastro de funcionário atualizado com sucesso!");
+      }
+    } else {
+      listaFuncionarios.push(dadosFuncionario);
+      salvarFuncionarios(listaFuncionarios);
+      alert(
+        `Funcionário cadastrado com sucesso! O número de registro é: ${dadosFuncionario.id}`
+      );
+    }
 
-  const formData = new FormData(form);
-  const dadosFuncionario = Object.fromEntries(formData.entries());
+    setTimeout(() => {
+      const origem = urlParams.get("origem") || "pagina-funcionarios";
+      window.location.href = `../../index.html?pagina=${origem}`;
+    }, 1000);
+  });
 
-  // 🔹 Garante que o turno será enviado corretamente
-  const turnoSelect = document.getElementById("turno");
-  if (turnoSelect && turnoSelect.value) {
-    dadosFuncionario.turno = turnoSelect.value;
-  } else {
-    dadosFuncionario.turno = "";
-  }
-
-  // 🔹 Garante que os IDs de residentes também vão
-  dadosFuncionario.residentes_sob_cuidados = hiddenInputIds.value || "";
-
-  console.log("🚀 Dados enviados:", dadosFuncionario); // <-- pra conferir no console
-
-  // 🔹 Envia pro backend
-  if (isEditMode) {
-    await salvarFuncionario(dadosFuncionario, true, funcionarioId);
-    alert("Cadastro de funcionário atualizado com sucesso!");
-  } else {
-    await salvarFuncionario(dadosFuncionario);
-    alert("Funcionário cadastrado com sucesso!");
-  }
-
-  const origem = urlParams.get("origem") || "pagina-funcionarios";
-  window.location.href = `../../index.html?pagina=${origem}`;
-});
-
-
-  // --- Lógica de Navegação ---
   function mostrarEtapa(i) {
     etapas.forEach((e, idx) => e.classList.toggle("ativo", idx === i));
     etapaAtual = i;
@@ -286,11 +202,10 @@ form.addEventListener("submit", async function (event) {
     })
   );
 
-  // --- Lógica das Tags ---
   if (selectResidenteMultiplo) {
     listaResidentes.forEach((r) =>
       selectResidenteMultiplo.appendChild(
-        new Option(`${r["primeiro_nome"]} ${r.sobrenome}`, r.id)
+        new Option(`${r["primeiro-nome"]} ${r.sobrenome}`, r.id)
       )
     );
   }
@@ -303,7 +218,7 @@ form.addEventListener("submit", async function (event) {
       if (residente) {
         const tag = document.createElement("span");
         tag.className = "tag";
-        tag.textContent = `${residente["primeiro_nome"]} ${residente.sobrenome}`;
+        tag.textContent = `${residente["primeiro-nome"]} ${residente.sobrenome}`;
         const removeIcon = document.createElement("i");
         removeIcon.className = "bx bx-x";
         removeIcon.onclick = () => {
@@ -328,8 +243,6 @@ form.addEventListener("submit", async function (event) {
     });
   }
 
-
-  // --- Inicialização ---
   configurarValidacaoDatas();
   iniciarToggleSenha("senha", "toggle-senha-funcionario");
   mostrarEtapa(etapaAtual);

@@ -266,11 +266,12 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-/* realatorio ________________________________________________________________ */
+/* relatorio ________________________________________________________________ */
 .botoes-status {
   display: flex;
   gap: 10px;
 }
+
 .btn-status {
   flex-grow: 1;
   padding: 15px;
@@ -282,6 +283,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
   transition: all 0.2s;
 }
+
+#horaMedicacao {
+  color: #000;
+}
+
 .btn-status.selecionado {
   background-color: var(--cor-principal);
   color: rgb(0, 0, 0);
@@ -298,6 +304,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   height: 20px;
   margin-right: 10px;
 }
+
 .grupo-form-checkbox label {
   margin-bottom: 0;
   font-weight: normal;

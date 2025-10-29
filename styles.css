@@ -52,11 +52,11 @@ body {
 
 .logo-header {
   margin-top: 1vh;
-  margin-left: 5vh;
+  margin-left: 2vh;
 }
 
 .logo-header img {
-  width: 18%;
+  width: 15%;
   height: auto;
   object-fit: cover;
 }
@@ -1393,12 +1393,24 @@ body.dark-mode .ficha {
   background-color: var(--cor-fundo-elemento-dark);
 }
 
+body.dark-mode .opcao-config.opcao-logout {
+  background-color: rgba(245, 94, 94, 0.719);
+}
+
+body.dark-mode .opcao-config.opcao-logout span {
+  color: #ffffff;
+}
+
 body.dark-mode .opcao-config {
   background-color: var(--cor-fundo-elemento-dark);
 }
 
 body.dark-mode .opcao-config i {
   color: #fff;
+}
+
+body.dark-mode .opcao-config span {
+  color: #ffffff;
 }
 
 body.dark-mode .ficha table th {

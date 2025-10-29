@@ -3,9 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cadastro de Funcionário</title>
     <link rel="stylesheet" href="../styles.css" />
-    <link rel="shortcut icon" href="/img/logo.png" type="image/x-icon" />
+    <link rel="shortcut icon" href="../../img/Logos.png" type="image/x-icon" />
     <link
       href="https://cdn.boxicons.com/fonts/brands/boxicons-brands.min.css"
       rel="stylesheet"
@@ -15,6 +14,8 @@
       href="https://cdn.boxicons.com/fonts/basic/boxicons.min.css"
       rel="stylesheet"
     />
+
+    <title>Acolhe + | Cadastro-funcionario</title>
   </head>
   <body>
     <main>
@@ -67,7 +68,12 @@
                 <label for="data_nascimento"
                   >Data de nascimento <span class="obrigatorio">*</span></label
                 >
-                <input type="date" id="data_nascimento" name="data_nascimento" required />
+                <input
+                  type="date"
+                  id="data_nascimento"
+                  name="data_nascimento"
+                  required
+                />
               </div>
             </div>
             <div class="linha-form">
@@ -275,7 +281,12 @@
                 <label for="data_admissao"
                   >Data de admissão <span class="obrigatorio">*</span></label
                 >
-                <input type="date" id="data_admissao" name="data_admissao" required />
+                <input
+                  type="date"
+                  id="data_admissao"
+                  name="data_admissao"
+                  required
+                />
               </div>
             </div>
             <div class="linha-form">
@@ -316,9 +327,15 @@
                 >
                 <select id="turno" name="turno" required>
                   <option value="" disabled selected>Selecionar turno</option>
-                  <option value="Manhã (06:00 - 14:00)">Manhã (06:00 - 14:00)</option>
-                  <option value="Tarde (14:00 - 22:00)">Tarde (14:00 - 22:00)</option>
-                  <option value="Noite (22:00 - 06:00)">Noite (22:00 - 06:00)</option>
+                  <option value="Manhã (06:00 - 14:00)">
+                    Manhã (06:00 - 14:00)
+                  </option>
+                  <option value="Tarde (14:00 - 22:00)">
+                    Tarde (14:00 - 22:00)
+                  </option>
+                  <option value="Noite (22:00 - 06:00)">
+                    Noite (22:00 - 06:00)
+                  </option>
                 </select>
               </div>
             </div>
@@ -353,15 +370,17 @@
               ></textarea>
             </div>
             <div class="linha-form">
-            <div class="grupo-form campo-expandir">
-              <label for="status">Status <span class="obrigatorio">*</span></label>
-              <select id="status" name="status" required>
-                <option value="Ativo" selected>Ativo</option>
-                <option value="Inativo">Inativo</option>
-                <option value="Pendente">Folga</option>
-              </select>
+              <div class="grupo-form campo-expandir">
+                <label for="status"
+                  >Status <span class="obrigatorio">*</span></label
+                >
+                <select id="status" name="status" required>
+                  <option value="Ativo" selected>Ativo</option>
+                  <option value="Inativo">Inativo</option>
+                  <option value="Pendente">Folga</option>
+                </select>
+              </div>
             </div>
-          </div>
 
             <div class="navegacao-form">
               <button type="submit" class="btn-enviar">CADASTRAR &rarr;</button>
