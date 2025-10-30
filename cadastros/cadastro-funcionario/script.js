@@ -38,7 +38,7 @@ function iniciarToggleSenha(inputId, toggleId) {
   }
 }
 
-//  CÓDIGO PRINCIPAL __________________________________________________________________________
+//  CÓDIGO PRINCIPAL __________________________________________________________________________
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("form-funcionario");
   const etapas = document.querySelectorAll(".etapa-form");
@@ -56,25 +56,22 @@ document.addEventListener("DOMContentLoaded", function () {
   let idsSelecionados = [];
   const listaResidentes = carregarResidentes();
 
-  form.setAttribute("novalidate", true); //LÓGICA DE EDIÇÃO E NÚMERO DE REGISTRO _________________________________________________________________________
+  form.setAttribute("novalidate", true);
 
+  //LÓGICA DE EDIÇÃO E NÚMERO DE REGISTRO _________________________________________________________________________
   const urlParams = new URLSearchParams(window.location.search);
   const funcionarioId = urlParams.get("id");
   const isEditMode = Boolean(funcionarioId);
   const inputNumeroRegistro = document.getElementById("numero-registro");
-  const listaFuncionarios = carregarFuncionarios(); // Carrega a lista aqui para uso no novo bloco 'else'
 
   if (isEditMode) {
-    if (inputNumeroRegistro) {
-      inputNumeroRegistro.value = funcionarioId;
-      // Torna readonly no modo edição para garantir a integridade do ID
-      inputNumeroRegistro.setAttribute("readonly", "readonly");
-    }
+    if (inputNumeroRegistro) inputNumeroRegistro.value = funcionarioId;
 
     const titulo = document.querySelector(".titulo");
     if (titulo) titulo.textContent = "Editar Ficha Do Funcionário";
     if (botaoSubmit) botaoSubmit.textContent = "SALVAR ALTERAÇÕES";
 
+    const listaFuncionarios = carregarFuncionarios();
     const funcionarioParaEditar = listaFuncionarios.find(
       (f) => f.id == funcionarioId
     );
@@ -97,16 +94,25 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   } else {
     if (inputNumeroRegistro) {
-      // MODO CADASTRO: Permite a entrada manual do número de registro
-      inputNumeroRegistro.removeAttribute("readonly");
-      inputNumeroRegistro.placeholder = "Digite o número de registro";
+      const listaFuncionarios = carregarFuncionarios();
+      let proximoId;
+      if (listaFuncionarios.length === 0) {
+        proximoId = 101;
+      } else {
+        const maiorId = Math.max(
+          ...listaFuncionarios.map((f) => parseInt(f.id))
+        );
+        proximoId = maiorId + 1;
+      }
+      inputNumeroRegistro.value = proximoId;
     }
-  } // LÓGICA DE SALVAR (COM A VALIDAÇÃO DO RESIDENTE) _____________________________________________________________________________
+  }
 
+  // LÓGICA DE SALVAR (COM A VALIDAÇÃO DO RESIDENTE) _____________________________________________________________________________
   form.addEventListener("submit", function (event) {
     event.preventDefault();
 
-    let primeiroCampoInvalido = null; // 1. Validação de campo vazio
+    let primeiroCampoInvalido = null;
 
     for (const campo of form.querySelectorAll("[required]")) {
       if (campo.closest('[style*="display: none"]') === null) {
@@ -133,19 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // 2. Validação de Unicidade do Número de Registro (apenas para Novo Cadastro)
-    if (!isEditMode && inputNumeroRegistro) {
-      const novoId = parseInt(inputNumeroRegistro.value);
-      if (listaFuncionarios.some((f) => parseInt(f.id) === novoId)) {
-        alert(
-          `O Número de Registro ${novoId} já existe. Por favor, escolha outro.`
-        );
-        inputNumeroRegistro.focus();
-        return;
-      }
-    } // Continua a lógica de salvar
-    // FIM das validações específicas
-
+    const listaFuncionarios = carregarFuncionarios();
     const formData = new FormData(form);
     const dadosFuncionario = Object.fromEntries(formData.entries());
     dadosFuncionario.id = parseInt(dadosFuncionario.id);

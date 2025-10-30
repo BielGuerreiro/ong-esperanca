@@ -110,7 +110,6 @@ function iniciarPaginaDashboard() {
   );
   const graficoContainer = document.querySelector(".grafico-dashboard");
 
-  // --- Atualiza contadores ---
   if (contadorResidentesEl) {
     contadorResidentesEl.textContent = listaResidentes.length;
   }
@@ -130,7 +129,6 @@ function iniciarPaginaDashboard() {
     contadorAtividadesEl.textContent = deHoje;
   }
 
-  // --- Monta lista de residentes ---
   if (listaResidentesDashboard) {
     listaResidentesDashboard.innerHTML = "";
     listaResidentes.forEach((residente) => {
@@ -266,7 +264,6 @@ function iniciarPaginaDashboard() {
   uma linha para cada residente com suas informações (nome, idade, etc.) e os botões 
   de ação (editar e excluir). Ela também ativa a funcionalidade do botão de excluir.
 */
-// Substitua TODA a sua função 'iniciarPaginaResidentes' por esta:
 
 function iniciarPaginaResidentes() {
   const listaResidentes = JSON.parse(
@@ -385,7 +382,7 @@ function iniciarPaginaFuncionarios() {
         }
       }
       const horario = definirHorario(funcionario.turno);
-      const status = funcionario.status || "Pendente";
+      const status = funcionario.status || "Ativo";
       const classeStatus = `status-${status.toLowerCase()}`;
       const statusHTML = `<span class="status ${classeStatus}">${status}</span>`;
 
@@ -455,6 +452,7 @@ function iniciarPaginaFuncionarios() {
   vinculado a qual responsável. Assim como as outras, ela também cria os botões 
   de ação (editar/excluir) e ativa a funcionalidade de exclusão.
 */
+
 function iniciarPaginaResponsaveis() {
   const listaResponsaveis = JSON.parse(
     sessionStorage.getItem("listaResponsaveis") || "[]"
@@ -551,7 +549,7 @@ function iniciarPaginaResponsaveis() {
 /*
   Esta função inicializa a página de Medicamentos. Ela busca a lista de tratamentos e 
   de residentes para montar a tabela de agendamentos de medicação. Para cada item, 
-  ela exibe o horário, o residente, o medicamento e o status (Pendente ou Administrado),
+  ela exibe o horário, o residente, o medicamento e o status ( ou Administrado),
   junto com os botões de editar e excluir, e ativa a função de exclusão.
 */
 
