@@ -320,10 +320,6 @@ body {
   font-size: 45px;
 }
 
-#mensagem-saudacao {
-  color: var(--main-color);
-}
-
 /* dashboard _______________________________________________________________________________________________________________________ */
 
 .boxes-container {
@@ -726,9 +722,16 @@ input:checked + .slider:before {
     display: none;
   }
 
+  .header1,
+  .ficha-container-dashboard,
+  .coluna-desktop {
+    display: none;
+  }
+
   .item-menu-desktop {
     display: none !important;
   }
+
   .item-menu-mobile {
     display: flex !important;
   }
