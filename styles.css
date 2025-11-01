@@ -47,7 +47,7 @@ html {
 
 body {
   height: auto;
-  background-color: red;
+  background-color: var(--cor-cinza-fundo);
   padding-bottom: 100px;
 }
 
