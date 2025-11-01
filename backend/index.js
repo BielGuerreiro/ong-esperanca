@@ -1,23 +1,26 @@
 const express = require("express");
-
 const cors = require("cors");
 const dotenv = require("dotenv");
-
-dotenv.config();
-
 const db = require("./database.js");
 
+dotenv.config();
 const app = express();
 
-// Middlewares
 app.use(cors());
 app.use(express.json());
+
+const medicamentoRoutes = require("./rotas/medicamento");
+const atividadeRouter = require("./rotas/atividade");
+const residenteRouter = require("./rotas/residente");
+
+app.use("/api", residenteRouter);
+app.use("/api", medicamentoRoutes);
+app.use("/api", atividadeRouter);
 
 app.get("/", (req, res) => {
   res.json({
     message: "✅ API do Sistema de Gestão - Funcionando!",
     version: "1.0.0",
-
     database_status: db
       ? "Conexão Pool Carregada"
       : "ERRO: Pool não carregado, verifique o database.js",

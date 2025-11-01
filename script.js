@@ -553,88 +553,88 @@ function iniciarPaginaResponsaveis() {
   junto com os botões de editar e excluir, e ativa a função de exclusão.
 */
 
-function iniciarPaginaMedicamentos() {
-  const listaResidentes = JSON.parse(
-    sessionStorage.getItem("listaResidentes") || "[]"
-  );
-  const listaTratamentos = JSON.parse(
-    sessionStorage.getItem("listaTratamentos") || "[]"
-  );
+// Defina a URL base do backend
+const API_URL = "http://localhost:3000/api";
 
+async function iniciarPaginaMedicamentos() {
   const tabelaBodyDesktop = document.getElementById("lista-medicamentos-body");
-  const listaBodyMobile = document.getElementById(
-    "lista-medicamentos-nova-body"
-  );
+  const listaBodyMobile = document.getElementById("lista-medicamentos-nova-body");
 
   if (!tabelaBodyDesktop || !listaBodyMobile) return;
 
   tabelaBodyDesktop.innerHTML = "";
   listaBodyMobile.innerHTML = "";
 
-  if (listaTratamentos.length > 0) {
-    listaTratamentos.forEach((tratamento) => {
-      const residente = listaResidentes.find(
-        (r) => r.id == tratamento.residenteId
-      );
-      const nomeResidente = residente
-        ? `${residente["primeiro-nome"]} ${residente.sobrenome}`
-        : "Não encontrado";
+  try {
+    // Busca os medicamentos do backend
+    const response = await fetch(`${API_URL}/medicamentos`);
+    if (!response.ok) throw new Error("Erro ao buscar medicamentos do servidor");
+    const listaTratamentos = await response.json();
 
-      const acoesHTML = `
-        <a href="cadastros/cadastro-medicamento/index.html?id=${tratamento.id}&origem=pagina-medicamentos" class="btn-acao-icone btn-editar" title="Editar Agendamento"><i class='bx bxs-pencil'></i></a>
-        <a href="#" class="btn-acao-icone btn-excluir" data-id="${tratamento.id}" title="Excluir Agendamento"><i class='bx bx-trash-alt'></i></a>
-      `;
+    if (listaTratamentos.length > 0) {
+      listaTratamentos.forEach((tratamento) => {
+        const nomeResidente = tratamento.residenteNome || "Não encontrado";
 
-      const tr = document.createElement("tr");
+        const acoesHTML = `
+          <a href="cadastros/cadastro-medicamento/index.html?id=${tratamento.id}&origem=pagina-medicamentos" class="btn-acao-icone btn-editar" title="Editar Agendamento"><i class='bx bxs-pencil'></i></a>
+          <a href="#" class="btn-acao-icone btn-excluir" data-id="${tratamento.id}" title="Excluir Agendamento"><i class='bx bx-trash-alt'></i></a>
+        `;
 
-      tr.innerHTML = `
-        <td>${tratamento.horario}</td>
-        <td>${nomeResidente}</td>
-        <td>${tratamento.medicamento}</td>
-        <td>${tratamento.dosagem}</td>
-        <td>${tratamento.tipo || "N/A"}</td>
-        <td class="acoes">${acoesHTML}</td>
-      `;
-      tabelaBodyDesktop.appendChild(tr);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${tratamento.horario}</td>
+          <td>${nomeResidente}</td>
+          <td>${tratamento.medicamento}</td>
+          <td>${tratamento.dosagem}</td>
+          <td>${tratamento.tipo || "N/A"}</td>
+          <td class="acoes">${acoesHTML}</td>
+        `;
+        tabelaBodyDesktop.appendChild(tr);
 
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <span class="medicamento-residente">${nomeResidente}</span>
-        <span class="medicamento-nome">${tratamento.medicamento}</span>
-        <div class="medicamento-acoes">${acoesHTML}</div>
-      `;
-      listaBodyMobile.appendChild(li);
-    });
-  } else {
-    tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align:center;">Nenhum tratamento agendado.</td></tr>`;
-    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum tratamento agendado.</li>`;
-  }
-
-  const paginaMedicamentos = document.getElementById("pagina-medicamentos");
-  paginaMedicamentos.addEventListener("click", function (event) {
-    const botaoExcluir = event.target.closest(".btn-excluir");
-    if (!botaoExcluir) return;
-
-    event.preventDefault();
-    const idParaExcluir = botaoExcluir.dataset.id;
-    const nomeDoMedicamento =
-      JSON.parse(sessionStorage.getItem("listaTratamentos")).find(
-        (t) => t.id == idParaExcluir
-      )?.medicamento || "este agendamento";
-
-    if (
-      confirm(
-        `Tem certeza que deseja excluir o agendamento do medicamento "${nomeDoMedicamento}"?`
-      )
-    ) {
-      const novaLista = JSON.parse(
-        sessionStorage.getItem("listaTratamentos") || "[]"
-      ).filter((t) => t.id != idParaExcluir);
-      sessionStorage.setItem("listaTratamentos", JSON.stringify(novaLista));
-      alert("Agendamento excluído com sucesso!");
-      iniciarPaginaMedicamentos();
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span class="medicamento-residente">${nomeResidente}</span>
+          <span class="medicamento-nome">${tratamento.medicamento}</span>
+          <div class="medicamento-acoes">${acoesHTML}</div>
+        `;
+        listaBodyMobile.appendChild(li);
+      });
+    } else {
+      tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align:center;">Nenhum tratamento agendado.</td></tr>`;
+      listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum tratamento agendado.</li>`;
     }
-  });
+
+    // Lógica de exclusão
+    document.getElementById("pagina-medicamentos").addEventListener("click", async function (event) {
+      const botaoExcluir = event.target.closest(".btn-excluir");
+      if (!botaoExcluir) return;
+
+      event.preventDefault();
+      const idParaExcluir = botaoExcluir.dataset.id;
+
+      if (confirm(`Tem certeza que deseja excluir este agendamento?`)) {
+        try {
+          const deleteResponse = await fetch(`${API_URL}/medicamentos/${idParaExcluir}`, { method: "DELETE" });
+
+          if (deleteResponse.ok) {
+            alert("Agendamento excluído com sucesso!");
+            iniciarPaginaMedicamentos(); // Recarrega a lista
+          } else {
+            const erro = await deleteResponse.json();
+            alert("Erro ao excluir: " + (erro.error || "desconhecido"));
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Erro de rede ao excluir o agendamento.");
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+    tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align:center;">Erro ao carregar tratamentos.</td></tr>`;
+    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Erro ao carregar tratamentos.</li>`;
+  }
 }
 
 // sessao atividades  -_____________________________________________________________________________________________________
