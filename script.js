@@ -647,14 +647,19 @@ async function iniciarPaginaMedicamentos() {
   tabela para refletir a mudança instantaneamente.
 */
 
-function iniciarPaginaAtividades() {
-  const listaAgendamentos = JSON.parse(
-    sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
-  );
+async function iniciarPaginaAtividades() {
+  let listaAgendamentos = [];
+
+  try {
+    const res = await fetch(`${API_URL}/atividades`);
+    if (!res.ok) throw new Error("Erro ao listar atividades");
+    listaAgendamentos = await res.json();
+  } catch (err) {
+    console.error("Erro ao listar atividades:", err);
+  }
 
   const tabelaBodyDesktop = document.getElementById("lista-atividades-body");
   const listaBodyMobile = document.getElementById("lista-atividades-nova-body");
-
   if (!tabelaBodyDesktop || !listaBodyMobile) return;
 
   tabelaBodyDesktop.innerHTML = "";
@@ -666,33 +671,45 @@ function iniciarPaginaAtividades() {
       const classeStatus = `status-${status.toLowerCase()}`;
       const statusHTML = `<span class="status ${classeStatus}">${status}</span>`;
 
-      const dataFormatada = new Date(
-        agendamento.data + "T00:00:00"
-      ).toLocaleDateString("pt-BR");
+      // --- Data formatada ---
+      const dataRaw = agendamento.data || agendamento.data_atividade;
+      let dataFormatada = "N/A";
+      if (dataRaw) {
+        const dataObj = new Date(dataRaw);
+        if (!isNaN(dataObj.getTime())) {
+          dataFormatada = dataObj.toLocaleDateString("pt-BR");
+        }
+      }
+
+      const horarioExibicao = agendamento.horario || "N/A";
+      const duracaoExibicao = agendamento.duracao || "N/A";
 
       const acoesHTML = `
         <a href="cadastros/cadastro-atividade/index.html?id=${agendamento.id}&origem=pagina-atividades" class="btn-acao-icone btn-editar" title="Editar Atividade"><i class='bx bxs-pencil'></i></a>
         <a href="#" class="btn-acao-icone btn-excluir" data-id="${agendamento.id}" title="Excluir Atividade"><i class='bx bx-trash-alt'></i></a>
       `;
 
+      // --- Desktop ---
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${dataFormatada}</td>
-        <td>${agendamento.horario}</td>
-        <td>${agendamento["nome-atividade"]}</td>
-        <td>${agendamento.duracao || "N/A"}</td>
+        <td>${horarioExibicao}</td>
+        <td>${agendamento.nome_atividade || agendamento.nome || "N/A"}</td>
+        <td>${duracaoExibicao}</td>
         <td>${statusHTML}</td>
         <td class="acoes">${acoesHTML}</td>
       `;
       tabelaBodyDesktop.appendChild(tr);
 
+      // --- Mobile ---
       const li = document.createElement("li");
       li.innerHTML = `
         <div class="atividade-data-hora">
             <span class="data">${dataFormatada}</span>
-            <span class="hora">${agendamento.horario}</span>
+            <span class="hora">${horarioExibicao}</span>
         </div>
-        <span class="atividade-nome">${agendamento["nome-atividade"]}</span>
+        <span class="atividade-nome">${agendamento.nome_atividade || agendamento.nome || "N/A"}</span>
+        <span class="atividade-duracao">${duracaoExibicao}</span>
         <div class="atividade-acoes">${acoesHTML}</div>
       `;
       listaBodyMobile.appendChild(li);
@@ -702,38 +719,42 @@ function iniciarPaginaAtividades() {
     listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhuma atividade agendada.</li>`;
   }
 
+  // --- Exclusão via backend ---
   const paginaAtividades = document.getElementById("pagina-atividades");
+  paginaAtividades.replaceWith(paginaAtividades.cloneNode(true));
+  const novaPagina = document.getElementById("pagina-atividades");
 
-  paginaAtividades.addEventListener("click", function (event) {
+  novaPagina.addEventListener("click", async function (event) {
     const botaoExcluir = event.target.closest(".btn-excluir");
     if (!botaoExcluir) return;
 
     event.preventDefault();
     const idParaExcluir = botaoExcluir.dataset.id;
-    const agendamento = JSON.parse(
-      sessionStorage.getItem("listaAgendamentosAtividade")
-    ).find((ag) => ag.id == idParaExcluir);
 
-    if (
-      agendamento &&
-      confirm(
-        `Tem certeza que deseja excluir a atividade "${agendamento["nome-atividade"]}"?`
-      )
-    ) {
-      const novaLista = JSON.parse(
-        sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
-      ).filter((ag) => ag.id != idParaExcluir);
-
-      sessionStorage.setItem(
-        "listaAgendamentosAtividade",
-        JSON.stringify(novaLista)
-      );
-
-      alert("Atividade excluída com sucesso!");
-      iniciarPaginaAtividades();
+    if (confirm(`Tem certeza que deseja excluir a atividade?`)) {
+      try {
+        const res = await fetch(`${API_URL}/atividades/${idParaExcluir}`, {
+          method: "DELETE",
+        });
+        if (res.ok) {
+          alert("Atividade excluída com sucesso!");
+          iniciarPaginaAtividades();
+        } else {
+          const erro = await res.json();
+          alert("Erro ao excluir: " + (erro.error || "desconhecido"));
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Erro de rede ao excluir atividade.");
+      }
     }
   });
 }
+
+if (document.getElementById("pagina-atividades")) {
+  iniciarPaginaAtividades();
+}
+
 
 // sessao relatorio   -_____________________________________________________________________________________________________
 

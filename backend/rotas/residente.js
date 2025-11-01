@@ -1,10 +1,8 @@
-// rotas/residentes.js
 const express = require("express");
 const connection = require("../database.js");
 
 const router = express.Router();
 
-// Listar todos os residentes
 router.get("/residentes", async (req, res) => {
   const conn = await connection.getConnection();
   try {
