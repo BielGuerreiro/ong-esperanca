@@ -10,13 +10,13 @@ app.use(cors());
 app.use(express.json());
 
 const medicamentoRoutes = require("./rotas/medicamento");
-const atividadeRouter = require("./rotas/atividade");
 const residenteRouter = require("./rotas/residente");
+const atividadesRouter = require("./rotas/atividade");
 const funcionariosRouter = require("./rotas/funcionarios");
 
 app.use("/api", residenteRouter);
 app.use("/api", medicamentoRoutes);
-app.use("/api", atividadeRouter);
+app.use("/api", atividadesRouter);
 app.use("/api", funcionariosRouter);
 
 app.get("/", (req, res) => {

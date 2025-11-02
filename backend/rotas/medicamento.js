@@ -1,6 +1,6 @@
-// rotas/medicamentos.js
 const express = require("express");
 const connection = require("../database.js");
+const { enviarEmailMedicamento } = require("../alerta/notificacao.js");
 
 const router = express.Router();
 
@@ -103,6 +103,7 @@ router.get("/medicamentos", async (req, res) => {
   } finally {
     conn.release();
   }
+
 });
 
 // ==============================
@@ -129,7 +130,27 @@ router.post("/medicamentos", async (req, res) => {
       VALUES (?, ?, CURDATE())
     `, [residenteId, medicamentoId]);
 
+    const [row] = await conn.query(`
+      SELECT CONCAT(primeiro_nome, ' ', sobrenome) AS nome_completo
+      FROM residentes
+      WHERE id_residente = ?
+    `, [residenteId]);
+
+    const residenteNome = row[0]?.nome_completo || "Desconhecido";
+
     await conn.commit();
+
+    await enviarEmailMedicamento({
+      residenteNome,
+      medicamento,
+      tipo,
+      dosagem,
+      horario,
+      frequencia,
+      duracao,
+      validade
+    });
+
     res.json({ message: "Medicamento cadastrado e vinculado com sucesso!", medicamentoId });
   } catch (err) {
     await conn.rollback();
