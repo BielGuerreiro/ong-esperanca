@@ -1,34 +1,31 @@
 const express = require("express");
-const connection = require("../database.js");
+const db = require("../database.js"); // 1. CORRIGIDO: Usa 'db'
 const { enviarEmailMedicamento } = require("../alerta/notificacao.js");
-
 const router = express.Router();
 
-/// ==============================
+// ==============================
 // 0️⃣ BUSCAR MEDICAMENTO POR ID
 // ==============================
 router.get("/medicamentos/:id", async (req, res) => {
   const { id } = req.params;
-  const conn = await connection.getConnection();
+  let conn;
   try {
-    const [rows] = await conn.query(`
-      SELECT 
-        m.id_medicamento AS id,
-        m.nome_medicamento AS medicamento,
-        m.dosagem,
-        m.tipo,
-        m.horario,
-        m.frequencia,
-        m.duracao,
-        m.data_vencimento,
-        r.id_residente AS residenteId,
-        r.primeiro_nome,
-        r.sobrenome
-      FROM medicamentos m
-      JOIN recebe rec ON rec.medicamento_id_medicamento = m.id_medicamento
-      JOIN residentes r ON r.id_residente = rec.residente_id_residente
-      WHERE m.id_medicamento = ?
-    `, [id]);
+    conn = await db.getConnection(); // 2. CORRIGIDO: Usa 'db' // 3. CORRIGIDO: Usa 'id_tratamento'
+    const [rows] = await conn.query(
+      `
+      SELECT 
+        m.id_tratamento AS id, 
+        m.nome_medicamento AS medicamento,
+        m.dosagem, m.tipo, m.horario, m.frequencia, m.duracao, m.data_vencimento,
+        r.id_residente AS residenteId,
+        r.primeiro_nome, r.sobrenome
+      FROM medicamentos m
+      JOIN recebe rec ON rec.medicamento_id_tratamento = m.id_tratamento
+      JOIN residentes r ON r.id_residente = rec.residente_id_residente
+      WHERE m.id_tratamento = ?
+    `,
+      [id]
+    );
 
     if (rows.length === 0) {
       return res.status(404).json({ error: "Medicamento não encontrado" });
@@ -43,8 +40,10 @@ router.get("/medicamentos/:id", async (req, res) => {
       horario: row.horario,
       frequencia: row.frequencia,
       duracao: row.duracao,
-      validade: row.data_vencimento ? row.data_vencimento.toISOString().split("T")[0] : null,
-      residenteId: row.residenteId
+      validade: row.data_vencimento
+        ? row.data_vencimento.toISOString().split("T")[0]
+        : null,
+      residenteId: row.residenteId,
     };
 
     res.json(medicamento);
@@ -52,48 +51,42 @@ router.get("/medicamentos/:id", async (req, res) => {
     console.error("Erro ao buscar medicamento:", err);
     res.status(500).json({ error: "Erro ao buscar medicamento." });
   } finally {
-    conn.release();
+    if (conn) conn.release();
   }
 });
-
-
 
 // ==============================
 // 1️⃣ LISTAR TODOS OS MEDICAMENTOS
 // ==============================
 router.get("/medicamentos", async (req, res) => {
-  const conn = await connection.getConnection();
+  let conn;
   try {
+    conn = await db.getConnection(); // CORRIGIDO: Usa 'db' // CORRIGIDO: Usa 'id_tratamento'
     const [rows] = await conn.query(`
-      SELECT 
-        m.id_medicamento AS id,
-        m.nome_medicamento AS medicamento,
-        m.dosagem,
-        m.tipo,
-        m.horario,
-        m.frequencia,
-        m.duracao,
-        m.data_vencimento,
-        r.id_residente AS residenteId,
-        r.primeiro_nome,
-        r.sobrenome
-      FROM medicamentos m
-      JOIN recebe rec ON rec.medicamento_id_medicamento = m.id_medicamento
-      JOIN residentes r ON r.id_residente = rec.residente_id_residente
-      ORDER BY m.horario ASC
-    `);
+      SELECT 
+        m.id_tratamento AS id,
+        m.nome_medicamento AS medicamento,
+        m.dosagem, m.tipo, m.horario, m.frequencia, m.duracao, m.data_vencimento,
+        r.id_residente AS residenteId,
+        r.primeiro_nome, r.sobrenome
+      FROM medicamentos m
+      JOIN recebe rec ON rec.medicamento_id_tratamento = m.id_tratamento
+      JOIN residentes r ON r.id_residente = rec.residente_id_residente
+      ORDER BY m.horario ASC
+    `);
 
-    const listaTratamentos = rows.map(row => ({
+    const listaTratamentos = rows.map((row) => ({
       id: row.id,
       medicamento: row.medicamento,
       dosagem: row.dosagem,
       tipo: row.tipo,
-      horario: row.horario,
+      // Formata o horário para HH:MM
+      horario: row.horario ? row.horario.substring(0, 5) : "N/A",
       frequencia: row.frequencia,
       duracao: row.duracao,
       validade: row.data_vencimento,
       residenteId: row.residenteId,
-      residenteNome: `${row.primeiro_nome} ${row.sobrenome}`
+      residenteNome: `${row.primeiro_nome} ${row.sobrenome}`,
     }));
 
     res.json(listaTratamentos);
@@ -101,44 +94,60 @@ router.get("/medicamentos", async (req, res) => {
     console.error("Erro ao listar medicamentos:", err);
     res.status(500).json({ error: "Erro ao listar medicamentos." });
   } finally {
-    conn.release();
+    if (conn) conn.release();
   }
-
 });
 
 // ==============================
 // 2️⃣ CADASTRAR MEDICAMENTO
 // ==============================
 router.post("/medicamentos", async (req, res) => {
-  const { residenteId, medicamento, tipo, horario, dosagem, frequencia, duracao, validade } = req.body;
-  const conn = await connection.getConnection();
-
+  const {
+    residenteId,
+    medicamento,
+    tipo,
+    horario,
+    dosagem,
+    frequencia,
+    duracao,
+    validade,
+  } = req.body;
+  let conn;
   try {
+    conn = await db.getConnection(); // CORRIGIDO: Usa 'db'
     await conn.beginTransaction();
 
-    const [result] = await conn.query(`
-      INSERT INTO medicamentos 
-        (nome_medicamento, dosagem, tipo, horario, frequencia, duracao, data_vencimento)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `, [medicamento, dosagem, tipo, horario, frequencia, duracao, validade]);
+    const [result] = await conn.query(
+      `INSERT INTO medicamentos 
+        (nome_medicamento, dosagem, tipo, horario, frequencia, duracao, data_vencimento)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `,
+      [medicamento, dosagem, tipo, horario, frequencia, duracao, validade]
+    );
 
-    const medicamentoId = result.insertId;
+    const medicamentoId = result.insertId; // Este ID é o 'id_tratamento' // CORRIGIDO: Usa 'medicamento_id_tratamento'
 
-    await conn.query(`
-      INSERT INTO recebe 
-        (residente_id_residente, medicamento_id_medicamento, data_prescricao)
-      VALUES (?, ?, CURDATE())
-    `, [residenteId, medicamentoId]);
+    await conn.query(
+      `
+      INSERT INTO recebe 
+        (residente_id_residente, medicamento_id_tratamento, data_prescricao)
+      VALUES (?, ?, CURDATE())
+    `,
+      [residenteId, medicamentoId]
+    );
 
-    const [row] = await conn.query(`
-      SELECT CONCAT(primeiro_nome, ' ', sobrenome) AS nome_completo
-      FROM residentes
-      WHERE id_residente = ?
-    `, [residenteId]);
+    const [row] = await conn.query(
+      `
+      SELECT CONCAT(primeiro_nome, ' ', sobrenome) AS nome_completo
+      FROM residentes
+      WHERE id_residente = ?
+    `,
+      [residenteId]
+    );
 
     const residenteNome = row[0]?.nome_completo || "Desconhecido";
 
-    await conn.commit();
+    await conn.commit(); // O envio de e-mail continua igual
 
     await enviarEmailMedicamento({
       residenteNome,
@@ -148,16 +157,19 @@ router.post("/medicamentos", async (req, res) => {
       horario,
       frequencia,
       duracao,
-      validade
+      validade,
     });
 
-    res.json({ message: "Medicamento cadastrado e vinculado com sucesso!", medicamentoId });
+    res.json({
+      message: "Medicamento cadastrado e vinculado com sucesso!",
+      medicamentoId,
+    });
   } catch (err) {
-    await conn.rollback();
+    if (conn) await conn.rollback();
     console.error("Erro ao cadastrar medicamento:", err);
     res.status(500).json({ error: "Erro ao cadastrar medicamento." });
   } finally {
-    conn.release();
+    if (conn) conn.release();
   }
 });
 
@@ -166,22 +178,26 @@ router.post("/medicamentos", async (req, res) => {
 // ==============================
 router.put("/medicamentos/:id", async (req, res) => {
   const { id } = req.params;
-  const { medicamento, dosagem, tipo, horario, frequencia, duracao, validade } = req.body;
-
-  const conn = await connection.getConnection();
+  const { medicamento, dosagem, tipo, horario, frequencia, duracao, validade } =
+    req.body;
+  let conn;
   try {
-    await conn.query(`
-      UPDATE medicamentos
-      SET nome_medicamento = ?, dosagem = ?, tipo = ?, horario = ?, frequencia = ?, duracao = ?, data_vencimento = ?
-      WHERE id_medicamento = ?
-    `, [medicamento, dosagem, tipo, horario, frequencia, duracao, validade, id]);
+    conn = await db.getConnection(); // CORRIGIDO: Usa 'db' // CORRIGIDO: Usa 'id_tratamento'
+    await conn.query(
+      `
+      UPDATE medicamentos
+      SET nome_medicamento = ?, dosagem = ?, tipo = ?, horario = ?, frequencia = ?, duracao = ?, data_vencimento = ?
+      WHERE id_tratamento = ?
+    `,
+      [medicamento, dosagem, tipo, horario, frequencia, duracao, validade, id]
+    );
 
     res.json({ message: "Medicamento atualizado com sucesso!" });
   } catch (err) {
     console.error("Erro ao atualizar medicamento:", err);
     res.status(500).json({ error: "Erro ao atualizar medicamento." });
   } finally {
-    conn.release();
+    if (conn) conn.release();
   }
 });
 
@@ -190,20 +206,23 @@ router.put("/medicamentos/:id", async (req, res) => {
 // ==============================
 router.delete("/medicamentos/:id", async (req, res) => {
   const { id } = req.params;
-  const conn = await connection.getConnection();
+  let conn;
   try {
-    await conn.beginTransaction();
-    await conn.query("DELETE FROM recebe WHERE medicamento_id_medicamento = ?", [id]);
-    await conn.query("DELETE FROM medicamentos WHERE id_medicamento = ?", [id]);
+    conn = await db.getConnection(); // CORRIGIDO: Usa 'db'
+    await conn.beginTransaction(); // CORRIGIDO: Usa 'medicamento_id_tratamento' e 'id_tratamento'
+    await conn.query("DELETE FROM recebe WHERE medicamento_id_tratamento = ?", [
+      id,
+    ]);
+    await conn.query("DELETE FROM medicamentos WHERE id_tratamento = ?", [id]);
     await conn.commit();
 
     res.json({ message: "Medicamento excluído com sucesso!" });
   } catch (err) {
-    await conn.rollback();
+    if (conn) await conn.rollback();
     console.error("Erro ao excluir medicamento:", err);
     res.status(500).json({ error: "Erro ao excluir medicamento." });
   } finally {
-    conn.release();
+    if (conn) conn.release();
   }
 });
 

@@ -1,19 +1,24 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const API_URL = "http://localhost:3000/api";
   const form = document.getElementById("form-add-estoque");
   const tabelaBody = document.getElementById("lista-estoque-body");
   const ctx = document.getElementById("grafico-estoque")?.getContext("2d");
   let graficoEstoque = null;
 
-  function carregarEstoque() {
-    return JSON.parse(sessionStorage.getItem("listaEstoque") || "[]");
+  async function carregarEstoqueDoBackend() {
+    try {
+      const res = await fetch(`${API_URL}/estoque`);
+      if (!res.ok) throw new Error("Erro ao buscar estoque");
+      return await res.json();
+    } catch (err) {
+      console.error(err);
+      tabelaBody.innerHTML = `<tr><td colspan="2" style="text-align:center;">Erro ao carregar estoque.</td></tr>`;
+      return [];
+    }
   }
 
-  function salvarEstoque(estoque) {
-    sessionStorage.setItem("listaEstoque", JSON.stringify(estoque));
-  }
-
-  function renderizarTudo() {
-    const estoque = carregarEstoque();
+  async function renderizarTudo() {
+    const estoque = await carregarEstoqueDoBackend();
 
     tabelaBody.innerHTML = "";
     if (estoque.length === 0) {
@@ -23,21 +28,20 @@ document.addEventListener("DOMContentLoaded", function () {
       estoque.forEach((item) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-                    <td>${item.nome}</td>
-                    <td>${item.quantidade}</td>
-                `;
+          <td>${item.nome}</td>
+          <td>${item.quantidade}</td>
+        `;
         tabelaBody.appendChild(tr);
       });
     }
 
+    // Renderiza o gráfico ______________________________________________________________________
     if (ctx) {
       if (graficoEstoque) {
         graficoEstoque.destroy();
       }
-
       const labels = estoque.map((item) => item.nome);
       const data = estoque.map((item) => item.quantidade);
-
       graficoEstoque = new Chart(ctx, {
         type: "doughnut",
         data: {
@@ -68,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  form.addEventListener("submit", function (event) {
+  form.addEventListener("submit", async function (event) {
     event.preventDefault();
     const nomeMedicamentoInput = document.getElementById(
       "nome-medicamento-estoque"
@@ -83,20 +87,28 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    const estoque = carregarEstoque();
-    const itemExistente = estoque.find(
-      (item) => item.nome.toLowerCase() === nomeMedicamento.toLowerCase()
-    );
+    try {
+      const res = await fetch(`${API_URL}/estoque`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nome: nomeMedicamento,
+          quantidade: quantidade,
+        }),
+      });
 
-    if (itemExistente) {
-      itemExistente.quantidade += quantidade;
-    } else {
-      estoque.push({ nome: nomeMedicamento, quantidade: quantidade });
+      if (res.ok) {
+        // Sucesso!
+        form.reset();
+        renderizarTudo();
+      } else {
+        const erro = await res.json();
+        alert("Erro ao salvar: " + (erro.error || "desconhecido"));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Erro de rede ao salvar no estoque.");
     }
-
-    salvarEstoque(estoque);
-    form.reset();
-    renderizarTudo();
   });
 
   renderizarTudo();
