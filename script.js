@@ -1,4 +1,5 @@
 // Funções Globais_______________________________________________________________________________
+
 /*
   Estas são funções de "ajuda" que podem ser usadas em várias partes do sistema.
   A função 'calcularIdade' recebe uma data de nascimento e retorna a idade atual da pessoa.
@@ -28,6 +29,8 @@ function definirCategoria(idade) {
 function atualizarSaudacao() {
   const elementoSaudacao = document.getElementById("mensagem-saudacao");
   if (!elementoSaudacao) return;
+
+  const API_URL = "http://localhost:3000/api";
 
   const horaAtual = new Date().getHours();
   let saudacao = "";
@@ -350,99 +353,149 @@ function iniciarPaginaResidentes() {
   informações como nome, turno, e status de cada um. Ela também cria os links 
   corretos para a edição de cada ficha e ativa a funcionalidade do botão de excluir.
 */
-function iniciarPaginaFuncionarios() {
-  const listaFuncionarios = JSON.parse(
-    sessionStorage.getItem("listaFuncionarios") || "[]"
-  );
 
+async function iniciarPaginaFuncionarios() {
   const tabelaBodyDesktop = document.getElementById("lista-funcionarios-body");
   const listaBodyMobile = document.getElementById(
     "lista-funcionarios-nova-body"
   );
 
-  if (!tabelaBodyDesktop || !listaBodyMobile) return;
-
-  tabelaBodyDesktop.innerHTML = "";
-  listaBodyMobile.innerHTML = "";
-
-  if (listaFuncionarios.length > 0) {
-    listaFuncionarios.forEach((funcionario) => {
-      const nomeCompleto = `${funcionario["primeiro-nome"]} ${funcionario.sobrenome}`;
-
-      function definirHorario(turno) {
-        switch (turno) {
-          case "manha":
-            return "06:00 - 14:00";
-          case "tarde":
-            return "14:00 - 22:00";
-          case "noite":
-            return "22:00 - 06:00";
-          default:
-            return "N/A";
-        }
-      }
-      const horario = definirHorario(funcionario.turno);
-      const status = funcionario.status || "Ativo";
-      const classeStatus = `status-${status.toLowerCase()}`;
-      const statusHTML = `<span class="status ${classeStatus}">${status}</span>`;
-
-      const acoesHTML = `
-        <a href="cadastros/cadastro-funcionario/index.html?id=${funcionario.id}&origem=pagina-funcionarios" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
-        <a href="#" class="btn-acao-icone btn-excluir" data-id="${funcionario.id}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
-      `;
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${horario}</td>
-        <td>${nomeCompleto}</td>
-        <td>${funcionario.id.toString().slice(-4)}</td>
-        <td>${statusHTML}</td>
-        <td class="acoes">${acoesHTML}</td>
-      `;
-      tabelaBodyDesktop.appendChild(tr);
-
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <span class="funcionario-nome">${nomeCompleto}</span>
-        <div class="funcionario-status">${statusHTML}</div>
-        <div class="funcionario-acoes">${acoesHTML}</div>
-      `;
-      listaBodyMobile.appendChild(li);
-    });
-  } else {
-    tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum funcionário cadastrado.</td></tr>`;
-    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum funcionário cadastrado.</li>`;
+  if (!tabelaBodyDesktop || !listaBodyMobile) {
+    console.warn("Elementos da tabela de funcionários não encontrados.");
+    return;
   }
 
-  const paginaFuncionarios = document.getElementById("pagina-funcionarios");
+  // Define o estado de "Carregando..." ______________________________________________________________________________
+  tabelaBodyDesktop.innerHTML =
+    '<tr><td colspan="5" style="text-align: center;">Carregando...</td></tr>';
+  listaBodyMobile.innerHTML =
+    '<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Carregando...</li>';
 
-  paginaFuncionarios.addEventListener("click", function (event) {
-    const botaoExcluir = event.target.closest(".btn-excluir");
-    if (!botaoExcluir) return;
+  try {
+    const response = await fetch(`${API_URL}/funcionarios`);
 
-    event.preventDefault();
-    const idParaExcluir = botaoExcluir.dataset.id;
-
-    const itemPai = botaoExcluir.closest("tr") || botaoExcluir.closest("li");
-    const nomeDoFuncionario = itemPai.querySelector(
-      "td:nth-child(2), .funcionario-nome"
-    ).textContent;
-
-    if (
-      confirm(
-        `Tem certeza que deseja excluir o funcionário "${nomeDoFuncionario}"?`
-      )
-    ) {
-      const novaLista = JSON.parse(
-        sessionStorage.getItem("listaFuncionarios") || "[]"
-      ).filter((func) => func.id != idParaExcluir);
-
-      sessionStorage.setItem("listaFuncionarios", JSON.stringify(novaLista));
-      alert("Funcionário excluído com sucesso!");
-
-      iniciarPaginaFuncionarios();
+    if (!response.ok) {
+      const errData = await response.json();
+      throw new Error(
+        errData.error || "Erro ao buscar funcionários do servidor"
+      );
     }
-  });
+
+    const listaFuncionarios = await response.json();
+
+    // 2. LIMPAR A TABELA ______________________________________________________________________________
+    tabelaBodyDesktop.innerHTML = "";
+    listaBodyMobile.innerHTML = "";
+
+    // 3. PREENCHER A TABELA ______________________________________________________________________________
+    if (listaFuncionarios.length > 0) {
+      listaFuncionarios.forEach((funcionario) => {
+        const idDoFuncionario = funcionario.id_funcionario;
+
+        const numRegistro = funcionario.numero_registro || "N/A";
+
+        const nomeCompleto = `${funcionario.primeiro_nome} ${funcionario.sobrenome}`;
+
+        // Função para formatar o turno ______________________________________________________________________________
+        function definirHorario(turno) {
+          switch (turno) {
+            case "manha":
+              return "06:00 - 14:00";
+            case "tarde":
+              return "14:00 - 22:00";
+            case "noite":
+              return "22:00 - 06:00";
+            default:
+              return "N/A";
+          }
+        }
+        const horario = definirHorario(funcionario.turno);
+
+        const status = funcionario.status || "Ativo";
+        const classeStatus = `status-${status.toLowerCase()}`;
+
+        const statusFormatado =
+          status.charAt(0).toUpperCase() + status.slice(1);
+        const statusHTML = `<span class="status ${classeStatus}">${statusFormatado}</span>`;
+
+        const acoesHTML = `
+          <a href="cadastros/cadastro-funcionario/index.html?id=${idDoFuncionario}&origem=pagina-funcionarios" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
+          <a href="#" class="btn-acao-icone btn-excluir" data-id="${idDoFuncionario}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
+        `;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${horario}</td>
+          <td>${nomeCompleto}</td>
+          <td>${numRegistro}</td> <td>${statusHTML}</td>
+          <td class="acoes">${acoesHTML}</td>
+        `;
+        tabelaBodyDesktop.appendChild(tr);
+
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span class="funcionario-nome">${nomeCompleto}</span>
+          <div class="funcionario-status">${statusHTML}</div>
+          <div class="funcionario-acoes">${acoesHTML}</div>
+        `;
+        listaBodyMobile.appendChild(li);
+      });
+    } else {
+      tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum funcionário cadastrado.</td></tr>`;
+      listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum funcionário cadastrado.</li>`;
+    }
+
+    // 4. ADICIONAR LÓGICA DE EXCLUSÃO ______________________________________________________________________________
+    const paginaFuncionarios = document.getElementById("pagina-funcionarios");
+    if (paginaFuncionarios && !paginaFuncionarios.dataset.listenerAdicionado) {
+      paginaFuncionarios.dataset.listenerAdicionado = "true";
+
+      paginaFuncionarios.addEventListener("click", async function (event) {
+        const botaoExcluir = event.target.closest(".btn-excluir");
+        if (!botaoExcluir) return;
+
+        event.preventDefault();
+
+        const idParaExcluir = botaoExcluir.dataset.id;
+
+        const itemPai =
+          botaoExcluir.closest("tr") || botaoExcluir.closest("li");
+        const nomeEl =
+          itemPai.querySelector(".funcionario-nome") ||
+          itemPai.querySelector("td:nth-child(2)");
+        const nomeDoFuncionario = nomeEl ? nomeEl.textContent : "Funcionário";
+
+        if (
+          confirm(
+            `Tem certeza que deseja excluir o funcionário "${nomeDoFuncionario}"?`
+          )
+        ) {
+          try {
+            const deleteResponse = await fetch(
+              `${API_URL}/funcionarios/${idParaExcluir}`,
+              { method: "DELETE" }
+            );
+
+            if (deleteResponse.ok) {
+              alert("Funcionário excluído com sucesso!");
+              iniciarPaginaFuncionarios();
+            } else {
+              const erro = await deleteResponse.json();
+              alert("Erro ao excluir: " + (erro.error || "desconhecido"));
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Erro de rede ao excluir o funcionário.");
+          }
+        }
+      });
+    }
+  } catch (error) {
+    console.error(error);
+
+    tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align:center;">Erro ao carregar funcionários: ${error.message}</td></tr>`;
+    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Erro ao carregar funcionários. Tente recarregar.</li>`;
+  }
 }
 
 // tabela responsavel  ______________________________________________________________________________________________________________
@@ -558,7 +611,9 @@ const API_URL = "http://localhost:3000/api";
 
 async function iniciarPaginaMedicamentos() {
   const tabelaBodyDesktop = document.getElementById("lista-medicamentos-body");
-  const listaBodyMobile = document.getElementById("lista-medicamentos-nova-body");
+  const listaBodyMobile = document.getElementById(
+    "lista-medicamentos-nova-body"
+  );
 
   if (!tabelaBodyDesktop || !listaBodyMobile) return;
 
@@ -568,7 +623,8 @@ async function iniciarPaginaMedicamentos() {
   try {
     // Busca os medicamentos do backend
     const response = await fetch(`${API_URL}/medicamentos`);
-    if (!response.ok) throw new Error("Erro ao buscar medicamentos do servidor");
+    if (!response.ok)
+      throw new Error("Erro ao buscar medicamentos do servidor");
     const listaTratamentos = await response.json();
 
     if (listaTratamentos.length > 0) {
@@ -605,31 +661,35 @@ async function iniciarPaginaMedicamentos() {
     }
 
     // Lógica de exclusão
-    document.getElementById("pagina-medicamentos").addEventListener("click", async function (event) {
-      const botaoExcluir = event.target.closest(".btn-excluir");
-      if (!botaoExcluir) return;
+    document
+      .getElementById("pagina-medicamentos")
+      .addEventListener("click", async function (event) {
+        const botaoExcluir = event.target.closest(".btn-excluir");
+        if (!botaoExcluir) return;
 
-      event.preventDefault();
-      const idParaExcluir = botaoExcluir.dataset.id;
+        event.preventDefault();
+        const idParaExcluir = botaoExcluir.dataset.id;
 
-      if (confirm(`Tem certeza que deseja excluir este agendamento?`)) {
-        try {
-          const deleteResponse = await fetch(`${API_URL}/medicamentos/${idParaExcluir}`, { method: "DELETE" });
+        if (confirm(`Tem certeza que deseja excluir este agendamento?`)) {
+          try {
+            const deleteResponse = await fetch(
+              `${API_URL}/medicamentos/${idParaExcluir}`,
+              { method: "DELETE" }
+            );
 
-          if (deleteResponse.ok) {
-            alert("Agendamento excluído com sucesso!");
-            iniciarPaginaMedicamentos(); // Recarrega a lista
-          } else {
-            const erro = await deleteResponse.json();
-            alert("Erro ao excluir: " + (erro.error || "desconhecido"));
+            if (deleteResponse.ok) {
+              alert("Agendamento excluído com sucesso!");
+              iniciarPaginaMedicamentos(); // Recarrega a lista
+            } else {
+              const erro = await deleteResponse.json();
+              alert("Erro ao excluir: " + (erro.error || "desconhecido"));
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Erro de rede ao excluir o agendamento.");
           }
-        } catch (err) {
-          console.error(err);
-          alert("Erro de rede ao excluir o agendamento.");
         }
-      }
-    });
-
+      });
   } catch (error) {
     console.error(error);
     tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align:center;">Erro ao carregar tratamentos.</td></tr>`;

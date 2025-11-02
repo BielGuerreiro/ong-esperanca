@@ -72,17 +72,22 @@
                 <input type="date" id="nascimento" name="nascimento" required />
               </div>
             </div>
+
             <div class="linha-form">
-              <div class="grupo-form">
+              <div class="grupo-form campo-expandir">
                 <label for="sexo"
                   >Sexo <span class="obrigatorio">*</span></label
                 >
+
                 <select id="sexo" name="sexo" required>
                   <option value="" disabled selected>Selecionar</option>
+
                   <option value="masculino">Masculino</option>
+
                   <option value="feminino">Feminino</option>
                 </select>
               </div>
+
               <div class="grupo-form campo-expandir">
                 <label for="telefone"
                   >Telefone <span class="obrigatorio">*</span></label
@@ -97,6 +102,7 @@
                 />
               </div>
             </div>
+
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="email"
@@ -111,6 +117,7 @@
                 />
               </div>
             </div>
+
             <div class="navegacao-form">
               <button type="button" class="btn-proximo">PRÓXIMO &rarr;</button>
               <button type="button" class="btn-cancelar">
@@ -248,16 +255,17 @@
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="numero-registro"
-                  >Número de Registro (gerado automaticamente)</label
+                  >Número de Registro <span class="obrigatorio">*</span></label
                 >
                 <input
                   type="text"
                   id="numero-registro"
-                  name="id"
-                  readonly
-                  placeholder="Será gerado ao salvar"
+                  name="numero_registro"
+                  required=""
+                  placeholder="Ex: 101, 102, A-01..."
                 />
               </div>
+
               <div class="grupo-form campo-expandir">
                 <label for="cargo"
                   >Cargo <span class="obrigatorio">*</span></label
@@ -310,6 +318,7 @@
                 </select>
               </div>
             </div>
+
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="turno"
@@ -323,7 +332,18 @@
                   <option value="noite">Noite (22:00 - 06:00)</option>
                 </select>
               </div>
+
+              <div class="grupo-form campo-expandir">
+                <label for="status">Status </label>
+
+                <select id="status" name="status" required>
+                  <option value="ativo" selected>Efetivo</option>
+
+                  <option value="inativo">Ex-funcionário</option>
+                </select>
+              </div>
             </div>
+
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="residente-select"

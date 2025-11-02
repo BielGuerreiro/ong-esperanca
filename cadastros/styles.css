@@ -43,6 +43,15 @@ main {
   box-sizing: border-box;
 }
 
+/* bloqueia o editar em campos ___________________________________________________________________________ */
+.campo-travado,
+input[readonly] {
+  background-color: #f0f0f0;
+  color: #777;
+  cursor: not-allowed;
+  border-color: #ddd;
+}
+
 /*Estrutura do Formulário _________________________________________________________________ */
 .container-formulario {
   background-color: white;
@@ -201,11 +210,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
 }
 
-/*  Validação */
+/*  Validação _________________________________________________________________________________________ */
 .form-foi-validado input:invalid,
 .form-foi-validado select:invalid,
 .form-foi-validado textarea:invalid {
-  border-color: #c23b36;
+  border-color: var(--cor-vermelho-escuro);
 }
 
 /* asterisco obrigatorio _________________________________________________________________ */

@@ -14,7 +14,7 @@ if (process.env.DATABASE_URL) {
   db = mysql.createPool({
     host: "localhost",
     user: "root",
-    password: "",
+    password: "2526",
     database: "ong_esperanca",
     port: 3306,
   });
