@@ -5,7 +5,7 @@
     <title>Agendar Atividade</title>
     <link rel="stylesheet" href="../styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="/img/logo.png" type="image/x-icon" />
+    <link rel="shortcut icon" href="../../img/Logos.png" type="image/x-icon" />
   </head>
   <body>
     <main>
@@ -113,6 +113,16 @@
               />
             </div>
 
+            <div class="grupo-form campo-expandir" id="container-status">
+              <label for="status">Status da Atividade</label>
+
+              <select id="status" name="status">
+                <option value="Agendada" selected>Agendada</option>
+                <option value="concluida">Concluída</option>
+                <option value="cancelada">Cancelada</option>
+              </select>
+            </div>
+
             <div class="navegacao-form">
               <button type="submit" class="btn-enviar">AGENDAR</button>
               <button type="button" class="btn-cancelar">
@@ -123,6 +133,7 @@
         </form>
       </div>
     </main>
+
     <script src="script.js"></script>
     <script src="../../theme-manager.js" defer></script>
   </body>

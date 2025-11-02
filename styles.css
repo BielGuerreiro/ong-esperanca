@@ -257,6 +257,13 @@ body {
   background-color: #ffc107;
 }
 
+.status-concluida {
+  background-color: #4caf50 !important;
+}
+.status-cancelada {
+  background-color: #f44336 !important;
+}
+
 /* status relatorio ___________________________________________________________________________________________ */
 
 .status-administrado {
@@ -536,6 +543,45 @@ body {
   font-weight: bold;
   font-size: 12px;
   color: white;
+}
+
+/* atividade ________________________________________________________________ */
+
+/* --- Estilos para Tabela de Atividades --- */
+
+/* Coluna de Data/Horário */
+.tabela-atividades td:first-child {
+  line-height: 1.4;
+}
+.tabela-atividades .col-horario {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+.tabela-atividades .col-data {
+  font-size: 13px;
+  color: var(--secondary-color-light);
+}
+
+/* Coluna de Participantes */
+.tabela-atividades .participantes-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tabela-atividades .participantes-lista li {
+  background-color: var(--primary-color-light);
+  color: var(--primary-color);
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  font-size: 13px;
+  display: inline-block;
+  margin-right: 4px;
+}
+.tabela-atividades .participantes-lista .mais-participantes {
+  background-color: var(--accent-color);
+  color: #fff;
+  font-weight: 600;
 }
 
 /* relatorio ______________________________________________________________________________ */

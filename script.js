@@ -707,6 +707,8 @@ async function iniciarPaginaMedicamentos() {
   tabela para refletir a mudança instantaneamente.
 */
 
+// (A função carregarAtividades NÃO precisa estar aqui, ela está no script de cadastro)
+
 async function iniciarPaginaAtividades() {
   let listaAgendamentos = [];
 
@@ -727,33 +729,82 @@ async function iniciarPaginaAtividades() {
 
   if (listaAgendamentos.length > 0) {
     listaAgendamentos.forEach((agendamento) => {
-      const status = agendamento.status || "Agendada";
-      const classeStatus = `status-${status.toLowerCase()}`;
-      const statusHTML = `<span class="status ${classeStatus}">${status}</span>`;
+      // --- Normalização de status ---
+      const statusOriginal = agendamento.status || "Agendada";
+      const statusNormalizado = statusOriginal
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim()
+        .toLowerCase();
+      const classeStatus = `status-${statusNormalizado}`;
+      const statusFormatado =
+        statusOriginal.charAt(0).toUpperCase() +
+        statusOriginal.slice(1).toLowerCase();
 
-      // --- Data formatada ---
+      const statusHTML = `
+        <span class="status ${classeStatus}">${statusFormatado}</span>
+      `;
+
+      // --- Data e hora ---
       const dataRaw = agendamento.data || agendamento.data_atividade;
       let dataFormatada = "N/A";
       if (dataRaw) {
         const dataObj = new Date(dataRaw);
-        if (!isNaN(dataObj.getTime())) {
-          dataFormatada = dataObj.toLocaleDateString("pt-BR");
+        if (!isNaN(dataObj)) {
+          dataFormatada = dataObj.toLocaleDateString("pt-BR", {
+            timeZone: "UTC",
+          });
         }
       }
 
-      const horarioExibicao = agendamento.horario || "N/A";
-      const duracaoExibicao = agendamento.duracao || "N/A";
+      let horarioExibicao = "N/A";
+      if (agendamento.horario) {
+        horarioExibicao = agendamento.horario.substring(0, 5);
+      }
 
-      const acoesHTML = `
-        <a href="cadastros/cadastro-atividade/index.html?id=${agendamento.id}&origem=pagina-atividades" class="btn-acao-icone btn-editar" title="Editar Atividade"><i class='bx bxs-pencil'></i></a>
-        <a href="#" class="btn-acao-icone btn-excluir" data-id="${agendamento.id}" title="Excluir Atividade"><i class='bx bx-trash-alt'></i></a>
+      const dataHoraHTML = `
+        <div><span class="col-horario">${horarioExibicao}</span></div>
+        <div><span class="col-data">${dataFormatada}</span></div>
       `;
 
-      // --- Desktop ---
+      // --- Duração ---
+      const duracaoExibicao = agendamento.duracao || "N/A";
+
+      // --- Ações ---
+      const acoesHTML = `
+        <a href="cadastros/cadastro-atividade/index.html?id=${agendamento.id}&origem=pagina-atividades" 
+           class="btn-acao-icone btn-editar" title="Editar Atividade">
+           <i class='bx bxs-pencil'></i></a>
+        <a href="#" class="btn-acao-icone btn-excluir" data-id="${agendamento.id}" title="Excluir Atividade">
+           <i class='bx bx-trash-alt'></i></a>
+      `;
+
+      // --- Participantes ---
+      let participantesHTML = "Nenhum";
+      if (agendamento.participantes_nomes) {
+        const nomes = agendamento.participantes_nomes.split(", ");
+        const total = nomes.length;
+        const nomesExibidos = nomes.slice(0, 5);
+
+        participantesHTML = `<ul class="participantes-lista">`;
+        nomesExibidos.forEach((nome) => {
+          participantesHTML += `<li>${nome}</li>`;
+        });
+
+        if (total > 5) {
+          participantesHTML += `<li class="mais-participantes">+${
+            total - 5
+          }</li>`;
+        }
+        participantesHTML += `</ul>`;
+      }
+
+      // --- Linha Desktop ---
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${dataFormatada}</td>
-        <td>${horarioExibicao}</td>
+        <td>${dataHoraHTML}</td>
+        <td>${participantesHTML}</td>
         <td>${agendamento.nome_atividade || agendamento.nome || "N/A"}</td>
         <td>${duracaoExibicao}</td>
         <td>${statusHTML}</td>
@@ -761,15 +812,17 @@ async function iniciarPaginaAtividades() {
       `;
       tabelaBodyDesktop.appendChild(tr);
 
-      // --- Mobile ---
+      // --- Item Mobile ---
       const li = document.createElement("li");
       li.innerHTML = `
         <div class="atividade-data-hora">
-            <span class="data">${dataFormatada}</span>
-            <span class="hora">${horarioExibicao}</span>
+          <span class="data">${dataFormatada}</span>
+          <span class="hora">${horarioExibicao}</span>
         </div>
-        <span class="atividade-nome">${agendamento.nome_atividade || agendamento.nome || "N/A"}</span>
-        <span class="atividade-duracao">${duracaoExibicao}</span>
+        <span class="atividade-nome">${
+          agendamento.nome_atividade || agendamento.nome || "N/A"
+        }</span>
+        <div class="atividade-status">${statusHTML}</div>
         <div class="atividade-acoes">${acoesHTML}</div>
       `;
       listaBodyMobile.appendChild(li);
@@ -779,42 +832,44 @@ async function iniciarPaginaAtividades() {
     listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhuma atividade agendada.</li>`;
   }
 
-  // --- Exclusão via backend ---
+  // --- Exclusão ---
   const paginaAtividades = document.getElementById("pagina-atividades");
-  paginaAtividades.replaceWith(paginaAtividades.cloneNode(true));
-  const novaPagina = document.getElementById("pagina-atividades");
 
-  novaPagina.addEventListener("click", async function (event) {
-    const botaoExcluir = event.target.closest(".btn-excluir");
-    if (!botaoExcluir) return;
+  if (paginaAtividades && !paginaAtividades.dataset.listenerExcluir) {
+    paginaAtividades.dataset.listenerExcluir = "true";
 
-    event.preventDefault();
-    const idParaExcluir = botaoExcluir.dataset.id;
+    paginaAtividades.addEventListener("click", async function (event) {
+      const botaoExcluir = event.target.closest(".btn-excluir");
+      if (!botaoExcluir) return;
 
-    if (confirm(`Tem certeza que deseja excluir a atividade?`)) {
-      try {
-        const res = await fetch(`${API_URL}/atividades/${idParaExcluir}`, {
-          method: "DELETE",
-        });
-        if (res.ok) {
-          alert("Atividade excluída com sucesso!");
-          iniciarPaginaAtividades();
-        } else {
-          const erro = await res.json();
-          alert("Erro ao excluir: " + (erro.error || "desconhecido"));
+      event.preventDefault();
+      const idParaExcluir = botaoExcluir.dataset.id;
+
+      if (confirm(`Tem certeza que deseja excluir a atividade?`)) {
+        try {
+          const res = await fetch(`${API_URL}/atividades/${idParaExcluir}`, {
+            method: "DELETE",
+          });
+          if (res.ok) {
+            alert("Atividade excluída com sucesso!");
+            iniciarPaginaAtividades();
+          } else {
+            const erro = await res.json();
+            alert("Erro ao excluir: " + (erro.error || "desconhecido"));
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Erro de rede ao excluir atividade.");
         }
-      } catch (err) {
-        console.error(err);
-        alert("Erro de rede ao excluir atividade.");
       }
-    }
-  });
+    });
+  }
 }
 
+// --- Inicialização ---
 if (document.getElementById("pagina-atividades")) {
   iniciarPaginaAtividades();
 }
-
 
 // sessao relatorio   -_____________________________________________________________________________________________________
 
