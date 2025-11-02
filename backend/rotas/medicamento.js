@@ -1,6 +1,11 @@
 const express = require("express");
-const db = require("../database.js"); // 1. CORRIGIDO: Usa 'db'
-const { enviarEmailMedicamento } = require("../alerta/notificacao.js");
+const db = require("../database.js");
+const {
+  enviarEmailMedicamento,
+  enviarEmailAtualizacaoMedicamento,
+  enviarEmailExclusaoMedicamento,
+} = require("../alerta/notificacao.js");
+
 const router = express.Router();
 
 // ==============================
@@ -10,20 +15,20 @@ router.get("/medicamentos/:id", async (req, res) => {
   const { id } = req.params;
   let conn;
   try {
-    conn = await db.getConnection(); // 2. CORRIGIDO: Usa 'db' // 3. CORRIGIDO: Usa 'id_tratamento'
+    conn = await db.getConnection();
     const [rows] = await conn.query(
       `
-      SELECT 
-        m.id_tratamento AS id, 
-        m.nome_medicamento AS medicamento,
-        m.dosagem, m.tipo, m.horario, m.frequencia, m.duracao, m.data_vencimento,
-        r.id_residente AS residenteId,
-        r.primeiro_nome, r.sobrenome
-      FROM medicamentos m
-      JOIN recebe rec ON rec.medicamento_id_tratamento = m.id_tratamento
-      JOIN residentes r ON r.id_residente = rec.residente_id_residente
-      WHERE m.id_tratamento = ?
-    `,
+      SELECT 
+        m.id_tratamento AS id, 
+        m.nome_medicamento AS medicamento,
+        m.dosagem, m.tipo, m.horario, m.frequencia, m.duracao, m.data_vencimento,
+        r.id_residente AS residenteId,
+        r.primeiro_nome, r.sobrenome
+      FROM medicamentos m
+      JOIN recebe rec ON rec.medicamento_id_tratamento = m.id_tratamento
+      JOIN residentes r ON r.id_residente = rec.residente_id_residente
+      WHERE m.id_tratamento = ?
+    `,
       [id]
     );
 
@@ -61,30 +66,31 @@ router.get("/medicamentos/:id", async (req, res) => {
 router.get("/medicamentos", async (req, res) => {
   let conn;
   try {
-    conn = await db.getConnection(); // CORRIGIDO: Usa 'db' // CORRIGIDO: Usa 'id_tratamento'
+    conn = await db.getConnection();
     const [rows] = await conn.query(`
-      SELECT 
-        m.id_tratamento AS id,
-        m.nome_medicamento AS medicamento,
-        m.dosagem, m.tipo, m.horario, m.frequencia, m.duracao, m.data_vencimento,
-        r.id_residente AS residenteId,
-        r.primeiro_nome, r.sobrenome
-      FROM medicamentos m
-      JOIN recebe rec ON rec.medicamento_id_tratamento = m.id_tratamento
-      JOIN residentes r ON r.id_residente = rec.residente_id_residente
-      ORDER BY m.horario ASC
-    `);
+      SELECT 
+        m.id_tratamento AS id,
+        m.nome_medicamento AS medicamento,
+        m.dosagem, m.tipo, m.horario, m.frequencia, m.duracao, m.data_vencimento,
+        r.id_residente AS residenteId,
+        r.primeiro_nome, r.sobrenome
+      FROM medicamentos m
+      JOIN recebe rec ON rec.medicamento_id_tratamento = m.id_tratamento
+      JOIN residentes r ON r.id_residente = rec.residente_id_residente
+      ORDER BY m.horario ASC
+    `);
 
     const listaTratamentos = rows.map((row) => ({
       id: row.id,
       medicamento: row.medicamento,
       dosagem: row.dosagem,
       tipo: row.tipo,
-      // Formata o horário para HH:MM
       horario: row.horario ? row.horario.substring(0, 5) : "N/A",
       frequencia: row.frequencia,
       duracao: row.duracao,
-      validade: row.data_vencimento,
+      validade: row.data_vencimento
+        ? new Date(row.data_vencimento).toLocaleDateString("pt-BR")
+        : null,
       residenteId: row.residenteId,
       residenteNome: `${row.primeiro_nome} ${row.sobrenome}`,
     }));
@@ -114,41 +120,37 @@ router.post("/medicamentos", async (req, res) => {
   } = req.body;
   let conn;
   try {
-    conn = await db.getConnection(); // CORRIGIDO: Usa 'db'
+    conn = await db.getConnection();
     await conn.beginTransaction();
 
     const [result] = await conn.query(
       `INSERT INTO medicamentos 
-        (nome_medicamento, dosagem, tipo, horario, frequencia, duracao, data_vencimento)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `,
+        (nome_medicamento, dosagem, tipo, horario, frequencia, duracao, data_vencimento)
+        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [medicamento, dosagem, tipo, horario, frequencia, duracao, validade]
     );
 
-    const medicamentoId = result.insertId; // Este ID é o 'id_tratamento' // CORRIGIDO: Usa 'medicamento_id_tratamento'
+    const medicamentoId = result.insertId;
 
     await conn.query(
-      `
-      INSERT INTO recebe 
-        (residente_id_residente, medicamento_id_tratamento, data_prescricao)
-      VALUES (?, ?, CURDATE())
-    `,
+      `INSERT INTO recebe 
+        (residente_id_residente, medicamento_id_tratamento, data_prescricao)
+        VALUES (?, ?, CURDATE())`,
       [residenteId, medicamentoId]
     );
 
     const [row] = await conn.query(
-      `
-      SELECT CONCAT(primeiro_nome, ' ', sobrenome) AS nome_completo
-      FROM residentes
-      WHERE id_residente = ?
-    `,
+      `SELECT CONCAT(primeiro_nome, ' ', sobrenome) AS nome_completo
+       FROM residentes
+       WHERE id_residente = ?`,
       [residenteId]
     );
 
     const residenteNome = row[0]?.nome_completo || "Desconhecido";
 
-    await conn.commit(); // O envio de e-mail continua igual
+    await conn.commit();
 
+    // Envia e-mail
     await enviarEmailMedicamento({
       residenteNome,
       medicamento,
@@ -157,7 +159,9 @@ router.post("/medicamentos", async (req, res) => {
       horario,
       frequencia,
       duracao,
-      validade,
+      validade: validade
+        ? new Date(validade).toLocaleDateString("pt-BR")
+        : null,
     });
 
     res.json({
@@ -182,15 +186,40 @@ router.put("/medicamentos/:id", async (req, res) => {
     req.body;
   let conn;
   try {
-    conn = await db.getConnection(); // CORRIGIDO: Usa 'db' // CORRIGIDO: Usa 'id_tratamento'
+    conn = await db.getConnection();
+
     await conn.query(
-      `
-      UPDATE medicamentos
-      SET nome_medicamento = ?, dosagem = ?, tipo = ?, horario = ?, frequencia = ?, duracao = ?, data_vencimento = ?
-      WHERE id_tratamento = ?
-    `,
+      `UPDATE medicamentos
+       SET nome_medicamento = ?, dosagem = ?, tipo = ?, horario = ?, frequencia = ?, duracao = ?, data_vencimento = ?
+       WHERE id_tratamento = ?`,
       [medicamento, dosagem, tipo, horario, frequencia, duracao, validade, id]
     );
+
+    // Busca residente para envio de e-mail
+    const [row] = await conn.query(
+      `
+      SELECT CONCAT(r.primeiro_nome, ' ', r.sobrenome) AS residenteNome
+      FROM residentes r
+      JOIN recebe rec ON rec.residente_id_residente = r.id_residente
+      WHERE rec.medicamento_id_tratamento = ?`,
+      [id]
+    );
+
+    const residenteNome = row[0]?.residenteNome || "Desconhecido";
+
+    // Envia e-mail de atualização
+    await enviarEmailAtualizacaoMedicamento({
+      residenteNome,
+      medicamento,
+      tipo,
+      dosagem,
+      horario,
+      frequencia,
+      duracao,
+      validade: validade
+        ? new Date(validade).toLocaleDateString("pt-BR")
+        : null,
+    });
 
     res.json({ message: "Medicamento atualizado com sucesso!" });
   } catch (err) {
@@ -208,13 +237,41 @@ router.delete("/medicamentos/:id", async (req, res) => {
   const { id } = req.params;
   let conn;
   try {
-    conn = await db.getConnection(); // CORRIGIDO: Usa 'db'
-    await conn.beginTransaction(); // CORRIGIDO: Usa 'medicamento_id_tratamento' e 'id_tratamento'
-    await conn.query("DELETE FROM recebe WHERE medicamento_id_tratamento = ?", [
-      id,
-    ]);
+    conn = await db.getConnection();
+    await conn.beginTransaction();
+
+    // Busca dados para envio de e-mail
+    const [rows] = await conn.query(
+      `
+      SELECT m.nome_medicamento AS medicamento,
+             m.dosagem, m.tipo, m.horario, m.frequencia, m.duracao, m.data_vencimento AS validade,
+             CONCAT(r.primeiro_nome, ' ', r.sobrenome) AS residenteNome
+      FROM medicamentos m
+      JOIN recebe rec ON rec.medicamento_id_tratamento = m.id_tratamento
+      JOIN residentes r ON r.id_residente = rec.residente_id_residente
+      WHERE m.id_tratamento = ?`,
+      [id]
+    );
+
+    const medicamento = rows[0];
+
+    // Deleta registros
+    await conn.query(
+      "DELETE FROM recebe WHERE medicamento_id_tratamento = ?",
+      [id]
+    );
     await conn.query("DELETE FROM medicamentos WHERE id_tratamento = ?", [id]);
     await conn.commit();
+
+    // Envia e-mail de exclusão se encontrado
+    if (medicamento) {
+      await enviarEmailExclusaoMedicamento({
+        ...medicamento,
+        validade: medicamento.validade
+          ? new Date(medicamento.validade).toLocaleDateString("pt-BR")
+          : null,
+      });
+    }
 
     res.json({ message: "Medicamento excluído com sucesso!" });
   } catch (err) {
