@@ -373,15 +373,11 @@ async function iniciarPaginaFuncionarios() {
 
   try {
     const response = await fetch(`${API_URL}/funcionarios`);
-
     if (!response.ok) {
-      const errData = await response.json();
-      throw new Error(
-        errData.error || "Erro ao buscar funcionários do servidor"
-      );
+      throw new Error("Erro ao buscar funcionários do servidor");
     }
-
     const listaFuncionarios = await response.json();
+    listaFuncionarios.reverse();
 
     // 2. LIMPAR A TABELA ______________________________________________________________________________
     tabelaBodyDesktop.innerHTML = "";
@@ -621,11 +617,11 @@ async function iniciarPaginaMedicamentos() {
   listaBodyMobile.innerHTML = "";
 
   try {
-    // Busca os medicamentos do backend
     const response = await fetch(`${API_URL}/medicamentos`);
     if (!response.ok)
       throw new Error("Erro ao buscar medicamentos do servidor");
     const listaTratamentos = await response.json();
+    listaTratamentos.reverse();
 
     if (listaTratamentos.length > 0) {
       listaTratamentos.forEach((tratamento) => {
@@ -711,11 +707,11 @@ async function iniciarPaginaMedicamentos() {
 
 async function iniciarPaginaAtividades() {
   let listaAgendamentos = [];
-
   try {
     const res = await fetch(`${API_URL}/atividades`);
     if (!res.ok) throw new Error("Erro ao listar atividades");
     listaAgendamentos = await res.json();
+    listaAgendamentos.reverse();
   } catch (err) {
     console.error("Erro ao listar atividades:", err);
   }
@@ -800,7 +796,7 @@ async function iniciarPaginaAtividades() {
         participantesHTML += `</ul>`;
       }
 
-      // --- Linha Desktop ---
+      // --- Linha Desktop (Permanece com 6 colunas, incluindo Status) ---
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${dataHoraHTML}</td>
@@ -812,7 +808,7 @@ async function iniciarPaginaAtividades() {
       `;
       tabelaBodyDesktop.appendChild(tr);
 
-      // --- Item Mobile ---
+      // --- Item Mobile (CORRIGIDO: Agora com 3 colunas) ---
       const li = document.createElement("li");
       li.innerHTML = `
         <div class="atividade-data-hora">
@@ -822,7 +818,6 @@ async function iniciarPaginaAtividades() {
         <span class="atividade-nome">${
           agendamento.nome_atividade || agendamento.nome || "N/A"
         }</span>
-        <div class="atividade-status">${statusHTML}</div>
         <div class="atividade-acoes">${acoesHTML}</div>
       `;
       listaBodyMobile.appendChild(li);
@@ -832,7 +827,7 @@ async function iniciarPaginaAtividades() {
     listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhuma atividade agendada.</li>`;
   }
 
-  // --- Exclusão ---
+  // --- Exclusão (Não quebra mais o menu) ---
   const paginaAtividades = document.getElementById("pagina-atividades");
 
   if (paginaAtividades && !paginaAtividades.dataset.listenerExcluir) {
@@ -1017,11 +1012,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const menuItens = document.querySelectorAll(".menu-header li");
   let isAnimating = false;
 
-  function ajustarAlturaContainer(paginaAtiva) {
-    if (paginaAtiva && containerGeral) {
-      containerGeral.style.height = `${paginaAtiva.scrollHeight + 60}px`;
-    }
-  }
   menuItens.forEach((item) => {
     item.addEventListener("click", function () {
       if (isAnimating) return;
@@ -1052,7 +1042,6 @@ document.addEventListener("DOMContentLoaded", function () {
         );
       }
       paginaAlvo.classList.add("ativa", "pagina-entrando");
-      ajustarAlturaContainer(paginaAlvo);
       paginaAlvo.addEventListener(
         "animationend",
         () => {

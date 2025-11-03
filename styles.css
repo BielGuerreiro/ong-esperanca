@@ -164,16 +164,6 @@ body {
 }
 
 /* deixa none as paginas nao acessadas ________________________________________________ */
-.pagina-conteudo {
-  position: absolute;
-  top: 30px;
-  left: 30px;
-  right: 30px;
-
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.5s, transform 0.5s;
-}
 
 .pagina-conteudo.ativa {
   position: absolute;
@@ -214,22 +204,12 @@ body {
 }
 
 /* status funcionario ___________________________________________________________________________________________ */
-.status-trabalhando {
-  background-color: #28a745;
-}
-.status-folga {
-  background-color: #6c757d;
-}
-.status-falta {
-  background-color: #dc3545;
-}
-
-.status-pendente {
-  background-color: #ffc107;
+.status-inativo {
+  background-color: #f44336;
 }
 
 .status-ativo {
-  background-color: #33e01c;
+  background-color: #4caf50;
 }
 
 /* status medicamento ___________________________________________________________________________________________ */
@@ -258,22 +238,22 @@ body {
 }
 
 .status-concluida {
-  background-color: #4caf50 !important;
+  background-color: #4caf50;
 }
 .status-cancelada {
-  background-color: #f44336 !important;
+  background-color: #f44336;
 }
 
 /* status relatorio ___________________________________________________________________________________________ */
 
 .status-administrado {
-  background-color: #28a745;
+  background-color: #4caf50;
 }
 .status-pendente {
-  background-color: #d1a00e;
+  background-color: #ffc107;
 }
 .status-nao-tomado {
-  background-color: #dc3545;
+  background-color: #f44336;
 }
 
 .btn-acao-icone.btn-confirmar {
@@ -305,6 +285,45 @@ body {
   background-color: var(--cor-vermelho-escuro);
 }
 
+/* --- SCROLLBAR CUSTOMIZADO (DENTRO DAS FICHAS) --- */
+
+.lista-residentes-container,
+.lista-funcionarios-container,
+.lista-medicamentos-container,
+.lista-atividades-nova,
+.lista-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--main-color, #6ea0c7) transparent;
+}
+
+/* Para Chrome/Edge */
+.lista-residentes-container::-webkit-scrollbar,
+.lista-funcionarios-container::-webkit-scrollbar,
+.lista-medicamentos-container::-webkit-scrollbar,
+.lista-atividades-nova::-webkit-scrollbar,
+.lista-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.lista-residentes-container::-webkit-scrollbar-track,
+.lista-funcionarios-container::-webkit-scrollbar-track,
+.lista-medicamentos-container::-webkit-scrollbar-track,
+.lista-atividades-nova::-webkit-scrollbar-track,
+.lista-container::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.lista-residentes-container::-webkit-scrollbar-thumb,
+.lista-funcionarios-container::-webkit-scrollbar-thumb,
+.lista-medicamentos-container::-webkit-scrollbar-thumb,
+.lista-atividades-nova::-webkit-scrollbar-thumb,
+.lista-container::-webkit-scrollbar-thumb {
+  background-color: var(--main-color, #75afdc);
+  border-radius: 10px;
+  border: 2px solid transparent;
+}
+
 /* home page _____________________________________________________________________________________________ */
 .container-geral {
   position: relative;
@@ -312,8 +331,21 @@ body {
   padding: 30px;
   top: 10vh;
   box-sizing: border-box;
+  height: 90vh;
   overflow: hidden;
-  transition: height 0.4s ease-out;
+}
+
+.pagina-conteudo {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  right: 30px;
+  bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s, transform 0.5s;
 }
 
 .titulo h2 {
@@ -459,13 +491,6 @@ body {
   width: 500px;
 }
 
-@media (max-width: 1100px) {
-  .chart-wrapper {
-    width: 100%;
-    height: 20vh;
-  }
-}
-
 .chart-wrapper h2 {
   font-size: 18px;
   color: #555;
@@ -476,6 +501,8 @@ body {
 .ficha-container {
   display: flex;
   margin-top: 30px;
+  flex-grow: 1;
+  min-height: 0;
 }
 
 .ficha-container-dashboard {
@@ -511,11 +538,14 @@ body {
   font-weight: bold;
 }
 
+/* .lista-residentes-container, */
+
 .lista-residentes-container,
 .lista-funcionarios-container {
   flex-grow: 1;
   overflow-y: auto;
   padding: 0 30px;
+  min-height: 0;
 }
 
 .tabela-residentes,
@@ -547,9 +577,6 @@ body {
 
 /* atividade ________________________________________________________________ */
 
-/* --- Estilos para Tabela de Atividades --- */
-
-/* Coluna de Data/Horário */
 .tabela-atividades td:first-child {
   line-height: 1.4;
 }
@@ -562,7 +589,6 @@ body {
   color: var(--secondary-color-light);
 }
 
-/* Coluna de Participantes */
 .tabela-atividades .participantes-lista {
   margin: 0;
   padding: 0;
@@ -616,7 +642,7 @@ body {
 /* adm __________________________________________________________________________________________ */
 
 .configuracoes-container {
-  max-width: 400px;
+  width: 30%;
   margin: 50px auto 0 auto;
 }
 
@@ -745,6 +771,11 @@ input:checked + .slider:before {
   .lista-residentes-dashboard {
     height: auto;
     flex: 0;
+  }
+
+  .chart-wrapper {
+    width: 100%;
+    height: 20vh;
   }
 }
 
@@ -1423,6 +1454,10 @@ input:checked + .slider:before {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
+  }
+
+  .configuracoes-container {
+    width: 90%;
   }
 }
 

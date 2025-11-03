@@ -2,23 +2,29 @@ const express = require("express");
 const db = require("../database.js");
 const router = express.Router();
 
-// 1. LISTAR ATIVIDADES (Corrigido: Busca nomes dos participantes)
 router.get("/atividades", async (req, res) => {
   let conn;
   try {
     conn = await db.getConnection();
     const [rows] = await conn.query(`
       SELECT 
-        a.id_atividade AS id, a.nome AS nome_atividade, a.categoria_atividade AS categoria,
-        a.local_atividade AS local, a.data_atividade AS data, a.horario,
-        a.duracao, a.responsavel_atividade AS responsavel, a.status, 
+        a.id_atividade AS id,
+        a.nome AS nome_atividade,
+        a.categoria_atividade AS categoria,
+        a.local_atividade AS local,
+        a.data_atividade AS data,
+        a.horario,
+        a.duracao,
+        a.responsavel_atividade AS responsavel,
+        a.status, 
         GROUP_CONCAT(DISTINCT f.residente_id_residente) AS participantes_ids,
         GROUP_CONCAT(DISTINCT r.primeiro_nome SEPARATOR ', ') AS participantes_nomes
       FROM atividades a
       LEFT JOIN faz f ON f.atividade_id_atividade = a.id_atividade
       LEFT JOIN residentes r ON r.id_residente = f.residente_id_residente
       GROUP BY a.id_atividade
-      ORDER BY a.data_atividade ASC, a.horario ASC
+      -- A CORREÇÃO ESTÁ AQUI: ASC MUDOU PARA DESC --
+      ORDER BY a.data_atividade DESC, a.horario DESC
     `);
     res.json(rows);
   } catch (err) {
