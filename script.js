@@ -268,82 +268,108 @@ function iniciarPaginaDashboard() {
   de ação (editar e excluir). Ela também ativa a funcionalidade do botão de excluir.
 */
 
-function iniciarPaginaResidentes() {
-  const listaResidentes = JSON.parse(
-    sessionStorage.getItem("listaResidentes") || "[]"
-  );
-
+async function iniciarPaginaResidentes() {
   const tabelaBodyDesktop = document.getElementById("lista-residentes-body");
   const listaBodyMobile = document.getElementById("lista-residentes-nova-body");
-
   if (!tabelaBodyDesktop || !listaBodyMobile) return;
 
-  tabelaBodyDesktop.innerHTML = "";
-  listaBodyMobile.innerHTML = "";
+  tabelaBodyDesktop.innerHTML =
+    '<tr><td colspan="5" style="text-align: center;">Carregando...</td></tr>';
+  listaBodyMobile.innerHTML =
+    '<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Carregando...</li>';
 
-  if (listaResidentes.length > 0) {
-    listaResidentes.forEach((residente) => {
-      const idade = calcularIdade(residente.nascimento);
-      const categoria = definirCategoria(idade);
-      const nomeCompleto = `${residente["primeiro-nome"]} ${residente.sobrenome}`;
-      const sexoFormatado = residente.sexo
-        ? residente.sexo.charAt(0).toUpperCase() + residente.sexo.slice(1)
-        : "N/A";
-      const acoesHTML = `
-        <a href="cadastros/cadastro-residente/index.html?id=${residente.id}&origem=pagina-residentes" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
-        <a href="#" class="btn-acao-icone btn-excluir" data-id="${residente.id}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
-      `;
+  try {
+    const response = await fetch(`${API_URL}/residentes`);
+    if (!response.ok) throw new Error("Erro ao buscar residentes");
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${nomeCompleto}</td>
-        <td>${idade}</td>
-        <td>${sexoFormatado}</td>
-        <td>${categoria}</td>
-        <td class="acoes">${acoesHTML}</td>
-      `;
-      tabelaBodyDesktop.appendChild(tr);
+    let listaResidentes = await response.json();
+    listaResidentes.reverse();
 
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <span class="residente-nome">${nomeCompleto}</span>
-        <span class="residente-idade">${idade}</span>
-        <div class="residente-acoes">${acoesHTML}</div>
-      `;
-      listaBodyMobile.appendChild(li);
-    });
-  } else {
-    tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum residente cadastrado.</td></tr>`;
-    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum residente cadastrado.</li>`;
-  }
+    tabelaBodyDesktop.innerHTML = "";
+    listaBodyMobile.innerHTML = "";
 
-  const paginaResidentes = document.getElementById("pagina-residentes");
+    if (listaResidentes.length > 0) {
+      listaResidentes.forEach((residente) => {
+        const idade = calcularIdade(residente.data_nascimento);
+        const categoria = definirCategoria(idade);
+        const nomeCompleto = `${residente.primeiro_nome} ${residente.sobrenome}`;
+        const sexoFormatado = residente.sexo
+          ? residente.sexo.charAt(0).toUpperCase() + residente.sexo.slice(1)
+          : "N/A";
 
-  paginaResidentes.addEventListener("click", function (event) {
-    const botaoExcluir = event.target.closest(".btn-excluir");
-    if (!botaoExcluir) return;
+        const acoesHTML = `
+          <a href="cadastros/cadastro-residente/index.html?id=${residente.id_residente}&origem=pagina-residentes" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
+          <a href="#" class="btn-acao-icone btn-excluir" data-id="${residente.id_residente}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
+        `;
 
-    event.preventDefault();
-    const idParaExcluir = botaoExcluir.dataset.id;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${nomeCompleto}</td>
+          <td>${idade}</td>
+          <td>${sexoFormatado}</td>
+          <td>${categoria}</td>
+          <td class="acoes">${acoesHTML}</td>
+        `;
+        tabelaBodyDesktop.appendChild(tr);
 
-    const itemPai = botaoExcluir.closest("tr") || botaoExcluir.closest("li");
-    const nomeDoResidente = itemPai.querySelector(
-      "td:first-child, .residente-nome"
-    ).textContent;
-
-    if (
-      confirm(
-        `Tem certeza que deseja excluir o residente "${nomeDoResidente}"?`
-      )
-    ) {
-      const novaLista = JSON.parse(
-        sessionStorage.getItem("listaResidentes") || "[]"
-      ).filter((residente) => residente.id != idParaExcluir);
-      sessionStorage.setItem("listaResidentes", JSON.stringify(novaLista));
-      alert("Residente excluído com sucesso!");
-      iniciarPaginaResidentes();
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span class="residente-nome">${nomeCompleto}</span>
+          <span class="residente-idade">${idade}</span>
+          <div class="residente-acoes">${acoesHTML}</div>
+        `;
+        listaBodyMobile.appendChild(li);
+      });
+    } else {
+      tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum residente cadastrado.</td></tr>`;
+      listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum residente cadastrado.</li>`;
     }
-  });
+
+    // --- Lógica de Exclusão  _______________________________________________________________________ ---
+    const paginaResidentes = document.getElementById("pagina-residentes");
+    if (paginaResidentes && !paginaResidentes.dataset.listenerExcluir) {
+      paginaResidentes.dataset.listenerExcluir = "true";
+      paginaResidentes.addEventListener("click", async function (event) {
+        const botaoExcluir = event.target.closest(".btn-excluir");
+        if (!botaoExcluir) return;
+
+        event.preventDefault();
+        const idParaExcluir = botaoExcluir.dataset.id;
+
+        const nomeDoResidente = botaoExcluir
+          .closest("tr, li")
+          .querySelector(".residente-nome, td:first-child").textContent;
+
+        if (
+          confirm(
+            `Tem certeza que deseja excluir o residente "${nomeDoResidente}"? Esta ação não pode ser desfeita.`
+          )
+        ) {
+          try {
+            const deleteResponse = await fetch(
+              `${API_URL}/residentes/${idParaExcluir}`,
+              { method: "DELETE" }
+            );
+
+            if (deleteResponse.ok) {
+              alert("Residente excluído com sucesso!");
+              iniciarPaginaResidentes(); // Recarrega a lista
+            } else {
+              const erro = await deleteResponse.json();
+              alert("Erro ao excluir: " + (erro.error || "desconhecido"));
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Erro de rede ao excluir o residente.");
+          }
+        }
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Erro ao carregar residentes.</td></tr>`;
+    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Erro ao carregar residentes.</li>`;
+  }
 }
 
 // tabela funcionario ______________________________________________________________________________________________________________

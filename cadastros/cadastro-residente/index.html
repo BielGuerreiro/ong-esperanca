@@ -6,7 +6,7 @@
     <title>Cadastro de Residente</title>
     <link rel="stylesheet" href="../styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="shortcut icon" href="/img/logo.png" type="image/x-icon" />
+    <link rel="shortcut icon" href="../../img/Logos.png" type="image/x-icon" />
   </head>
   <body>
     <main>
@@ -141,11 +141,13 @@
                   >Data de entrada <span class="obrigatorio">*</span></label
                 ><input type="date" id="entrada" name="entrada" required />
               </div>
+
               <div class="grupo-form campo-expandir">
                 <label for="saida">Data de saída (Opcional)</label
                 ><input type="date" id="saida" name="saida" />
               </div>
             </div>
+
             <div class="navegacao-form">
               <button type="button" class="btn-proximo">PRÓXIMO &rarr;</button>
               <button type="button" class="btn-cancelar">
@@ -169,6 +171,7 @@
                 />
               </div>
             </div>
+
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="rua">Rua <span class="obrigatorio">*</span></label
@@ -176,6 +179,7 @@
                   type="text"
                   id="rua"
                   name="rua"
+                  maxlength="255"
                   placeholder="Digite o nome da rua"
                   required
                 />
@@ -186,12 +190,14 @@
                   type="text"
                   id="numero"
                   name="numero"
+                  maxlength="10"
                   placeholder="Número"
                   inputmode="numeric"
                   required
                 />
               </div>
             </div>
+
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="complemento">Complemento (Opcional)</label
@@ -199,10 +205,12 @@
                   type="text"
                   id="complemento"
                   name="complemento"
+                  maxlength="100"
                   placeholder="Apto, Bloco, Casa, etc."
                 />
               </div>
             </div>
+
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="bairro"
@@ -211,11 +219,13 @@
                   type="text"
                   id="bairro"
                   name="bairro"
+                  maxlength="100"
                   placeholder="Digite o bairro"
                   required
                 />
               </div>
             </div>
+
             <div class="linha-form">
               <div class="grupo-form campo-expandir">
                 <label for="cidade"
@@ -224,10 +234,12 @@
                   type="text"
                   id="cidade"
                   name="cidade"
+                  maxlength="100"
                   placeholder="Digite a cidade"
                   required
                 />
               </div>
+
               <div class="grupo-form">
                 <label for="uf">UF <span class="obrigatorio">*</span></label
                 ><select id="uf" name="uf" required>
@@ -282,31 +294,114 @@
                 <option value="sim">Sim</option>
               </select>
             </div>
+
             <div id="dados-escola-container" style="display: none">
               <div class="linha-form">
                 <div class="grupo-form campo-expandir">
-                  <label for="escola-nome">Nome da Escola</label
-                  ><input type="text" id="escola-nome" name="escola-nome" />
+                  <label for="escola-nome">Nome da Escola</label>
+
+                  <input type="text" id="escola-nome" name="escola-nome" />
                 </div>
               </div>
+
               <div class="linha-form">
                 <div class="grupo-form campo-expandir">
-                  <label for="escola-rua">Rua da Escola</label
-                  ><input type="text" id="escola-rua" name="escola-rua" />
-                </div>
-                <div class="grupo-form">
-                  <label for="escola-numero">Número</label
-                  ><input
+                  <label for="escola-cep">CEP da Escola</label>
+
+                  <input
                     type="text"
-                    id="escola-numero"
-                    name="escola-numero"
+                    id="escola-cep"
+                    name="escola-cep"
+                    placeholder="00000-000"
+                    maxlength="9"
                     inputmode="numeric"
                   />
                 </div>
               </div>
-              <div class="grupo-form">
-                <label for="escola-bairro">Bairro da Escola</label
-                ><input type="text" id="escola-bairro" name="escola-bairro" />
+
+              <div class="linha-form">
+                <div class="grupo-form campo-expandir">
+                  <label for="escola-rua">Rua da Escola</label>
+                  <input
+                    type="text"
+                    id="escola-rua"
+                    name="escola-rua"
+                    maxlength="255"
+                  />
+                </div>
+
+                <div class="grupo-form">
+                  <label for="escola-numero">Número</label>
+
+                  <input
+                    type="text"
+                    id="escola-numero"
+                    name="escola-numero"
+                    inputmode="numeric"
+                    maxlength="10"
+                  />
+                </div>
+              </div>
+
+              <div class="linha-form">
+                <div class="grupo-form campo-expandir">
+                  <label for="escola-bairro">Bairro da Escola</label>
+
+                  <input
+                    type="text"
+                    id="escola-bairro"
+                    name="escola-bairro"
+                    maxlength="100"
+                  />
+                </div>
+              </div>
+
+              <div class="linha-form">
+                <div class="grupo-form campo-expandir">
+                  <label for="escola-cidade">Cidade da Escola</label>
+
+                  <input
+                    type="text"
+                    id="escola-cidade"
+                    name="escola-cidade"
+                    maxlength="100"
+                  />
+                </div>
+
+                <div class="grupo-form">
+                  <label for="escola-uf">UF</label>
+
+                  <select id="escola-uf" name="escola-uf">
+                    <option value="" disabled selected>UF</option>
+                    <option value="AC">Acre</option>
+                    <option value="AL">Alagoas</option>
+                    <option value="AP">Amapá</option>
+                    <option value="AM">Amazonas</option>
+                    <option value="BA">Bahia</option>
+                    <option value="CE">Ceará</option>
+                    <option value="DF">Distrito Federal</option>
+                    <option value="ES">Espírito Santo</option>
+                    <option value="GO">Goiás</option>
+                    <option value="MA">Maranhão</option>
+                    <option value="MT">Mato Grosso</option>
+                    <option value="MS">Mato Grosso do Sul</option>
+                    <option value="MG">Minas Gerais</option>
+                    <option value="PA">Pará</option>
+                    <option value="PB">Paraíba</option>
+                    <option value="PR">Paraná</option>
+                    <option value="PE">Pernambuco</option>
+                    <option value="PI">Piauí</option>
+                    <option value="RJ">Rio de Janeiro</option>
+                    <option value="RN">Rio Grande do Norte</option>
+                    <option value="RS">Rio Grande do Sul</option>
+                    <option value="RO">Rondônia</option>
+                    <option value="RR">Roraima</option>
+                    <option value="SC">Santa Catarina</option>
+                    <option value="SP">São Paulo</option>
+                    <option value="SE">Sergipe</option>
+                    <option value="TO">Tocantins</option>
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -342,6 +437,7 @@
                     id="responsavel-primeiro-nome"
                     name="responsavel-primeiro-nome"
                     placeholder="Digite o nome"
+                    maxlength="50"
                   />
                 </div>
                 <div class="grupo-form campo-expandir">
@@ -352,6 +448,7 @@
                     id="responsavel-sobrenome"
                     name="responsavel-sobrenome"
                     placeholder="Digite o sobrenome"
+                    maxlength="100"
                   />
                 </div>
               </div>
@@ -366,6 +463,7 @@
                     name="responsavel-nascimento"
                   />
                 </div>
+
                 <div class="grupo-form campo-expandir">
                   <label for="responsavel-sexo"
                     >Sexo<span class="obrigatorio">*</span></label
@@ -376,6 +474,7 @@
                   </select>
                 </div>
               </div>
+
               <div class="linha-form">
                 <div class="grupo-form">
                   <label for="responsavel-cpf"
@@ -389,6 +488,7 @@
                     inputmode="numeric"
                   />
                 </div>
+
                 <div class="grupo-form campo-expandir">
                   <label for="responsavel-estado-civil">Estado Civil</label
                   ><select
@@ -413,6 +513,7 @@
                     placeholder="exemplo@email.com"
                   />
                 </div>
+
                 <div class="grupo-form campo-expandir">
                   <label for="responsavel-telefone"
                     >Telefone<span class="obrigatorio">*</span></label
@@ -435,6 +536,7 @@
                     id="responsavel-parentesco"
                     name="responsavel-parentesco"
                     placeholder="Ex: Mãe, Pai, Tio"
+                    maxlength="50"
                   />
                 </div>
               </div>
@@ -481,8 +583,10 @@
                       id="responsavel-rua"
                       name="responsavel-rua"
                       placeholder="Digite o nome da rua"
+                      maxlength="255"
                     />
                   </div>
+
                   <div class="grupo-form">
                     <label for="responsavel-numero"
                       >Nº<span class="obrigatorio">*</span></label
@@ -492,9 +596,11 @@
                       name="responsavel-numero"
                       placeholder="Número"
                       inputmode="numeric"
+                      maxlength="10"
                     />
                   </div>
                 </div>
+
                 <div class="linha-form">
                   <div class="grupo-form campo-expandir">
                     <label for="responsavel-bairro"
@@ -504,9 +610,11 @@
                       id="responsavel-bairro"
                       name="responsavel-bairro"
                       placeholder="Digite o bairro"
+                      maxlength="100"
                     />
                   </div>
                 </div>
+
                 <div class="linha-form">
                   <div class="grupo-form campo-expandir">
                     <label for="responsavel-cidade"
@@ -516,8 +624,10 @@
                       id="responsavel-cidade"
                       name="responsavel-cidade"
                       placeholder="Digite a cidade"
+                      maxlength="100"
                     />
                   </div>
+
                   <div class="grupo-form">
                     <label for="responsavel-uf"
                       >UF<span class="obrigatorio">*</span></label
