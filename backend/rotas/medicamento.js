@@ -1,5 +1,5 @@
 const express = require("express");
-const db = require("../database.js");
+const db = require("../database.js"); // 1. CORRIGIDO: Usa 'db'
 const {
   enviarEmailMedicamento,
   enviarEmailAtualizacaoMedicamento,
@@ -15,7 +15,8 @@ router.get("/medicamentos/:id", async (req, res) => {
   const { id } = req.params;
   let conn;
   try {
-    conn = await db.getConnection();
+    conn = await db.getConnection(); // 2. CORRIGIDO: Usa 'db'
+    // 3. CORRIGIDO: Usa 'id_tratamento' e 'medicamento_id_tratamento'
     const [rows] = await conn.query(
       `
       SELECT 
@@ -42,11 +43,11 @@ router.get("/medicamentos/:id", async (req, res) => {
       medicamento: row.medicamento,
       dosagem: row.dosagem,
       tipo: row.tipo,
-      horario: row.horario,
+      horario: row.horario ? row.horario.substring(0, 5) : null, // Formata HH:MM
       frequencia: row.frequencia,
       duracao: row.duracao,
       validade: row.data_vencimento
-        ? row.data_vencimento.toISOString().split("T")[0]
+        ? new Date(row.data_vencimento).toISOString().split("T")[0]
         : null,
       residenteId: row.residenteId,
     };
@@ -66,7 +67,8 @@ router.get("/medicamentos/:id", async (req, res) => {
 router.get("/medicamentos", async (req, res) => {
   let conn;
   try {
-    conn = await db.getConnection();
+    conn = await db.getConnection(); // CORRIGIDO: Usa 'db'
+    // CORRIGIDO: Usa 'id_tratamento' e 'medicamento_id_tratamento'
     const [rows] = await conn.query(`
       SELECT 
         m.id_tratamento AS id,
@@ -85,12 +87,10 @@ router.get("/medicamentos", async (req, res) => {
       medicamento: row.medicamento,
       dosagem: row.dosagem,
       tipo: row.tipo,
-      horario: row.horario ? row.horario.substring(0, 5) : "N/A",
+      horario: row.horario ? row.horario.substring(0, 5) : "N/A", // Formata HH:MM
       frequencia: row.frequencia,
       duracao: row.duracao,
-      validade: row.data_vencimento
-        ? new Date(row.data_vencimento).toLocaleDateString("pt-BR")
-        : null,
+      validade: row.data_vencimento, // Não formata aqui, deixa o script principal fazer
       residenteId: row.residenteId,
       residenteNome: `${row.primeiro_nome} ${row.sobrenome}`,
     }));
@@ -120,18 +120,27 @@ router.post("/medicamentos", async (req, res) => {
   } = req.body;
   let conn;
   try {
-    conn = await db.getConnection();
+    conn = await db.getConnection(); // CORRIGIDO: Usa 'db'
     await conn.beginTransaction();
 
     const [result] = await conn.query(
       `INSERT INTO medicamentos 
         (nome_medicamento, dosagem, tipo, horario, frequencia, duracao, data_vencimento)
         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [medicamento, dosagem, tipo, horario, frequencia, duracao, validade]
+      [
+        medicamento,
+        dosagem,
+        tipo,
+        horario,
+        frequencia,
+        duracao,
+        validade || null,
+      ] // Aceita validade nula
     );
 
     const medicamentoId = result.insertId;
 
+    // CORRIGIDO: Usa 'medicamento_id_tratamento'
     await conn.query(
       `INSERT INTO recebe 
         (residente_id_residente, medicamento_id_tratamento, data_prescricao)
@@ -160,8 +169,8 @@ router.post("/medicamentos", async (req, res) => {
       frequencia,
       duracao,
       validade: validade
-        ? new Date(validade).toLocaleDateString("pt-BR")
-        : null,
+        ? new Date(validade).toLocaleDateString("pt-BR", { timeZone: "UTC" }) // Adiciona timeZone UTC
+        : "N/A",
     });
 
     res.json({
@@ -186,13 +195,24 @@ router.put("/medicamentos/:id", async (req, res) => {
     req.body;
   let conn;
   try {
-    conn = await db.getConnection();
+    conn = await db.getConnection(); // CORRIGIDO: Usa 'db'
+    await conn.beginTransaction(); // Adiciona transação
 
+    // CORRIGIDO: Usa 'id_tratamento'
     await conn.query(
       `UPDATE medicamentos
        SET nome_medicamento = ?, dosagem = ?, tipo = ?, horario = ?, frequencia = ?, duracao = ?, data_vencimento = ?
        WHERE id_tratamento = ?`,
-      [medicamento, dosagem, tipo, horario, frequencia, duracao, validade, id]
+      [
+        medicamento,
+        dosagem,
+        tipo,
+        horario,
+        frequencia,
+        duracao,
+        validade || null,
+        id,
+      ]
     );
 
     // Busca residente para envio de e-mail
@@ -207,6 +227,8 @@ router.put("/medicamentos/:id", async (req, res) => {
 
     const residenteNome = row[0]?.residenteNome || "Desconhecido";
 
+    await conn.commit(); // Confirma a transação
+
     // Envia e-mail de atualização
     await enviarEmailAtualizacaoMedicamento({
       residenteNome,
@@ -217,12 +239,13 @@ router.put("/medicamentos/:id", async (req, res) => {
       frequencia,
       duracao,
       validade: validade
-        ? new Date(validade).toLocaleDateString("pt-BR")
-        : null,
+        ? new Date(validade).toLocaleDateString("pt-BR", { timeZone: "UTC" })
+        : "N/A",
     });
 
     res.json({ message: "Medicamento atualizado com sucesso!" });
   } catch (err) {
+    if (conn) await conn.rollback();
     console.error("Erro ao atualizar medicamento:", err);
     res.status(500).json({ error: "Erro ao atualizar medicamento." });
   } finally {
@@ -240,7 +263,6 @@ router.delete("/medicamentos/:id", async (req, res) => {
     conn = await db.getConnection();
     await conn.beginTransaction();
 
-    // Busca dados para envio de e-mail
     const [rows] = await conn.query(
       `
       SELECT m.nome_medicamento AS medicamento,
@@ -255,21 +277,20 @@ router.delete("/medicamentos/:id", async (req, res) => {
 
     const medicamento = rows[0];
 
-    // Deleta registros
-    await conn.query(
-      "DELETE FROM recebe WHERE medicamento_id_tratamento = ?",
-      [id]
-    );
+    await conn.query("DELETE FROM recebe WHERE medicamento_id_tratamento = ?", [
+      id,
+    ]);
     await conn.query("DELETE FROM medicamentos WHERE id_tratamento = ?", [id]);
     await conn.commit();
 
-    // Envia e-mail de exclusão se encontrado
     if (medicamento) {
       await enviarEmailExclusaoMedicamento({
         ...medicamento,
         validade: medicamento.validade
-          ? new Date(medicamento.validade).toLocaleDateString("pt-BR")
-          : null,
+          ? new Date(medicamento.validade).toLocaleDateString("pt-BR", {
+              timeZone: "UTC",
+            })
+          : "N/A",
       });
     }
 

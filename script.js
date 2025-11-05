@@ -284,6 +284,7 @@ async function iniciarPaginaResidentes() {
 
     let listaResidentes = await response.json();
     listaResidentes.reverse();
+    3;
 
     tabelaBodyDesktop.innerHTML = "";
     listaBodyMobile.innerHTML = "";
