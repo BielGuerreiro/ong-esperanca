@@ -14,12 +14,14 @@ const residenteRouter = require("./rotas/residente");
 const atividadesRouter = require("./rotas/atividade");
 const funcionariosRouter = require("./rotas/funcionarios");
 const estoqueRouter = require("./estoque-backend");
+const relatorioRouter = require("./rotas/relatorio");
 
 app.use("/api", residenteRouter);
 app.use("/api", medicamentoRoutes);
 app.use("/api", atividadesRouter);
 app.use("/api", funcionariosRouter);
 app.use("/api", estoqueRouter);
+app.use("/api", relatorioRouter);
 
 app.get("/", (req, res) => {
   res.json({

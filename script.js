@@ -902,97 +902,118 @@ if (document.getElementById("pagina-atividades")) {
   outras, ela também cria os botões de ação e ativa a funcionalidade de exclusão.
   */
 
-function iniciarPaginaRelatorios() {
-  const listaRelatorios = JSON.parse(
-    sessionStorage.getItem("listaRelatoriosDiarios") || "[]"
-  );
-  const listaResidentes = JSON.parse(
-    sessionStorage.getItem("listaResidentes") || "[]"
-  );
-
+async function iniciarPaginaRelatorios() {
   const tabelaBodyDesktop = document.getElementById("lista-relatorios-body");
   const listaBodyMobile = document.getElementById("lista-relatorios-nova-body");
-
   if (!tabelaBodyDesktop || !listaBodyMobile) return;
 
-  tabelaBodyDesktop.innerHTML = "";
-  listaBodyMobile.innerHTML = "";
+  tabelaBodyDesktop.innerHTML =
+    '<tr><td colspan="6" style="text-align: center;">Carregando...</td></tr>';
+  listaBodyMobile.innerHTML =
+    '<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Carregando...</li>';
 
-  const relatoriosOrdenados = listaRelatorios.slice().reverse();
+  try {
+    const response = await fetch(`${API_URL}/relatorios`);
+    if (!response.ok) throw new Error("Erro ao buscar relatórios");
 
-  if (relatoriosOrdenados.length > 0) {
-    relatoriosOrdenados.forEach((relatorio) => {
-      const residente = listaResidentes.find(
-        (r) => r.id == relatorio.residenteId
-      );
-      const nomeResidente = residente
-        ? `${residente["primeiro-nome"]} ${residente.sobrenome}`
-        : "Não encontrado";
-      const dataFormatada = new Date(
-        relatorio.data + "T00:00:00"
-      ).toLocaleDateString("pt-BR");
-      const acoesHTML = `
-        <a href="cadastros/cadastro-relatorio/index.html?id=${relatorio.id}&origem=pagina-relatorios" class="btn-acao-icone btn-editar" title="Editar Relatório"><i class='bx bxs-pencil'></i></a>
-        <a href="#" class="btn-acao-icone btn-excluir" data-id="${relatorio.id}" title="Excluir Relatório"><i class='bx bx-trash-alt'></i></a>
-      `;
+    // O backend já envia os mais novos primeiro
+    const relatoriosOrdenados = await response.json();
 
-      let statusHtml = relatorio.statusMedicacao || "N/A";
-      let classeStatus = "";
-      if (relatorio.statusMedicacao === "Medicado") {
-        classeStatus = "status-administrado";
-      } else if (relatorio.statusMedicacao === "Não Tomado") {
-        // <<< CORRIGIDO
-        classeStatus = "status-nao-tomado";
-      }
-      if (classeStatus) {
-        statusHtml = `<span class="status ${classeStatus}">${relatorio.statusMedicacao}</span>`;
-      }
+    tabelaBodyDesktop.innerHTML = "";
+    listaBodyMobile.innerHTML = "";
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${dataFormatada}</td>
-        <td>${nomeResidente}</td>
-        <td>${relatorio.medicamento || "Nenhum"}</td>
-        <td>${relatorio.responsavelNome}</td>
-        <td>${statusHtml}</td>
-        <td class="acoes">${acoesHTML}</td>
-      `;
-      tabelaBodyDesktop.appendChild(tr);
+    if (relatoriosOrdenados.length > 0) {
+      relatoriosOrdenados.forEach((relatorio) => {
+        const nomeResidente = relatorio.residenteNome || "Não encontrado";
 
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <span class="relatorio-data">${dataFormatada}</span>
-        <span class="relatorio-residente">${nomeResidente}</span>
-        <div class="relatorio-acoes">${acoesHTML}</div>
-      `;
-      listaBodyMobile.appendChild(li);
-    });
-  } else {
-    tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align: center;">Nenhum relatório cadastrado.</td></tr>`;
-    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum relatório cadastrado.</li>`;
-  }
+        // --- CORREÇÃO DA DATA "N/A" ---
+        let dataFormatada = "N/A";
+        if (relatorio.data) {
+          // Só formata se a data não for nula
+          const dataObj = new Date(relatorio.data + "T00:00:00");
+          if (!isNaN(dataObj.getTime())) {
+            dataFormatada = dataObj.toLocaleDateString("pt-BR");
+          }
+        }
+        // --- FIM DA CORREÇÃO ---
 
-  const paginaRelatorios = document.getElementById("pagina-relatorios");
+        const acoesHTML = `
+          <a href="cadastros/cadastro-relatorio/index.html?id=${relatorio.id}&origem=pagina-relatorios" class="btn-acao-icone btn-editar" title="Editar Relatório"><i class='bx bxs-pencil'></i></a>
+          <a href="#" class="btn-acao-icone btn-excluir" data-id="${relatorio.id}" title="Excluir Relatório"><i class='bx bx-trash-alt'></i></a>
+        `;
 
-  paginaRelatorios.addEventListener("click", function (event) {
-    const botaoExcluir = event.target.closest(".btn-excluir");
-    if (!botaoExcluir) return;
+        let statusHtml = relatorio.statusMedicacao || "N/A";
+        let classeStatus = "";
+        if (relatorio.statusMedicacao === "Medicado") {
+          classeStatus = "status-administrado";
+        } else if (relatorio.statusMedicacao === "Não Tomado") {
+          classeStatus = "status-nao-tomado";
+        }
+        if (classeStatus) {
+          statusHtml = `<span class="status ${classeStatus}">${relatorio.statusMedicacao}</span>`;
+        }
 
-    event.preventDefault();
-    const idParaExcluir = botaoExcluir.dataset.id;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${dataFormatada}</td>
+          <td>${nomeResidente}</td>
+          <td>${relatorio.medicamento || "Nenhum"}</td>
+          <td>${relatorio.responsavelNome}</td>
+          <td>${statusHtml}</td>
+          <td class="acoes">${acoesHTML}</td>
+        `;
+        tabelaBodyDesktop.appendChild(tr);
 
-    if (confirm("Tem certeza que deseja excluir este relatório?")) {
-      let relatoriosAtuais = JSON.parse(
-        sessionStorage.getItem("listaRelatoriosDiarios") || "[]"
-      );
-      const novaLista = relatoriosAtuais.filter((r) => r.id != idParaExcluir);
-      sessionStorage.setItem(
-        "listaRelatoriosDiarios",
-        JSON.stringify(novaLista)
-      );
-      iniciarPaginaRelatorios();
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span class="relatorio-data">${dataFormatada}</span>
+          <span class="relatorio-residente">${nomeResidente}</span>
+          <div class="relatorio-acoes">${acoesHTML}</div>
+        `;
+        listaBodyMobile.appendChild(li);
+      });
+    } else {
+      tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align: center;">Nenhum relatório cadastrado.</td></tr>`;
+      listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum relatório cadastrado.</li>`;
     }
-  });
+
+    // (O seu código de exclusão que já funciona)
+    const paginaRelatorios = document.getElementById("pagina-relatorios");
+    if (paginaRelatorios && !paginaRelatorios.dataset.listenerExcluir) {
+      paginaRelatorios.dataset.listenerExcluir = "true";
+      paginaRelatorios.addEventListener("click", async function (event) {
+        const botaoExcluir = event.target.closest(".btn-excluir");
+        if (!botaoExcluir) return;
+
+        event.preventDefault();
+        const idParaExcluir = botaoExcluir.dataset.id;
+
+        if (confirm("Tem certeza que deseja excluir este relatório?")) {
+          try {
+            const deleteResponse = await fetch(
+              `${API_URL}/relatorios/${idParaExcluir}`,
+              { method: "DELETE" }
+            );
+
+            if (deleteResponse.ok) {
+              alert("Relatório excluído com sucesso!");
+              iniciarPaginaRelatorios();
+            } else {
+              const erro = await deleteResponse.json();
+              alert("Erro ao excluir: " + (erro.error || "desconhecido"));
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Erro de rede ao excluir o relatório.");
+          }
+        }
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align: center;">Erro ao carregar relatórios.</td></tr>`;
+    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Erro ao carregar relatórios.</li>`;
+  }
 }
 
 // sessao adm  -_____________________________________________________________________________________________________
