@@ -2,7 +2,9 @@ const express = require("express");
 const db = require("../database.js");
 const router = express.Router();
 
-// LISTAR TODOS OS RESIDENTES _______________________________________________________________________
+// ==============================
+// 1️⃣ LISTAR TODOS OS RESIDENTES
+// ==============================
 router.get("/residentes", async (req, res) => {
   let conn;
   try {
@@ -19,7 +21,9 @@ router.get("/residentes", async (req, res) => {
   }
 });
 
-// 2️ BUSCAR UM RESIDENTE COMPLETO POR ID para editar _______________________________________________________________________
+// ==============================
+// 2️⃣ BUSCAR UM RESIDENTE COMPLETO POR ID (Para "Editar")
+// ==============================
 router.get("/residentes/:id", async (req, res) => {
   const { id } = req.params;
   let conn;
@@ -89,8 +93,11 @@ router.get("/residentes/:id", async (req, res) => {
     const enderecoIgual =
       possuiResponsavel && data.cep === data.responsavel_cep;
 
+    // --- A CORREÇÃO ESTÁ AQUI ---
+    // Função interna para formatar datas com segurança
     const formatISODate = (date) => {
-      if (!date) return null;
+      if (!date) return null; // Se a data for NULL, retorna NULL
+      // Converte para Objeto Data, depois para String ISO (texto), e SÓ ENTÃO corta
       return new Date(date).toISOString().split("T")[0];
     };
 
@@ -100,13 +107,13 @@ router.get("/residentes/:id", async (req, res) => {
       cpf: data.cpf,
       documento: data.documento,
       sexo: data.sexo,
-      nascimento: formatISODate(data.data_nascimento),
+      nascimento: formatISODate(data.data_nascimento), // <-- CORRIGIDO
       sus: data.num_sus,
       etnia: data.etnia,
       pcd: data.pcd,
       sangue: data.tipo_sanguinio,
-      entrada: formatISODate(data.data_entrada),
-      saida: formatISODate(data.data_saida),
+      entrada: formatISODate(data.data_entrada), // <-- CORRIGIDO
+      saida: formatISODate(data.data_saida), // <-- CORRIGIDO
 
       cep: data.cep,
       rua: data.rua,
@@ -128,7 +135,7 @@ router.get("/residentes/:id", async (req, res) => {
       "possui-responsavel": possuiResponsavel ? "sim" : "nao",
       "responsavel-primeiro-nome": data.responsavel_primeiro_nome,
       "responsavel-sobrenome": data.responsavel_sobrenome,
-      "responsavel-nascimento": formatISODate(data.responsavel_nascimento),
+      "responsavel-nascimento": formatISODate(data.responsavel_nascimento), // <-- CORRIGIDO
       "responsavel-sexo": data.responsavel_sexo,
       "responsavel-cpf": data.responsavel_cpf,
       "responsavel-estado-civil": data.responsavel_estado_civil,
@@ -157,7 +164,9 @@ router.get("/residentes/:id", async (req, res) => {
   }
 });
 
-//  CADASTRAR NOVO RESIDENTE _______________________________________________________________________
+// ==============================
+// 3️⃣ CADASTRAR NOVO RESIDENTE
+// ==============================
 router.post("/residentes", async (req, res) => {
   let conn;
   try {
@@ -166,7 +175,7 @@ router.post("/residentes", async (req, res) => {
     conn = await db.getConnection();
     await conn.beginTransaction();
 
-    // 1. Salva o Endereço do Residente _______________________________________________________________________
+    // 1. Salva o Endereço do Residente
     const sqlEndRes = `INSERT INTO enderecos (cep, rua, numero, complemento, bairro, cidade, uf) VALUES (?, ?, ?, ?, ?, ?, ?)`;
     const [resEndRes] = await conn.query(sqlEndRes, [
       data.cep,
@@ -179,7 +188,7 @@ router.post("/residentes", async (req, res) => {
     ]);
     const id_endereco_residente = resEndRes.insertId;
 
-    // 2. Salva a Escola (se houver) _______________________________________________________________________
+    // 2. Salva a Escola (se houver)
     let id_escola = null;
     if (data["frequenta-escola"] === "sim" && data["escola-nome"]) {
       const sqlEndEsc = `INSERT INTO enderecos (cep, rua, numero, bairro, cidade, uf) VALUES (?, ?, ?, ?, ?, ?)`;
@@ -201,7 +210,7 @@ router.post("/residentes", async (req, res) => {
       id_escola = resEscola.insertId;
     }
 
-    // 3. Salva o Residente (com CPF mascarado) _______________________________________________________________________
+    // 3. Salva o Residente
     const sqlRes = `
       INSERT INTO residentes (primeiro_nome, sobrenome, cpf, documento, sexo, data_nascimento, num_sus, etnia, pcd, tipo_sanguinio, data_entrada, data_saida, frequenta_escola, doencas, vacinas, alergias, descricao, escola_id_escola)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -228,13 +237,13 @@ router.post("/residentes", async (req, res) => {
     ]);
     const id_residente = resRes.insertId;
 
-    // 4. Liga Residente ao seu Endereço _______________________________________________________________________
+    // 4. Liga Residente ao seu Endereço
     await conn.query(
       "INSERT INTO abriga (endereco_id_endereco, residente_id_residente) VALUES (?, ?)",
       [id_endereco_residente, id_residente]
     );
 
-    // 5. Salva o Responsável (se houver) _______________________________________________________________________
+    // 5. Salva o Responsável (se houver)
     if (data["possui-responsavel"] === "sim") {
       let id_endereco_responsavel;
 
@@ -286,16 +295,20 @@ router.post("/residentes", async (req, res) => {
   } catch (err) {
     if (conn) await conn.rollback();
     console.error("Erro ao cadastrar residente:", err);
-    res.status(500).json({
-      error: "Erro ao cadastrar residente.",
-      sqlMessage: err.sqlMessage,
-    });
+    res
+      .status(500)
+      .json({
+        error: "Erro ao cadastrar residente.",
+        sqlMessage: err.sqlMessage,
+      });
   } finally {
     if (conn) conn.release();
   }
 });
 
-// ATUALIZAR UM RESIDENTE _______________________________________________________________________
+// ==============================
+// 4️⃣ ATUALIZAR UM RESIDENTE
+// ==============================
 router.put("/residentes/:id", async (req, res) => {
   const { id } = req.params;
   let conn;
@@ -305,7 +318,7 @@ router.put("/residentes/:id", async (req, res) => {
     conn = await db.getConnection();
     await conn.beginTransaction();
 
-    // 1. Atualiza o Residente _______________________________________________________________________
+    // 1. Atualiza o Residente
     const sqlRes = `
       UPDATE residentes SET 
         primeiro_nome = ?, sobrenome = ?, cpf = ?, documento = ?, sexo = ?, 
@@ -335,7 +348,7 @@ router.put("/residentes/:id", async (req, res) => {
       id,
     ]);
 
-    // 2. Atualiza Endereço do Residente _______________________________________________________________________
+    // 2. Atualiza Endereço do Residente
     const sqlEndRes = `
       UPDATE enderecos e 
       JOIN abriga a ON e.id_endereco = a.endereco_id_endereco
@@ -353,7 +366,7 @@ router.put("/residentes/:id", async (req, res) => {
       id,
     ]);
 
-    // 3. Atualiza Escola e Endereço da Escola _______________________________________________________________________
+    // 3. Atualiza Escola e Endereço da Escola
     if (data["frequenta-escola"] === "sim" && data["escola-nome"]) {
       const [escolaRow] = await conn.query(
         "SELECT escola_id_escola FROM residentes WHERE id_residente = ?",
@@ -416,16 +429,20 @@ router.put("/residentes/:id", async (req, res) => {
   } catch (err) {
     if (conn) await conn.rollback();
     console.error("Erro ao atualizar residente:", err);
-    res.status(500).json({
-      error: "Erro ao atualizar residente.",
-      sqlMessage: err.sqlMessage,
-    });
+    res
+      .status(500)
+      .json({
+        error: "Erro ao atualizar residente.",
+        sqlMessage: err.sqlMessage,
+      });
   } finally {
     if (conn) conn.release();
   }
 });
 
-// parte de excluir _______________________________________________________________________
+// ==============================
+// 5️⃣ EXCLUIR UM RESIDENTE
+// ==============================
 router.delete("/residentes/:id", async (req, res) => {
   const { id } = req.params;
   let conn;
@@ -434,7 +451,7 @@ router.delete("/residentes/:id", async (req, res) => {
     conn = await db.getConnection();
     await conn.beginTransaction();
 
-    // 1. Encontrar e deletar o endereço do residente _______________________________________________________________________
+    // 1. Encontrar e deletar o endereço do residente
     const [endResRows] = await conn.query(
       "SELECT endereco_id_endereco FROM abriga WHERE residente_id_residente = ?",
       [id]
@@ -449,7 +466,7 @@ router.delete("/residentes/:id", async (req, res) => {
       ]);
     }
 
-    // 2. Encontrar e deletar o responsável e seu endereço _______________________________________________________________________
+    // 2. Encontrar e deletar o responsável e seu endereço
     const [respRows] = await conn.query(
       "SELECT responsavel_id_responsavel FROM tem WHERE residente_id_residente = ?",
       [id]
@@ -480,7 +497,7 @@ router.delete("/residentes/:id", async (req, res) => {
       ]);
     }
 
-    // 3. Deletar Escola e Endereço da Escola _______________________________________________________________________
+    // 3. Deletar Escola e Endereço da Escola
     const [escolaRow] = await conn.query(
       "SELECT escola_id_escola FROM residentes WHERE id_residente = ?",
       [id]
@@ -512,7 +529,7 @@ router.delete("/residentes/:id", async (req, res) => {
       }
     }
 
-    // 4. Deletar Residente _______________________________________________________________________
+    // 4. Deletar Residente
     const [result] = await conn.query(
       "DELETE FROM residentes WHERE id_residente = ?",
       [id]

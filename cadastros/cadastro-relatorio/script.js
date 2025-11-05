@@ -1,7 +1,5 @@
-// URL base da API
 const API_URL = "http://localhost:3000/api";
 
-// ===== FUNÇÕES AUXILIARES DE API =====
 async function carregarResidentes() {
   try {
     const res = await fetch(`${API_URL}/residentes`);
@@ -20,6 +18,17 @@ async function carregarMedicamentos() {
     const tratamentos = await res.json();
     const nomes = tratamentos.map((t) => t.medicamento);
     return [...new Set(nomes)];
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
+
+async function carregarFuncionarios() {
+  try {
+    const res = await fetch(`${API_URL}/funcionarios`);
+    if (!res.ok) throw new Error("Erro ao buscar funcionários");
+    return await res.json();
   } catch (err) {
     console.error(err);
     return [];
@@ -49,14 +58,14 @@ document.addEventListener("DOMContentLoaded", async function () {
   const todosBotoesStatus = document.querySelectorAll(".botoes-status");
   const selectMedicamento = document.getElementById("medicamento");
 
+  const selectFuncionario = document.getElementById("funcionarioId");
+
   form.setAttribute("novalidate", true);
 
-  // --- LÓGICA DE EDIÇÃO ---
   const urlParams = new URLSearchParams(window.location.search);
   const relatorioId = urlParams.get("id");
   const isEditMode = Boolean(relatorioId);
 
-  // --- Popula a lista de Residentes (via fetch) ---
   if (selectResidente) {
     const listaResidentes = await carregarResidentes();
     selectResidente.innerHTML =
@@ -65,18 +74,31 @@ document.addEventListener("DOMContentLoaded", async function () {
       selectResidente.appendChild(
         new Option(
           `${residente.primeiro_nome} ${residente.sobrenome}`,
-          residente.id_residente // Salva o ID
+          residente.id_residente
         )
       );
     });
   }
 
-  // --- Popula a lista de Medicamentos (via fetch) ---
   if (selectMedicamento) {
     const listaNomesMedicamentos = await carregarMedicamentos();
     listaNomesMedicamentos.forEach((nome) => {
-      const option = new Option(nome, nome); // O valor é o próprio nome
+      const option = new Option(nome, nome);
       selectMedicamento.appendChild(option);
+    });
+  }
+
+  if (selectFuncionario) {
+    const listaFuncionarios = await carregarFuncionarios();
+    selectFuncionario.innerHTML =
+      '<option value="" disabled selected>Selecione seu nome</option>';
+    listaFuncionarios.forEach((func) => {
+      selectFuncionario.appendChild(
+        new Option(
+          `${func.primeiro_nome} ${func.sobrenome}`,
+          func.id_funcionario
+        )
+      );
     });
   }
 
@@ -88,57 +110,54 @@ document.addEventListener("DOMContentLoaded", async function () {
     const relatorioParaEditar = await buscarRelatorioPorId(relatorioId);
 
     if (relatorioParaEditar) {
-      // Preenche os campos (o loop automático do backend já faz a maior parte)
       Object.keys(relatorioParaEditar).forEach((key) => {
         if (form.elements[key]) {
           form.elements[key].value = relatorioParaEditar[key];
         }
       });
 
-      // --- CORREÇÃO MANUAL (Para campos com nomes diferentes) ---
       form.elements["descricao_fisio"].value =
         relatorioParaEditar.descricao_fisica || "";
       form.elements["evolucao_fisio"].value =
         relatorioParaEditar.evolucao_fisica || "";
-      // --- FIM DA CORREÇÃO ---
+      form.elements["funcionarioId"].value =
+        relatorioParaEditar.funcionario_id_funcionario || "";
 
-      // Preenche o checkbox de medicação
       const foiMedicadoCheckbox = document.getElementById("foi-medicado");
       if (foiMedicadoCheckbox) {
         foiMedicadoCheckbox.checked = relatorioParaEditar["foi-medicado"];
       }
 
-      // Preenche os botões de status (Evolução)
       todosBotoesStatus.forEach((container) => {
         const inputName = container.dataset.inputName;
+        const dbKey = inputName.replace("_fisio", "_fisica");
         const valorSalvo =
-          relatorioParaEditar[inputName] ||
-          relatorioParaEditar[inputName.replace("_fisio", "_fisica")]; // Tenta os dois nomes
+          relatorioParaEditar[inputName] || relatorioParaEditar[dbKey];
+
         if (valorSalvo) {
           const botaoParaSelecionar = container.querySelector(
             `.btn-status[data-value="${valorSalvo}"]`
           );
           if (botaoParaSelecionar) {
             botaoParaSelecionar.classList.add("selecionado");
+            if (form.elements[inputName]) {
+              form.elements[inputName].value = valorSalvo;
+            }
           }
         }
       });
 
-      // Seleciona o residente correto
       if (selectResidente) {
         selectResidente.value = relatorioParaEditar.residenteId;
       }
-      // Seleciona o medicamento correto
       if (selectMedicamento) {
-        selectMedicamento.value = relatorioParaEditar.medicamento;
+        selectMedicamento.value = relatorioParaEditar.medicamento || "";
       }
     }
   } else {
-    // Define a data atual para novos relatórios
     inputData.valueAsDate = new Date();
   }
 
-  // --- LÓGICA DO ACCORDION (Mantida) ---
   accordionHeaders.forEach((header) => {
     header.addEventListener("click", (event) => {
       event.preventDefault();
@@ -154,7 +173,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
   });
 
-  // --- LÓGICA DOS BOTÕES DE STATUS (Mantida) ---
   todosBotoesStatus.forEach((container) => {
     const inputEscondido = form.elements[container.dataset.inputName];
     container.querySelectorAll(".btn-status").forEach((botao) => {
@@ -175,16 +193,43 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
   });
 
-  // --- LÓGICA DE ENVIO DO FORMULÁRIO (Atualizada para fetch) ---
   form.addEventListener("submit", async function (event) {
     event.preventDefault();
-    if (!form.checkValidity()) {
-      alert("Por favor, preencha os campos obrigatórios (*).");
+    form.classList.remove("form-foi-validado");
+
+    let primeiroCampoInvalido = null;
+    for (const campo of form.querySelectorAll("[required]")) {
+      if (campo.closest('[style*="display: none"]') === null) {
+        if (!campo.value.trim()) {
+          primeiroCampoInvalido = campo;
+          break;
+        }
+      }
+    }
+
+    if (primeiroCampoInvalido) {
+      form.classList.add("form-foi-validado");
+      const etapaComErro = primeiroCampoInvalido.closest(".etapa-form");
+      if (etapaComErro) {
+        const indiceEtapaComErro = Array.from(etapas).indexOf(etapaComErro);
+        if (indiceEtapaComErro !== -1) {
+          mostrarEtapa(indiceEtapaComErro);
+        }
+      }
+      primeiroCampoInvalido.focus();
+      alert("Por favor, preencha todos os campos obrigatórios (*).");
       return;
     }
 
     const formData = new FormData(form);
     const dadosFicha = Object.fromEntries(formData.entries());
+
+    if (selectFuncionario && selectFuncionario.selectedIndex > 0) {
+      dadosFicha.responsavelNome =
+        selectFuncionario.options[selectFuncionario.selectedIndex].text;
+    } else {
+      dadosFicha.responsavelNome = "Não informado";
+    }
 
     const medicamentoSelecionado = dadosFicha.medicamento;
     const medicacaoConfirmada = dadosFicha.hasOwnProperty("foi-medicado");

@@ -916,7 +916,6 @@ async function iniciarPaginaRelatorios() {
     const response = await fetch(`${API_URL}/relatorios`);
     if (!response.ok) throw new Error("Erro ao buscar relatórios");
 
-    // O backend já envia os mais novos primeiro
     const relatoriosOrdenados = await response.json();
 
     tabelaBodyDesktop.innerHTML = "";
@@ -926,16 +925,13 @@ async function iniciarPaginaRelatorios() {
       relatoriosOrdenados.forEach((relatorio) => {
         const nomeResidente = relatorio.residenteNome || "Não encontrado";
 
-        // --- CORREÇÃO DA DATA "N/A" ---
         let dataFormatada = "N/A";
         if (relatorio.data) {
-          // Só formata se a data não for nula
           const dataObj = new Date(relatorio.data + "T00:00:00");
           if (!isNaN(dataObj.getTime())) {
             dataFormatada = dataObj.toLocaleDateString("pt-BR");
           }
         }
-        // --- FIM DA CORREÇÃO ---
 
         const acoesHTML = `
           <a href="cadastros/cadastro-relatorio/index.html?id=${relatorio.id}&origem=pagina-relatorios" class="btn-acao-icone btn-editar" title="Editar Relatório"><i class='bx bxs-pencil'></i></a>
@@ -977,7 +973,6 @@ async function iniciarPaginaRelatorios() {
       listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum relatório cadastrado.</li>`;
     }
 
-    // (O seu código de exclusão que já funciona)
     const paginaRelatorios = document.getElementById("pagina-relatorios");
     if (paginaRelatorios && !paginaRelatorios.dataset.listenerExcluir) {
       paginaRelatorios.dataset.listenerExcluir = "true";

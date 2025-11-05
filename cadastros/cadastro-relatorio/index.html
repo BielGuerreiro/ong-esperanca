@@ -354,6 +354,7 @@
                         <option value="">Nenhum</option>
                       </select>
                     </div>
+
                     <div class="grupo-form">
                       <label for="horaMedicacao">Hora</label>
                       <input
@@ -391,16 +392,14 @@
             </div>
 
             <div class="grupo-form">
-              <label for="responsavelNome"
+              <label for="funcionarioId"
                 >Responsável pelo Registro
                 <span class="obrigatorio">*</span></label
               >
-              <input
-                type="text"
-                id="responsavelNome"
-                name="responsavelNome"
-                required
-              />
+
+              <select id="funcionarioId" name="funcionarioId" required>
+                <option value="" disabled selected>Selecione o seu nome</option>
+              </select>
             </div>
 
             <div class="navegacao-form">

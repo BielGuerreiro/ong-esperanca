@@ -2,9 +2,6 @@ const express = require("express");
 const db = require("../database.js");
 const router = express.Router();
 
-// ==============================
-// 1️⃣ LISTAR TODOS OS RELATÓRIOS
-// ==============================
 router.get("/relatorios", async (req, res) => {
   let conn;
   try {
@@ -12,7 +9,7 @@ router.get("/relatorios", async (req, res) => {
     const [rows] = await conn.query(`
       SELECT 
         rel.id_relatorio AS id,
-        rel.data_relatorio AS data,
+        rel.data_relatorio,
         rel.medicamento,
         rel.responsavel_nome_registro AS responsavelNome,
         rel.statusMedicacao,
@@ -23,8 +20,12 @@ router.get("/relatorios", async (req, res) => {
       ORDER BY rel.data_relatorio DESC
     `);
 
+    //  FORMATA A DATA DE CADA RELATÓRIO ________________________________________________________________________________
     const relatorios = rows.map((rel) => ({
       ...rel,
+      data: rel.data_relatorio
+        ? new Date(rel.data_relatorio).toISOString().split("T")[0]
+        : null,
       residenteNome:
         `${rel.primeiro_nome || ""} ${rel.sobrenome || ""}`.trim() ||
         "Residente não encontrado",
@@ -39,9 +40,8 @@ router.get("/relatorios", async (req, res) => {
   }
 });
 
-// ==============================
-// 2️⃣ BUSCAR UM RELATÓRIO POR ID
-// ==============================
+// BUSCAR UM RELATÓRIO POR ID ________________________________________________________________________________
+
 router.get("/relatorios/:id", async (req, res) => {
   const { id } = req.params;
   let conn;
@@ -70,6 +70,9 @@ router.get("/relatorios/:id", async (req, res) => {
       responsavelNome: data.responsavel_nome_registro,
       horaMedicacao: data.horaMedicacao,
       "foi-medicado": data.statusMedicacao === "Medicado",
+      descricao_fisio: data.descricao_fisica,
+      evolucao_fisio: data.evolucao_fisica,
+      funcionarioId: data.funcionario_id_funcionario,
     });
   } catch (err) {
     console.error("Erro ao buscar relatório:", err);
@@ -79,31 +82,25 @@ router.get("/relatorios/:id", async (req, res) => {
   }
 });
 
-// ==============================
-// 3️⃣ CADASTRAR NOVO RELATÓRIO (Corrigido)
-// ==============================
+// CADASTRAR NOVO RELATÓRIO ________________________________________________________________________________
 router.post("/relatorios", async (req, res) => {
   let conn;
   try {
     const data = req.body;
 
     conn = await db.getConnection();
+    await conn.beginTransaction();
 
-    // --- CORREÇÃO ---
-    // 1. Buscar um funcionário válido no banco (qualquer um)
     const [funcRows] = await conn.query(
       "SELECT id_funcionario FROM funcionarios LIMIT 1"
     );
     if (funcRows.length === 0) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Nenhum funcionário cadastrado. Crie um funcionário antes de criar um relatório.",
-        });
+      return res.status(400).json({
+        error:
+          "Nenhum funcionário cadastrado. Crie um funcionário antes de criar um relatório.",
+      });
     }
     const funcionario_id_valido = funcRows[0].id_funcionario;
-    // --- FIM DA CORREÇÃO ---
 
     const sql = `
       INSERT INTO relatorios (
@@ -123,7 +120,7 @@ router.post("/relatorios", async (req, res) => {
 
     await conn.query(sql, [
       data.residenteId,
-      funcionario_id_valido, // 2. Usa o ID válido que encontramos
+      funcionario_id_valido,
       data.data,
       data.descricao_social,
       data.evolucao_social,
@@ -144,23 +141,22 @@ router.post("/relatorios", async (req, res) => {
       data.responsavelNome,
     ]);
 
+    await conn.commit();
     res.status(201).json({ message: "Ficha de Evolução salva com sucesso!" });
   } catch (err) {
+    if (conn) await conn.rollback();
     console.error("Erro ao cadastrar relatório:", err);
-    res
-      .status(500)
-      .json({
-        error: "Erro ao cadastrar relatório.",
-        sqlMessage: err.sqlMessage,
-      });
+    res.status(500).json({
+      error: "Erro ao cadastrar relatório.",
+      sqlMessage: err.sqlMessage,
+    });
   } finally {
     if (conn) conn.release();
   }
 });
 
-// ==============================
-// 4️⃣ ATUALIZAR UM RELATÓRIO
-// ==============================
+//  ATUALIZAR UM RELATÓRIO ________________________________________________________________________________
+
 router.put("/relatorios/:id", async (req, res) => {
   const { id } = req.params;
   let conn;
@@ -176,7 +172,7 @@ router.put("/relatorios/:id", async (req, res) => {
         descricao_pedagogica = ?, evolucao_pedagogica = ?,
         descricao_psicologica = ?, evolucao_psicologica = ?,
         descricao_saude = ?, evolucao_saude = ?,
-        descricao_fisica = ?, evolucao_fisio = ?,
+        descricao_fisica = ?, evolucao_fisica = ?,
         descricao_comunicacao = ?, evolucao_comunicacao = ?,
         medicamento = ?, horaMedicacao = ?, statusMedicacao = ?,
         descricao_geral = ?, responsavel_nome_registro = ?
@@ -209,20 +205,17 @@ router.put("/relatorios/:id", async (req, res) => {
     res.json({ message: "Ficha de Evolução atualizada com sucesso!" });
   } catch (err) {
     console.error("Erro ao atualizar relatório:", err);
-    res
-      .status(500)
-      .json({
-        error: "Erro ao atualizar relatório.",
-        sqlMessage: err.sqlMessage,
-      });
+    res.status(500).json({
+      error: "Erro ao atualizar relatório.",
+      sqlMessage: err.sqlMessage,
+    });
   } finally {
     if (conn) conn.release();
   }
 });
 
-// ==============================
-// 5️⃣ EXCLUIR UM RELATÓRIO
-// ==============================
+// EXCLUIR UM RELATÓRIO ________________________________________________________________________________
+
 router.delete("/relatorios/:id", async (req, res) => {
   const { id } = req.params;
   let conn;
