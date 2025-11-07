@@ -279,12 +279,22 @@ async function iniciarPaginaResidentes() {
     '<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Carregando...</li>';
 
   try {
-    const response = await fetch(`${API_URL}/residentes`);
+    const response = await fetch(`${API_URL}/residentes`, {
+      credentials: "include",
+    });
+
+    if (response.status === 401) {
+      console.error("Sessão expirada. Redirecionando para login.");
+      alert("Sua sessão expirou. Por favor, faça login novamente.");
+      localStorage.clear();
+      window.location.href = "/login/index.html";
+      return;
+    }
+
     if (!response.ok) throw new Error("Erro ao buscar residentes");
 
     let listaResidentes = await response.json();
     listaResidentes.reverse();
-    3;
 
     tabelaBodyDesktop.innerHTML = "";
     listaBodyMobile.innerHTML = "";
@@ -326,7 +336,7 @@ async function iniciarPaginaResidentes() {
       listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum residente cadastrado.</li>`;
     }
 
-    // --- Lógica de Exclusão  _______________________________________________________________________ ---
+    // --- Lógica de Exclusão ---
     const paginaResidentes = document.getElementById("pagina-residentes");
     if (paginaResidentes && !paginaResidentes.dataset.listenerExcluir) {
       paginaResidentes.dataset.listenerExcluir = "true";
@@ -349,8 +359,19 @@ async function iniciarPaginaResidentes() {
           try {
             const deleteResponse = await fetch(
               `${API_URL}/residentes/${idParaExcluir}`,
-              { method: "DELETE" }
+              {
+                method: "DELETE",
+                credentials: "include", // Envia o cookie de login
+              }
             );
+
+            // Verifica se a sessão expirou (erro 401)
+            if (deleteResponse.status === 401) {
+              alert("Sua sessão expirou. Por favor, faça login novamente.");
+              localStorage.clear();
+              window.location.href = "/login/index.html";
+              return;
+            }
 
             if (deleteResponse.ok) {
               alert("Residente excluído com sucesso!");
@@ -1022,23 +1043,132 @@ function iniciarPaginaAdm() {
   const botaoLoginLogout = document.getElementById("btn-logout");
   if (!botaoLoginLogout) return;
 
-  function configurarBotao() {
-    botaoLoginLogout.classList.add("opcao-logout");
-    botaoLoginLogout.href = "#";
-    botaoLoginLogout.removeEventListener("click", handleLogout);
-    botaoLoginLogout.addEventListener("click", handleLogout);
-  }
-
-  const handleLogout = function (event) {
+  const handleLogout = async function (event) {
+    // <-- 1. Tornar 'async'
     event.preventDefault();
     if (confirm("Tem certeza que deseja sair da sua conta?")) {
-      sessionStorage.clear();
+      try {
+        // 2. Chamar a API de logout do backend para limpar o cookie
+        await fetch("http://localhost:3000/api/logout", {
+          method: "POST",
+          credentials: "include", // <-- 3. IMPORTANTE: Envia o cookie
+        });
+      } catch (err) {
+        console.error("Erro ao fazer logout no backend:", err);
+        // Continua mesmo se falhar, para limpar o frontend
+      }
 
+      // 4. Limpar o localStorage
+      localStorage.clear();
+
+      // 5. Redirecionar para o login
       window.location.href = "login/index.html";
     }
   };
 
-  configurarBotao();
+  // (O resto da função 'configurarBotao' é igual)
+  botaoLoginLogout.classList.add("opcao-logout");
+  botaoLoginLogout.href = "#";
+  botaoLoginLogout.removeEventListener("click", handleLogout);
+  botaoLoginLogout.addEventListener("click", handleLogout);
+}
+
+// ----------------------------------------------------
+// NOVO: FUNÇÃO PARA GERAR COR DO AVATAR
+// ----------------------------------------------------
+function getAvatarColor(nome, sexo) {
+  // Paletas (sem preto e branco)
+  const coresMasculinas = [
+    "#2196F3", // Azul
+    "#D32F2F", // Vermelho
+    "#00796B", // Verde-azulado
+    "#5D4037", // Marrom
+    "#0288D1", // Azul Claro
+    "#F57C00", // Laranja
+  ];
+
+  const coresFemininas = [
+    "#E91E63", // Rosa
+    "#9C27B0", // Roxo
+    "#673AB7", // Roxo Escuro
+    "#EC407A", // Rosa Claro
+    "#AB47BC", // Lilás
+  ];
+
+  // Escolhe a paleta com base no sexo
+  let paleta = coresMasculinas; // Padrão
+  if (sexo === "feminino") {
+    paleta = coresFemininas;
+  }
+
+  // "Hash" simples para pegar uma cor da paleta com base no nome
+  // Isso garante que o mesmo nome sempre tenha a mesma cor
+  let hash = 0;
+  for (let i = 0; i < nome.length; i++) {
+    hash = nome.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % paleta.length;
+
+  return paleta[index];
+}
+
+// sessao adm - PERFIL DO USUÁRIO _______________________________________________________________
+// ----------------------------------------------------
+// ATUALIZADO: sessao adm - PERFIL DO USUÁRIO
+// ----------------------------------------------------
+function carregarInfoPerfilUsuario() {
+  // Encontra os elementos do perfil no HTML
+  const spanInicial = document.getElementById("perfil-inicial");
+  const pNomeCompleto = document.getElementById("perfil-nome-completo");
+
+  // Pega o elemento do círculo para mudar a cor
+  const avatarCircle = document.querySelector(".perfil-avatar");
+
+  // Se os elementos não existirem nesta página, não faz nada.
+  if (!spanInicial || !pNomeCompleto || !avatarCircle) return;
+
+  // Pega a string JSON do usuário que foi salva no login
+  const usuarioJSON = localStorage.getItem("usuarioLogado");
+
+  if (usuarioJSON) {
+    const usuario = JSON.parse(usuarioJSON);
+
+    // --- Define dados padrão ---
+    let inicial = "?";
+    let nomeCompleto = "Usuário";
+    let nomeParaHash = "Usuário"; // Nome a ser usado para gerar a cor
+    let sexoUsuario = "masculino"; // Padrão
+
+    // 1. Pega a inicial (CORRIGIDO: checa se nome não está vazio)
+    if (usuario.nome && usuario.nome.length > 0) {
+      inicial = usuario.nome.charAt(0).toUpperCase();
+      nomeCompleto = usuario.nome;
+      nomeParaHash = usuario.nome;
+    }
+
+    // 2. Pega o sobrenome
+    if (usuario.sobrenome) {
+      nomeCompleto += " " + usuario.sobrenome;
+    }
+
+    // 3. Pega o sexo
+    if (usuario.sexo) {
+      sexoUsuario = usuario.sexo;
+    }
+
+    // 4. Insere os dados nos elementos HTML
+    spanInicial.textContent = inicial;
+    pNomeCompleto.textContent = nomeCompleto;
+
+    // 5. Calcula e define a cor de fundo dinâmica
+    const corAvatar = getAvatarColor(nomeParaHash, sexoUsuario);
+    avatarCircle.style.backgroundColor = corAvatar;
+  } else {
+    // Caso o usuário não seja encontrado (improvável)
+    spanInicial.textContent = "!";
+    pNomeCompleto.textContent = "Visitante";
+    console.error("Usuário não encontrado na sessão.");
+  }
 }
 
 // document da pagina principal ___________________________________________________________________________________
@@ -1179,6 +1309,8 @@ document.addEventListener("DOMContentLoaded", function () {
   mobileMediaQuery.addEventListener("change", handleLayoutChange);
 
   // iniciacao __________________________________________________________________________________________________
+
+  carregarInfoPerfilUsuario();
   iniciarPaginaDashboard();
   iniciarPaginaResidentes();
   iniciarPaginaFuncionarios();

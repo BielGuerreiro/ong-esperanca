@@ -2,12 +2,19 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const db = require("./database.js");
+const cookieParser = require("cookie-parser");
 
 dotenv.config();
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://127.0.0.1:5502",
+    credentials: true,
+  })
+);
 app.use(express.json());
+app.use(cookieParser());
 
 const medicamentoRoutes = require("./rotas/medicamento");
 const residenteRouter = require("./rotas/residente");
@@ -15,6 +22,8 @@ const atividadesRouter = require("./rotas/atividade");
 const funcionariosRouter = require("./rotas/funcionarios");
 const estoqueRouter = require("./estoque-backend");
 const relatorioRouter = require("./rotas/relatorio");
+const loginRouter = require("./logar.js");
+const authMiddleware = require("./auth-middleware.js");
 
 app.use("/api", residenteRouter);
 app.use("/api", medicamentoRoutes);
@@ -22,6 +31,7 @@ app.use("/api", atividadesRouter);
 app.use("/api", funcionariosRouter);
 app.use("/api", estoqueRouter);
 app.use("/api", relatorioRouter);
+app.use("/api", loginRouter);
 
 app.get("/", (req, res) => {
   res.json({

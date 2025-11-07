@@ -21,7 +21,10 @@
     <link rel="shortcut icon" href="img/Logos.png" type="image/x-icon" />
 
     <link rel="stylesheet" href="styles.css" />
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="auth-guard.js" defer></script>
   </head>
   <body>
     <header class="header1">
@@ -467,6 +470,13 @@
 
         <div id="pagina-adm" class="pagina-conteudo">
           <div class="configuracoes-container">
+            <div class="perfil-usuario-container">
+              <div class="perfil-avatar">
+                <span id="perfil-inicial"></span>
+              </div>
+              <p class="perfil-nome" id="perfil-nome-completo"></p>
+            </div>
+
             <h2>Configurações</h2>
 
             <div class="configuracoes-opcoes">
