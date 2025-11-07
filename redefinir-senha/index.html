@@ -18,9 +18,8 @@
 
         <form id="redefinir-form">
           <div id="etapa-1" class="etapa-form ativo">
-            <p class="subtitulo">
-              Digite seu CPF e e-mail para confirmar sua identidade.
-            </p>
+            <p class="subtitulo">Confirme seus dados para prosseguir.</p>
+
             <div class="grupo-form">
               <label for="cpf">CPF <span class="obrigatorio">*</span></label>
               <input
@@ -32,6 +31,20 @@
                 required
               />
             </div>
+
+            <div class="grupo-form">
+              <label for="registro"
+                >Número de Registro <span class="obrigatorio">*</span></label
+              >
+              <input
+                type="text"
+                id="registro"
+                placeholder="Digite seu nº de registro"
+                maxlength="20"
+                required
+              />
+            </div>
+
             <div class="grupo-form">
               <label for="email"
                 >E-mail <span class="obrigatorio">*</span></label
@@ -45,6 +58,13 @@
               />
             </div>
 
+            <div class="grupo-form">
+              <label for="data-nascimento"
+                >Data de Nascimento <span class="obrigatorio">*</span></label
+              >
+              <input type="date" id="data-nascimento" required />
+            </div>
+
             <div class="navegacao-form">
               <button type="button" id="btn-verificar">Verificar</button>
               <button type="button" class="btn-cancelar">&larr; Voltar</button>
@@ -53,6 +73,7 @@
 
           <div id="etapa-2" class="etapa-form">
             <p class="subtitulo">Agora, crie uma nova senha de acesso.</p>
+
             <div class="grupo-form senha-container">
               <label for="nova-senha"
                 >Nova Senha <span class="obrigatorio">*</span></label
@@ -70,6 +91,7 @@
                 id="toggle-nova-senha"
               ></i>
             </div>
+
             <div class="grupo-form senha-container">
               <label for="confirmar-nova-senha"
                 >Confirmar Nova Senha <span class="obrigatorio">*</span></label
@@ -85,6 +107,7 @@
                 id="toggle-confirmar-senha"
               ></i>
             </div>
+
             <div class="navegacao-form">
               <button type="submit">Salvar Nova Senha</button>
               <button type="button" class="btn-cancelar">&larr; Voltar</button>

@@ -24,6 +24,7 @@ const estoqueRouter = require("./estoque-backend");
 const relatorioRouter = require("./rotas/relatorio");
 const loginRouter = require("./logar.js");
 const authMiddleware = require("./auth-middleware.js");
+const alterarSenhaRouter = require("./alterar-senha.js");
 
 app.use("/api", residenteRouter);
 app.use("/api", medicamentoRoutes);
@@ -32,6 +33,7 @@ app.use("/api", funcionariosRouter);
 app.use("/api", estoqueRouter);
 app.use("/api", relatorioRouter);
 app.use("/api", loginRouter);
+app.use("/api", alterarSenhaRouter);
 
 app.get("/", (req, res) => {
   res.json({
