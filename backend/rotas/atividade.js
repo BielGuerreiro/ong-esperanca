@@ -24,7 +24,7 @@ router.get("/atividades", async (req, res) => {
       LEFT JOIN residentes r ON r.id_residente = f.residente_id_residente
       GROUP BY a.id_atividade
       -- A CORREÇÃO ESTÁ AQUI: ASC MUDOU PARA DESC --
-      ORDER BY a.data_atividade DESC, a.horario DESC
+      ORDER BY a.data_atividade ASC, a.horario ASC
     `);
     res.json(rows);
   } catch (err) {
