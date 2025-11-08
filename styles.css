@@ -1487,6 +1487,16 @@ input:checked + .slider:before {
   .configuracoes-container {
     width: 90%;
   }
+
+  body.role-gerente
+    .menu-header
+    .acesso-gerente.item-menu-desktop:not(.item-menu-mobile) {
+    display: none !important;
+  }
+
+  body.role-gerente .menu-header .acesso-gerente.item-menu-mobile {
+    display: flex !important;
+  }
 }
 
 body.dark-mode {
@@ -1589,4 +1599,18 @@ body.dark-mode .header1 h1 {
 
 body.dark-mode .perfil-nome {
   color: white;
+}
+
+.acesso-gerente,
+.item-gerente {
+  display: none !important;
+}
+
+/* nivel de acesso __________________________________________________________________________________________________ */
+body.role-gerente .item-gerente {
+  display: inline-flex !important;
+}
+
+body.role-gerente .menu-header .acesso-gerente {
+  display: flex !important;
 }

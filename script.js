@@ -48,6 +48,24 @@ function atualizarSaudacao() {
   elementoSaudacao.textContent = `Olá, ${saudacao}, ${nomeUsuario}!`;
 }
 
+function aplicarControleDeAcesso() {
+  const usuarioJSON = localStorage.getItem("usuarioLogado");
+  if (!usuarioJSON) return;
+
+  try {
+    const usuario = JSON.parse(usuarioJSON);
+
+    if (usuario && usuario.nivel_acesso === "gerente") {
+      console.log("Nível de Acesso: Gerente. Aplicando permissões totais.");
+      document.body.classList.add("role-gerente");
+    } else {
+      console.log("Nível de Acesso: Funcionário. Aplicando limitações.");
+    }
+  } catch (e) {
+    console.error("Erro ao ler dados de acesso do usuário:", e);
+  }
+}
+
 // barra de pesquisa universal _______________________________________________________________________________________
 function configurarBusca(
   inputId,
@@ -1181,6 +1199,7 @@ function carregarInfoPerfilUsuario() {
   carregada com seus dados corretos.
 */
 document.addEventListener("DOMContentLoaded", function () {
+  aplicarControleDeAcesso();
   const containerGeral = document.querySelector(".container-geral");
   const menuItens = document.querySelectorAll(".menu-header li");
   let isAnimating = false;
@@ -1250,32 +1269,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const popularMenuFlyout = () => {
       flyoutLinksContainer.innerHTML = "";
+
+      const userIsGerente = document.body.classList.contains("role-gerente");
+
       todosOsLinksDoMenu.forEach((item) => {
-        if (
+        const isDesktopOnly =
           item.classList.contains("item-menu-desktop") &&
-          !item.classList.contains("item-menu-mobile")
-        ) {
-          const pagina = item.dataset.pagina;
-          const iconeHTML = item.querySelector("i").outerHTML;
-          const texto = item.querySelector(".texto-lado").textContent;
+          !item.classList.contains("item-menu-mobile");
 
-          const novoLink = document.createElement("a");
-          novoLink.href = "#";
-          novoLink.dataset.pagina = pagina;
-          novoLink.innerHTML = `${iconeHTML} <span>${texto}</span>`;
+        if (isDesktopOnly) {
+          const isRestricted = item.classList.contains("acesso-gerente");
 
-          novoLink.addEventListener("click", (e) => {
-            e.preventDefault();
-            const itemOriginalDoMenu = document.querySelector(
-              `.menu-header li[data-pagina="${pagina}"]`
-            );
-            if (itemOriginalDoMenu) {
-              itemOriginalDoMenu.click();
-            }
-            fecharFlyout();
-          });
+          if (!isRestricted || userIsGerente) {
+            const pagina = item.dataset.pagina;
+            const iconeHTML = item.querySelector("i").outerHTML;
+            const texto = item.querySelector(".texto-lado").textContent;
 
-          flyoutLinksContainer.appendChild(novoLink);
+            const novoLink = document.createElement("a");
+            novoLink.href = "#";
+            novoLink.dataset.pagina = pagina;
+            novoLink.innerHTML = `${iconeHTML} <span>${texto}</span>`;
+
+            novoLink.addEventListener("click", (e) => {
+              e.preventDefault();
+              const itemOriginalDoMenu = document.querySelector(
+                `.menu-header li[data-pagina="${pagina}"]`
+              );
+              if (itemOriginalDoMenu) {
+                itemOriginalDoMenu.click();
+              }
+              fecharFlyout();
+            });
+
+            flyoutLinksContainer.appendChild(novoLink);
+          }
         }
       });
     };
@@ -1328,7 +1355,6 @@ document.addEventListener("DOMContentLoaded", function () {
     "grid"
   );
 
-  // --- Buscas para a página de FUNCIONÁRIOS ---
   configurarBusca(
     "busca-funcionarios-desktop",
     "lista-funcionarios-body",

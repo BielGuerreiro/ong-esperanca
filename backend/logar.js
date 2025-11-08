@@ -3,8 +3,9 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const db = require("./database.js");
+require("dotenv").config();
 
-const JWT_SECRET = process.env.JWT_SECRET || "SEU_SEGREDO_SUPER_SECRETO_AQUI";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 router.post("/login", async (req, res) => {
   const { cpf, registro, senha } = req.body;
@@ -30,6 +31,7 @@ router.post("/login", async (req, res) => {
         nome: funcionario.primeiro_nome,
         sobrenome: funcionario.sobrenome,
         sexo: funcionario.sexo,
+        nivel_acesso: funcionario.nivel_acesso,
       };
 
       const token = jwt.sign(usuarioParaToken, JWT_SECRET, {
@@ -41,7 +43,7 @@ router.post("/login", async (req, res) => {
 
       res.cookie("authToken", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: false,
         expires: dataExpiracao,
         sameSite: "lax",
       });
@@ -60,7 +62,7 @@ router.post("/logout", (req, res) => {
   try {
     res.clearCookie("authToken", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false,
       sameSite: "lax",
     });
     res.status(200).json({ mensagem: "Logout bem-sucedido." });
