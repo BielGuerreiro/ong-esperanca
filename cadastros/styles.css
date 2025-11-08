@@ -275,7 +275,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
+/* atividade ________________________________________________________________ */
+#container-status {
+  display: none;
+}
+
 /* medicamento ________________________________________________________________ */
+
 #medicamento {
   color: rgb(0, 0, 0);
 }

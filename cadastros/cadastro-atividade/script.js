@@ -37,6 +37,18 @@ document.addEventListener("DOMContentLoaded", async function () {
   );
   const hiddenInputIds = document.getElementById("participantes_ids");
   const containerStatus = document.getElementById("container-status");
+  const selectStatus = document.getElementById("status");
+
+  // --- Lógica do Responsável Automático ---
+  const inputResponsavel = document.getElementById("responsavel-atividade");
+  const usuarioJSON = localStorage.getItem("usuarioLogado");
+
+  if (usuarioJSON && inputResponsavel) {
+    const usuarioLogado = JSON.parse(usuarioJSON);
+    const nomeCompleto = `${usuarioLogado.nome} ${usuarioLogado.sobrenome}`;
+    inputResponsavel.value = nomeCompleto;
+    inputResponsavel.readOnly = true;
+  }
 
   let idsSelecionados = [];
 
@@ -60,18 +72,16 @@ document.addEventListener("DOMContentLoaded", async function () {
   const isEditMode = Boolean(atividadeId);
 
   if (isEditMode) {
-    const titulo = document.querySelector(".titulo");
-    if (titulo) titulo.textContent = "Editar Atividade";
-    if (botaoSubmit) botaoSubmit.textContent = "SALVAR ALTERAÇÕES";
-
-    // Mostra o campo de status
     if (containerStatus) {
       containerStatus.style.display = "block";
     }
 
+    const titulo = document.querySelector(".titulo");
+    if (titulo) titulo.textContent = "Editar Atividade";
+    if (botaoSubmit) botaoSubmit.textContent = "SALVAR ALTERAÇÕES";
+
     const atividade = await buscarAtividadePorId(atividadeId);
     if (atividade) {
-      // Preenche todos os campos do formulário
       form.elements["nome-atividade"].value = atividade.nome_atividade || "";
       form.elements["categoria-atividade"].value = atividade.categoria || "";
       form.elements["local"].value = atividade.local || "";
@@ -80,11 +90,34 @@ document.addEventListener("DOMContentLoaded", async function () {
         : "";
       form.elements["horario"].value = atividade.horario.substring(0, 5) || "";
       form.elements["duracao"].value = atividade.duracao || "";
-      form.elements["responsavel-atividade"].value =
-        atividade.responsavel || "";
-      form.elements["status"].value = atividade.status || "Agendada";
 
-      // Participantes
+      if (!inputResponsavel.readOnly) {
+        form.elements["responsavel-atividade"].value =
+          atividade.responsavel || "";
+      }
+
+      let statusFinal = atividade.status;
+
+      if (statusFinal !== "concluida" && statusFinal !== "cancelada") {
+        statusFinal = "Agendada";
+      }
+
+      if (statusFinal === "Agendada") {
+        const dataForm = form.elements["data"].value;
+        const horaForm = form.elements["horario"].value;
+
+        if (dataForm && horaForm) {
+          const dataAtividade = new Date(`${dataForm}T${horaForm}`);
+          const agora = new Date();
+
+          if (dataAtividade < agora) {
+            statusFinal = "concluida";
+          }
+        }
+      }
+
+      selectStatus.value = statusFinal;
+
       if (atividade.participantes_ids) {
         idsSelecionados = atividade.participantes_ids
           .split(",")
@@ -93,13 +126,8 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
     }
   } else {
-    // Modo Cadastro: Garante que o status padrão "Agendada" esteja selecionado
-    if (form.elements["status"]) {
-      form.elements["status"].value = "Agendada";
-    }
   }
 
-  // --- Função de atualização das tags ---
   function atualizarTags() {
     if (!tagsContainer || !hiddenInputIds) return;
     tagsContainer.innerHTML = "";
@@ -127,7 +155,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     hiddenInputIds.value = idsSelecionados.join(",");
   }
 
-  // --- Seleção de residentes ---
   if (selectResidente) {
     selectResidente.addEventListener("change", function () {
       const id = this.value;
