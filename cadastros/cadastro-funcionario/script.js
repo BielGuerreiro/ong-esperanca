@@ -120,6 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
             idsSelecionados = funcionarioParaEditar.residentes_vinculados_ids
               .split(",")
               .filter(Boolean);
+
             atualizarTags();
           }
         }
@@ -181,6 +182,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const formData = new FormData(form);
     const dadosFuncionario = Object.fromEntries(formData.entries());
+
     let metodo = "POST";
     let url = `${API_URL}/funcionarios`;
 
