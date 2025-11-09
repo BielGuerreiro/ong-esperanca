@@ -89,4 +89,5 @@ module.exports = {
   enviarEmailMedicamento,
   enviarEmailAtualizacaoMedicamento,
   enviarEmailExclusaoMedicamento,
+  enviarEmailBase
 };
