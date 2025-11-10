@@ -324,7 +324,7 @@ async function iniciarPaginaResidentes() {
       console.error("Sessão expirada. Redirecionando para login.");
       alert("Sua sessão expirou. Por favor, faça login novamente.");
       localStorage.clear();
-      window.location.href = "/login/index.html";
+      window.location.href = "login/index.html";
       return;
     }
 
@@ -406,7 +406,7 @@ async function iniciarPaginaResidentes() {
             if (deleteResponse.status === 401) {
               alert("Sua sessão expirou. Por favor, faça login novamente.");
               localStorage.clear();
-              window.location.href = "/login/index.html";
+              window.location.href = "login/index.html";
               return;
             }
 
