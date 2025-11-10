@@ -61,6 +61,7 @@
                 >
                 <input type="time" id="horario" name="horario" required />
               </div>
+
               <div class="grupo-form campo-expandir">
                 <label for="dosagem"
                   >Dosagem <span class="obrigatorio">*</span></label
@@ -70,9 +71,11 @@
                   id="dosagem"
                   name="dosagem"
                   placeholder="Ex: 1 comprimido, 15 gotas"
+                  maxlength="50"
                   required
                 />
               </div>
+
               <div class="grupo-form campo-expandir">
                 <label for="frequencia">Frequência</label>
                 <input
@@ -80,6 +83,7 @@
                   id="frequencia"
                   name="frequencia"
                   placeholder="Ex: De 8 em 8 horas"
+                  maxlength="100"
                 />
               </div>
             </div>
@@ -94,6 +98,7 @@
                   placeholder="Ex: 7 dias, Contínuo"
                 />
               </div>
+
               <div class="grupo-form campo-expandir">
                 <label for="validade"
                   >Data de Vencimento do Lote

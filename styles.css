@@ -385,6 +385,10 @@ body {
   margin-top: 30px;
 }
 
+#mensagem-saudacao {
+  color: var(--main-color);
+}
+
 .box {
   flex-grow: 1;
   flex-shrink: 1;
@@ -557,6 +561,13 @@ body {
 }
 
 /* .lista-residentes-container, */
+
+.residentes-desktop-view {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+}
 
 .lista-residentes-container,
 .lista-funcionarios-container {

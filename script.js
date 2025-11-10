@@ -106,22 +106,12 @@ function configurarBusca(
 */
 let graficoAtividades = null;
 
-function iniciarPaginaDashboard() {
+async function iniciarPaginaDashboard() {
   atualizarSaudacao();
 
-  const listaResidentes = JSON.parse(
-    sessionStorage.getItem("listaResidentes") || "[]"
-  );
-  const listaTratamentos = JSON.parse(
-    sessionStorage.getItem("listaTratamentos") || "[]"
-  );
-  const listaAtividades = JSON.parse(
-    sessionStorage.getItem("listaAgendamentosAtividade") || "[]"
-  );
-
   const contadorResidentesEl = document.getElementById("contador-residentes");
-  const contadorMedicamentosEl = document.getElementById(
-    "contador-medicamentos-pendentes"
+  const contadorRelatoriosEl = document.getElementById(
+    "contador-relatorios-hoje"
   );
   const contadorAtividadesEl = document.getElementById(
     "contador-atividades-hoje"
@@ -131,22 +121,56 @@ function iniciarPaginaDashboard() {
   );
   const graficoContainer = document.querySelector(".grafico-dashboard");
 
+  let listaResidentes = [];
+  let listaRelatorios = [];
+  let listaAtividades = [];
+
+  const dataAtual = new Date();
+  const yyyy = dataAtual.getFullYear();
+  const mm = String(dataAtual.getMonth() + 1).padStart(2, "0");
+  const dd = String(dataAtual.getDate()).padStart(2, "0");
+  const hoje = `${yyyy}-${mm}-${dd}`;
+
+  try {
+    const resResidentes = await fetch(`${API_URL}/residentes`);
+    if (resResidentes.ok) listaResidentes = await resResidentes.json();
+  } catch (e) {
+    console.error("Dashboard: Erro ao carregar residentes", e);
+  }
+
+  try {
+    const resRelatorios = await fetch(`${API_URL}/relatorios`);
+    if (resRelatorios.ok) listaRelatorios = await resRelatorios.json();
+  } catch (e) {
+    console.error("Dashboard: Erro ao carregar relatorios", e);
+  }
+
+  try {
+    const resAtividades = await fetch(`${API_URL}/atividades`);
+    if (resAtividades.ok) listaAtividades = await resAtividades.json();
+  } catch (e) {
+    console.error("Dashboard: Erro ao carregar atividades", e);
+  }
+
   if (contadorResidentesEl) {
     contadorResidentesEl.textContent = listaResidentes.length;
   }
 
-  if (contadorMedicamentosEl) {
-    const pendentes = listaTratamentos.filter(
-      (t) => t.status === "Pendente"
-    ).length;
-    contadorMedicamentosEl.textContent = pendentes;
+  if (contadorRelatoriosEl) {
+    const deHoje = listaRelatorios.filter((r) => {
+      if (!r.data) return false;
+      const dataRelatorio = r.data.split("T")[0];
+      return dataRelatorio === hoje;
+    }).length;
+    contadorRelatoriosEl.textContent = deHoje;
   }
 
   if (contadorAtividadesEl) {
-    const hoje = new Date().toISOString().split("T")[0];
-    const deHoje = listaAtividades.filter(
-      (a) => a.data === hoje && a.status === "Agendada"
-    ).length;
+    const deHoje = listaAtividades.filter((a) => {
+      if (!a.data) return false;
+      const dataAtividade = a.data.split("T")[0];
+      return dataAtividade === hoje && a.status === "Agendada";
+    }).length;
     contadorAtividadesEl.textContent = deHoje;
   }
 
@@ -154,31 +178,27 @@ function iniciarPaginaDashboard() {
     listaResidentesDashboard.innerHTML = "";
     listaResidentes.forEach((residente) => {
       const li = document.createElement("li");
-      li.textContent = `${residente["primeiro-nome"]} ${residente.sobrenome}`;
-      li.dataset.id = residente.id;
+      li.textContent = `${residente.primeiro_nome} ${residente.sobrenome}`;
+      li.dataset.id = residente.id_residente;
       listaResidentesDashboard.appendChild(li);
     });
   }
 
-  // --- Clique no residente para gerar gráfico ---
   if (listaResidentesDashboard && graficoContainer) {
     listaResidentesDashboard.addEventListener("click", function (event) {
       if (event.target && event.target.nodeName === "LI") {
         const liClicado = event.target;
         const residenteId = liClicado.dataset.id;
 
-        // Ativa o residente selecionado
         listaResidentesDashboard
           .querySelectorAll("li")
           .forEach((item) => item.classList.remove("ativo"));
         liClicado.classList.add("ativo");
 
-        // Destroi gráfico anterior, se houver
         if (graficoAtividades) {
           graficoAtividades.destroy();
         }
 
-        // Substitui o container com novo gráfico
         graficoContainer.innerHTML = `
           <div class="chart-wrapper">
             <h2>Desempenho do Residente (Janeiro a Dezembro)</h2>
@@ -190,7 +210,6 @@ function iniciarPaginaDashboard() {
           .getElementById("grafico-desempenho-residente")
           .getContext("2d");
 
-        // Dados fictícios para o exemplo
         const meses = [
           "Janeiro",
           "Fevereiro",
@@ -227,28 +246,28 @@ function iniciarPaginaDashboard() {
               {
                 label: "Regrediu",
                 data: dadosRegrediu,
-                backgroundColor: "rgba(220, 53, 69, 0.8)", // vermelho
+                backgroundColor: "rgba(220, 53, 69, 0.8)",
                 borderColor: "rgba(220, 53, 69, 1)",
                 borderWidth: 1,
               },
               {
                 label: "Estagnado",
                 data: dadosEstagnado,
-                backgroundColor: "rgba(255, 193, 7, 0.8)", // amarelo
+                backgroundColor: "rgba(255, 193, 7, 0.8)",
                 borderColor: "rgba(255, 193, 7, 1)",
                 borderWidth: 1,
               },
               {
                 label: "Progresso",
                 data: dadosProgresso,
-                backgroundColor: "rgba(0, 123, 255, 0.8)", // azul
+                backgroundColor: "rgba(0, 123, 255, 0.8)",
                 borderColor: "rgba(0, 123, 255, 1)",
                 borderWidth: 1,
               },
               {
                 label: "Superou",
                 data: dadosSuperou,
-                backgroundColor: "rgba(40, 167, 69, 0.8)", // verde
+                backgroundColor: "rgba(40, 167, 69, 0.8)",
                 borderColor: "rgba(40, 167, 69, 1)",
                 borderWidth: 1,
               },

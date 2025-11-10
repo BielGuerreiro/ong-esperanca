@@ -317,8 +317,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .grupo-form-checkbox {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 50px;
 }
+
 .grupo-form-checkbox input[type="checkbox"] {
   width: 20px;
   height: 20px;
@@ -413,9 +414,12 @@ body.dark-mode .container-formulario {
   background-color: var(--cor-fundo-elemento-dark);
 }
 
+body.dark-mode #descricao_geral {
+  color: #ffffff;
+}
+
 body.dark-mode .grupo-form input,
-body.dark-mode .grupo-form select,
-body.dark-mode .grupo-form textarea {
+body.dark-mode .grupo-form select {
   color: var(--cor-texto-principal-dark);
   background-color: var(--cor-fundo-elemento-dark);
   border: 1px solid #777;
@@ -441,6 +445,7 @@ body.dark-mode .grupo-form input::-webkit-input-placeholder,
 body.dark-mode .grupo-form textarea::-webkit-input-placeholder {
   color: var(--cor-texto-secundario-dark);
 }
+
 body.dark-mode .grupo-form input::-moz-placeholder,
 body.dark-mode .grupo-form textarea::-moz-placeholder {
   color: var(--cor-texto-secundario-dark);

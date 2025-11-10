@@ -23,15 +23,16 @@
                 <label for="nome-atividade"
                   >Nome da Atividade <span class="obrigatorio">*</span></label
                 >
-
                 <input
                   type="text"
                   id="nome-atividade"
                   name="nome-atividade"
                   placeholder="Digite o nome da atividade"
+                  maxlength="255"
                   required
                 />
               </div>
+
               <div class="grupo-form campo-expandir">
                 <label for="categoria-atividade"
                   >Categoria <span class="obrigatorio">*</span></label
@@ -59,8 +60,10 @@
                   id="local"
                   name="local"
                   placeholder="Local onde vai acontecer"
+                  maxlength="255"
                 />
               </div>
+
               <div class="grupo-form">
                 <label for="data"
                   >Data <span class="obrigatorio">*</span></label
@@ -68,6 +71,7 @@
                 <input type="date" id="data" name="data" required />
               </div>
             </div>
+
             <div class="linha-form">
               <div class="grupo-form">
                 <label for="horario"
@@ -75,6 +79,7 @@
                 >
                 <input type="time" id="horario" name="horario" required />
               </div>
+
               <div class="grupo-form campo-expandir">
                 <label for="duracao">Duração</label>
                 <input
@@ -82,6 +87,7 @@
                   id="duracao"
                   name="duracao"
                   placeholder="Ex: 1 hora, 45 minutos"
+                  maxlength="50"
                 />
               </div>
             </div>
