@@ -21,6 +21,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   const tratamentoId = urlParams.get("id");
   const isEditMode = Boolean(tratamentoId);
 
+  // V----- 1. VERIFICA SE ESTÁ EM MODO "VISUALIZAR" -----V
+  const isViewMode = urlParams.get("view") === "true";
+  // ^---------------------------------------------------^
+
   const listaResidentes = await carregarResidentesBackend();
   if (selectResidente) {
     selectResidente.innerHTML =
@@ -35,6 +39,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   if (isEditMode) {
+    // Modo Edição ou Visualização (carrega os dados)
     try {
       const res = await fetch(`${API_URL}/medicamentos/${tratamentoId}`);
       if (res.ok) {
@@ -68,8 +73,37 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (botaoSubmit) botaoSubmit.textContent = "SALVAR ALTERAÇÕES";
   }
 
+  // V----- 2. APLICA A LÓGICA DE "VISUALIZAR" -----V
+  if (isViewMode) {
+    const titulo = document.querySelector("h2");
+    if (titulo) titulo.textContent = "Visualizar Tratamento";
+
+    // Trava todos os campos do formulário
+    form.querySelectorAll("input, select, textarea").forEach((field) => {
+      field.disabled = true;
+    });
+
+    // Esconde o botão de salvar
+    if (botaoSubmit) {
+      botaoSubmit.style.display = "none";
+    }
+
+    // Muda o texto do botão "Cancelar" para "Voltar"
+    if (botaoCancelar) {
+      botaoCancelar.innerHTML = "&larr; VOLTAR";
+    }
+  }
+  // ^------------------------------------------------^
+
   form.addEventListener("submit", async function (event) {
     event.preventDefault();
+
+    // V----- 3. IMPEDE ENVIO EM MODO "VISUALIZAR" -----V
+    if (isViewMode) {
+      return; // Não faz nada se estiver em modo de visualização
+    }
+    // ^-------------------------------------------------^
+
     if (!form.checkValidity()) {
       alert("Por favor, preencha todos os campos obrigatórios (*).");
       form.classList.add("form-foi-validado");
@@ -123,10 +157,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   if (botaoCancelar) {
     botaoCancelar.addEventListener("click", function () {
-      if (confirm("Tem certeza que deseja cancelar?")) {
-        const origem = urlParams.get("origem") || "pagina-medicamentos";
-        window.location.href = `../../index.html?pagina=${origem}`;
+      if (!isViewMode && !confirm("Tem certeza que deseja cancelar?")) {
+        return;
       }
+
+      const origem = urlParams.get("origem") || "pagina-medicamentos";
+      window.location.href = `../../index.html?pagina=${origem}`;
     });
   }
 });

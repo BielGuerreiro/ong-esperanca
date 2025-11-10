@@ -285,6 +285,24 @@ body {
   background-color: var(--cor-vermelho-escuro);
 }
 
+.btn-ver-ficha {
+  background-color: var(--main-color);
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+/* Efeito ao passar o mouse */
+.btn-ver-ficha:hover {
+  background-color: #000;
+  color: #ffffff;
+}
+
 /* --- SCROLLBAR CUSTOMIZADO (DENTRO DAS FICHAS) --- */
 
 .lista-residentes-container,
@@ -1613,4 +1631,15 @@ body.role-gerente .item-gerente {
 
 body.role-gerente .menu-header .acesso-gerente {
   display: flex !important;
+}
+
+.btn-excluir {
+  display: none !important;
+}
+
+/* * 2. Mostra o botão de excluir APENAS se o body
+ * tiver a classe 'role-gerente' (que seu JS já adiciona).
+*/
+body.role-gerente .btn-excluir {
+  display: inline-flex !important; /* ou 'inline-block', dependendo do seu CSS */
 }

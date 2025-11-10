@@ -1,5 +1,6 @@
-// Funções Globais_______________________________________________________________________________
+const API_URL = "http://localhost:3000/api";
 
+// Funções Globais_______________________________________________________________________________
 /*
   Estas são funções de "ajuda" que podem ser usadas em várias partes do sistema.
   A função 'calcularIdade' recebe uma data de nascimento e retorna a idade atual da pessoa.
@@ -30,8 +31,6 @@ function atualizarSaudacao() {
   const elementoSaudacao = document.getElementById("mensagem-saudacao");
   if (!elementoSaudacao) return;
 
-  const API_URL = "http://localhost:3000/api";
-
   const horaAtual = new Date().getHours();
   let saudacao = "";
 
@@ -48,6 +47,7 @@ function atualizarSaudacao() {
   elementoSaudacao.textContent = `Olá, ${saudacao}, ${nomeUsuario}!`;
 }
 
+// Nivel de acesso _________________________________________________________________________________
 function aplicarControleDeAcesso() {
   const usuarioJSON = localStorage.getItem("usuarioLogado");
   if (!usuarioJSON) return;
@@ -668,9 +668,6 @@ function iniciarPaginaResponsaveis() {
   junto com os botões de editar e excluir, e ativa a função de exclusão.
 */
 
-// Defina a URL base do backend
-const API_URL = "http://localhost:3000/api";
-
 async function iniciarPaginaMedicamentos() {
   const tabelaBodyDesktop = document.getElementById("lista-medicamentos-body");
   const listaBodyMobile = document.getElementById(
@@ -678,6 +675,8 @@ async function iniciarPaginaMedicamentos() {
   );
 
   if (!tabelaBodyDesktop || !listaBodyMobile) return;
+
+  const isGerente = document.body.classList.contains("role-gerente");
 
   tabelaBodyDesktop.innerHTML = "";
   listaBodyMobile.innerHTML = "";
@@ -693,10 +692,20 @@ async function iniciarPaginaMedicamentos() {
       listaTratamentos.forEach((tratamento) => {
         const nomeResidente = tratamento.residenteNome || "Não encontrado";
 
-        const acoesHTML = `
-          <a href="cadastros/cadastro-medicamento/index.html?id=${tratamento.id}&origem=pagina-medicamentos" class="btn-acao-icone btn-editar" title="Editar Agendamento"><i class='bx bxs-pencil'></i></a>
-          <a href="#" class="btn-acao-icone btn-excluir" data-id="${tratamento.id}" title="Excluir Agendamento"><i class='bx bx-trash-alt'></i></a>
-        `;
+        let acoesHTML = "";
+
+        if (isGerente) {
+          acoesHTML = `
+            <a href="cadastros/cadastro-medicamento/index.html?id=${tratamento.id}&origem=pagina-medicamentos" class="btn-acao-icone btn-editar" title="Editar Agendamento"><i class='bx bxs-pencil'></i></a>
+            <a href="#" class="btn-acao-icone btn-excluir" data-id="${tratamento.id}" title="Excluir Agendamento"><i class='bx bx-trash-alt'></i></a>
+          `;
+        } else {
+          acoesHTML = `
+            <a href="cadastros/cadastro-medicamento/index.html?id=${tratamento.id}&origem=pagina-medicamentos&view=true" class="btn-acao-texto btn-ver-ficha" title="Ver Ficha">
+              <i class='bx bx-show'></i> Ver Ficha
+            </a>
+          `;
+        }
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
@@ -722,10 +731,12 @@ async function iniciarPaginaMedicamentos() {
       listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum tratamento agendado.</li>`;
     }
 
-    // Lógica de exclusão
-    document
-      .getElementById("pagina-medicamentos")
-      .addEventListener("click", async function (event) {
+    const paginaMedicamentos = document.getElementById("pagina-medicamentos");
+
+    if (!paginaMedicamentos.dataset.listenerExcluir) {
+      paginaMedicamentos.dataset.listenerExcluir = "true";
+
+      paginaMedicamentos.addEventListener("click", async function (event) {
         const botaoExcluir = event.target.closest(".btn-excluir");
         if (!botaoExcluir) return;
 
@@ -741,7 +752,7 @@ async function iniciarPaginaMedicamentos() {
 
             if (deleteResponse.ok) {
               alert("Agendamento excluído com sucesso!");
-              iniciarPaginaMedicamentos(); // Recarrega a lista
+              iniciarPaginaMedicamentos();
             } else {
               const erro = await deleteResponse.json();
               alert("Erro ao excluir: " + (erro.error || "desconhecido"));
@@ -752,6 +763,7 @@ async function iniciarPaginaMedicamentos() {
           }
         }
       });
+    }
   } catch (error) {
     console.error(error);
     tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align:center;">Erro ao carregar tratamentos.</td></tr>`;
@@ -1062,65 +1074,54 @@ function iniciarPaginaAdm() {
   if (!botaoLoginLogout) return;
 
   const handleLogout = async function (event) {
-    // <-- 1. Tornar 'async'
     event.preventDefault();
     if (confirm("Tem certeza que deseja sair da sua conta?")) {
       try {
-        // 2. Chamar a API de logout do backend para limpar o cookie
         await fetch("http://localhost:3000/api/logout", {
           method: "POST",
-          credentials: "include", // <-- 3. IMPORTANTE: Envia o cookie
+          credentials: "include",
         });
       } catch (err) {
         console.error("Erro ao fazer logout no backend:", err);
-        // Continua mesmo se falhar, para limpar o frontend
       }
 
-      // 4. Limpar o localStorage
       localStorage.clear();
 
-      // 5. Redirecionar para o login
       window.location.href = "login/index.html";
     }
   };
 
-  // (O resto da função 'configurarBotao' é igual)
   botaoLoginLogout.classList.add("opcao-logout");
   botaoLoginLogout.href = "#";
   botaoLoginLogout.removeEventListener("click", handleLogout);
   botaoLoginLogout.addEventListener("click", handleLogout);
 }
 
-// ----------------------------------------------------
 // NOVO: FUNÇÃO PARA GERAR COR DO AVATAR
-// ----------------------------------------------------
+
 function getAvatarColor(nome, sexo) {
-  // Paletas (sem preto e branco)
   const coresMasculinas = [
-    "#2196F3", // Azul
-    "#D32F2F", // Vermelho
-    "#00796B", // Verde-azulado
-    "#5D4037", // Marrom
-    "#0288D1", // Azul Claro
-    "#F57C00", // Laranja
+    "#2196F3",
+    "#D32F2F",
+    "#00796B",
+    "#5D4037",
+    "#0288D1",
+    "#F57C00",
   ];
 
   const coresFemininas = [
-    "#E91E63", // Rosa
-    "#9C27B0", // Roxo
-    "#673AB7", // Roxo Escuro
-    "#EC407A", // Rosa Claro
-    "#AB47BC", // Lilás
+    "#E91E63",
+    "#9C27B0",
+    "#673AB7",
+    "#EC407A",
+    "#AB47BC",
   ];
 
-  // Escolhe a paleta com base no sexo
-  let paleta = coresMasculinas; // Padrão
+  let paleta = coresMasculinas;
   if (sexo === "feminino") {
     paleta = coresFemininas;
   }
 
-  // "Hash" simples para pegar uma cor da paleta com base no nome
-  // Isso garante que o mesmo nome sempre tenha a mesma cor
   let hash = 0;
   for (let i = 0; i < nome.length; i++) {
     hash = nome.charCodeAt(i) + ((hash << 5) - hash);
@@ -1131,58 +1132,44 @@ function getAvatarColor(nome, sexo) {
 }
 
 // sessao adm - PERFIL DO USUÁRIO _______________________________________________________________
-// ----------------------------------------------------
-// ATUALIZADO: sessao adm - PERFIL DO USUÁRIO
-// ----------------------------------------------------
 function carregarInfoPerfilUsuario() {
-  // Encontra os elementos do perfil no HTML
   const spanInicial = document.getElementById("perfil-inicial");
   const pNomeCompleto = document.getElementById("perfil-nome-completo");
 
-  // Pega o elemento do círculo para mudar a cor
   const avatarCircle = document.querySelector(".perfil-avatar");
 
-  // Se os elementos não existirem nesta página, não faz nada.
   if (!spanInicial || !pNomeCompleto || !avatarCircle) return;
 
-  // Pega a string JSON do usuário que foi salva no login
   const usuarioJSON = localStorage.getItem("usuarioLogado");
 
   if (usuarioJSON) {
     const usuario = JSON.parse(usuarioJSON);
 
-    // --- Define dados padrão ---
     let inicial = "?";
     let nomeCompleto = "Usuário";
-    let nomeParaHash = "Usuário"; // Nome a ser usado para gerar a cor
-    let sexoUsuario = "masculino"; // Padrão
+    let nomeParaHash = "Usuário";
+    let sexoUsuario = "masculino";
 
-    // 1. Pega a inicial (CORRIGIDO: checa se nome não está vazio)
     if (usuario.nome && usuario.nome.length > 0) {
       inicial = usuario.nome.charAt(0).toUpperCase();
       nomeCompleto = usuario.nome;
       nomeParaHash = usuario.nome;
     }
 
-    // 2. Pega o sobrenome
     if (usuario.sobrenome) {
       nomeCompleto += " " + usuario.sobrenome;
     }
 
-    // 3. Pega o sexo
     if (usuario.sexo) {
       sexoUsuario = usuario.sexo;
     }
 
-    // 4. Insere os dados nos elementos HTML
     spanInicial.textContent = inicial;
     pNomeCompleto.textContent = nomeCompleto;
 
-    // 5. Calcula e define a cor de fundo dinâmica
     const corAvatar = getAvatarColor(nomeParaHash, sexoUsuario);
     avatarCircle.style.backgroundColor = corAvatar;
   } else {
-    // Caso o usuário não seja encontrado (improvável)
     spanInicial.textContent = "!";
     pNomeCompleto.textContent = "Visitante";
     console.error("Usuário não encontrado na sessão.");

@@ -46,7 +46,6 @@ async function buscarRelatorioPorId(id) {
   }
 }
 
-// ===== CÓDIGO PRINCIPAL DA PÁGINA _______________________________________________________________________________
 document.addEventListener("DOMContentLoaded", async function () {
   const form = document.getElementById("form-relatorio");
   if (!form) return;
@@ -100,6 +99,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         )
       );
     });
+
+    const usuarioJSON = localStorage.getItem("usuarioLogado");
+    if (usuarioJSON) {
+      const usuarioLogado = JSON.parse(usuarioJSON);
+      if (usuarioLogado.id) {
+        selectFuncionario.value = usuarioLogado.id;
+        selectFuncionario.disabled = true;
+      }
+    }
   }
 
   if (isEditMode) {
@@ -224,9 +232,19 @@ document.addEventListener("DOMContentLoaded", async function () {
     const formData = new FormData(form);
     const dadosFicha = Object.fromEntries(formData.entries());
 
-    if (selectFuncionario && selectFuncionario.selectedIndex > 0) {
+    if (selectFuncionario && selectFuncionario.selectedIndex >= 0) {
       dadosFicha.responsavelNome =
         selectFuncionario.options[selectFuncionario.selectedIndex].text;
+    } else if (selectFuncionario && selectFuncionario.disabled) {
+      const idSelecionado = selectFuncionario.value;
+      const optionSelecionada = selectFuncionario.querySelector(
+        `option[value="${idSelecionado}"]`
+      );
+      if (optionSelecionada) {
+        dadosFicha.responsavelNome = optionSelecionada.text;
+      } else {
+        dadosFicha.responsavelNome = "Não informado";
+      }
     } else {
       dadosFicha.responsavelNome = "Não informado";
     }
