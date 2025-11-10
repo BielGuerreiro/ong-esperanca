@@ -1619,12 +1619,12 @@ body.dark-mode .perfil-nome {
   color: white;
 }
 
+/* nivel de acesso __________________________________________________________________________________________________ */
 .acesso-gerente,
 .item-gerente {
   display: none !important;
 }
 
-/* nivel de acesso __________________________________________________________________________________________________ */
 body.role-gerente .item-gerente {
   display: inline-flex !important;
 }
@@ -1637,9 +1637,6 @@ body.role-gerente .menu-header .acesso-gerente {
   display: none !important;
 }
 
-/* * 2. Mostra o botão de excluir APENAS se o body
- * tiver a classe 'role-gerente' (que seu JS já adiciona).
-*/
 body.role-gerente .btn-excluir {
-  display: inline-flex !important; /* ou 'inline-block', dependendo do seu CSS */
+  display: inline-flex !important;
 }

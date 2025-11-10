@@ -20,7 +20,6 @@ router.get("/relatorios", async (req, res) => {
       ORDER BY rel.data_relatorio DESC
     `);
 
-    //  FORMATA A DATA DE CADA RELATÓRIO ________________________________________________________________________________
     const relatorios = rows.map((rel) => ({
       ...rel,
       data: rel.data_relatorio
@@ -39,8 +38,6 @@ router.get("/relatorios", async (req, res) => {
     if (conn) conn.release();
   }
 });
-
-// BUSCAR UM RELATÓRIO POR ID ________________________________________________________________________________
 
 router.get("/relatorios/:id", async (req, res) => {
   const { id } = req.params;
@@ -82,7 +79,6 @@ router.get("/relatorios/:id", async (req, res) => {
   }
 });
 
-// CADASTRAR NOVO RELATÓRIO ________________________________________________________________________________
 router.post("/relatorios", async (req, res) => {
   let conn;
   try {
@@ -92,15 +88,16 @@ router.post("/relatorios", async (req, res) => {
     await conn.beginTransaction();
 
     const [funcRows] = await conn.query(
-      "SELECT id_funcionario FROM funcionarios LIMIT 1"
+      "SELECT id_funcionario FROM funcionarios WHERE id_funcionario = ?",
+      [data.funcionarioId]
     );
+
     if (funcRows.length === 0) {
+      await conn.rollback();
       return res.status(400).json({
-        error:
-          "Nenhum funcionário cadastrado. Crie um funcionário antes de criar um relatório.",
+        error: "Funcionário responsável não encontrado.",
       });
     }
-    const funcionario_id_valido = funcRows[0].id_funcionario;
 
     const sql = `
       INSERT INTO relatorios (
@@ -120,7 +117,7 @@ router.post("/relatorios", async (req, res) => {
 
     await conn.query(sql, [
       data.residenteId,
-      funcionario_id_valido,
+      data.funcionarioId,
       data.data,
       data.descricao_social,
       data.evolucao_social,
@@ -141,6 +138,15 @@ router.post("/relatorios", async (req, res) => {
       data.responsavelNome,
     ]);
 
+    if (data.medicamento && data.statusMedicacao === "Medicado") {
+      const sqlEstoque = `
+        UPDATE estoque 
+        SET quantidade = GREATEST(0, quantidade - 1) 
+        WHERE nome = ? AND quantidade > 0
+      `;
+      await conn.query(sqlEstoque, [data.medicamento]);
+    }
+
     await conn.commit();
     res.status(201).json({ message: "Ficha de Evolução salva com sucesso!" });
   } catch (err) {
@@ -154,8 +160,6 @@ router.post("/relatorios", async (req, res) => {
     if (conn) conn.release();
   }
 });
-
-//  ATUALIZAR UM RELATÓRIO ________________________________________________________________________________
 
 router.put("/relatorios/:id", async (req, res) => {
   const { id } = req.params;
@@ -213,8 +217,6 @@ router.put("/relatorios/:id", async (req, res) => {
     if (conn) conn.release();
   }
 });
-
-// EXCLUIR UM RELATÓRIO ________________________________________________________________________________
 
 router.delete("/relatorios/:id", async (req, res) => {
   const { id } = req.params;

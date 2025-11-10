@@ -232,6 +232,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     const formData = new FormData(form);
     const dadosFicha = Object.fromEntries(formData.entries());
 
+    if (selectFuncionario.disabled && selectFuncionario.value) {
+      dadosFicha.funcionarioId = selectFuncionario.value;
+    }
+
     if (selectFuncionario && selectFuncionario.selectedIndex >= 0) {
       dadosFicha.responsavelNome =
         selectFuncionario.options[selectFuncionario.selectedIndex].text;

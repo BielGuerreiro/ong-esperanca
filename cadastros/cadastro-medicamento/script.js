@@ -1,6 +1,6 @@
 const API_URL = "http://localhost:3000/api";
 
-async function carregarResidentesBackend() {
+async function carregarResidentes() {
   try {
     const response = await fetch(`${API_URL}/residentes`);
     if (!response.ok) throw new Error("Erro ao buscar residentes");
@@ -11,21 +11,30 @@ async function carregarResidentesBackend() {
   }
 }
 
+async function carregarEstoque() {
+  try {
+    const response = await fetch(`${API_URL}/estoque`);
+    if (!response.ok) throw new Error("Erro ao buscar estoque");
+    return await response.json();
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
+
 document.addEventListener("DOMContentLoaded", async function () {
   const form = document.getElementById("form-medicamento");
   const selectResidente = document.getElementById("residenteId");
+  const selectMedicamento = document.getElementById("medicamento");
   const botaoSubmit = document.querySelector(".btn-enviar");
   const botaoCancelar = document.querySelector(".btn-cancelar");
 
   const urlParams = new URLSearchParams(window.location.search);
   const tratamentoId = urlParams.get("id");
   const isEditMode = Boolean(tratamentoId);
-
-  // V----- 1. VERIFICA SE ESTÁ EM MODO "VISUALIZAR" -----V
   const isViewMode = urlParams.get("view") === "true";
-  // ^---------------------------------------------------^
 
-  const listaResidentes = await carregarResidentesBackend();
+  const listaResidentes = await carregarResidentes();
   if (selectResidente) {
     selectResidente.innerHTML =
       '<option value="" disabled selected>Selecione um residente</option>';
@@ -38,8 +47,20 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
   }
 
+  const listaEstoque = await carregarEstoque();
+  if (selectMedicamento) {
+    selectMedicamento.innerHTML =
+      '<option value="" disabled selected>Selecione do estoque</option>';
+    listaEstoque.forEach((item) => {
+      const option = new Option(
+        `${item.nome} (Estoque: ${item.quantidade})`,
+        item.nome
+      );
+      selectMedicamento.appendChild(option);
+    });
+  }
+
   if (isEditMode) {
-    // Modo Edição ou Visualização (carrega os dados)
     try {
       const res = await fetch(`${API_URL}/medicamentos/${tratamentoId}`);
       if (res.ok) {
@@ -68,42 +89,33 @@ document.addEventListener("DOMContentLoaded", async function () {
       console.error("Erro ao carregar tratamento:", err);
     }
 
-    const titulo = document.querySelector("h2");
+    const titulo = document.querySelector(".titulo");
     if (titulo) titulo.textContent = "Editar Tratamento";
     if (botaoSubmit) botaoSubmit.textContent = "SALVAR ALTERAÇÕES";
   }
 
-  // V----- 2. APLICA A LÓGICA DE "VISUALIZAR" -----V
   if (isViewMode) {
-    const titulo = document.querySelector("h2");
+    const titulo = document.querySelector(".titulo");
     if (titulo) titulo.textContent = "Visualizar Tratamento";
 
-    // Trava todos os campos do formulário
     form.querySelectorAll("input, select, textarea").forEach((field) => {
       field.disabled = true;
     });
 
-    // Esconde o botão de salvar
     if (botaoSubmit) {
       botaoSubmit.style.display = "none";
     }
 
-    // Muda o texto do botão "Cancelar" para "Voltar"
     if (botaoCancelar) {
       botaoCancelar.innerHTML = "&larr; VOLTAR";
     }
   }
-  // ^------------------------------------------------^
 
   form.addEventListener("submit", async function (event) {
     event.preventDefault();
-
-    // V----- 3. IMPEDE ENVIO EM MODO "VISUALIZAR" -----V
     if (isViewMode) {
-      return; // Não faz nada se estiver em modo de visualização
+      return;
     }
-    // ^-------------------------------------------------^
-
     if (!form.checkValidity()) {
       alert("Por favor, preencha todos os campos obrigatórios (*).");
       form.classList.add("form-foi-validado");
@@ -160,7 +172,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (!isViewMode && !confirm("Tem certeza que deseja cancelar?")) {
         return;
       }
-
       const origem = urlParams.get("origem") || "pagina-medicamentos";
       window.location.href = `../../index.html?pagina=${origem}`;
     });

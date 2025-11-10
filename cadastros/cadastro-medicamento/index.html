@@ -33,14 +33,13 @@
                 <label for="medicamento"
                   >Nome do Medicamento <span class="obrigatorio">*</span></label
                 >
-                <input
-                  type="text"
-                  id="medicamento"
-                  name="medicamento"
-                  placeholder="Digite o nome do medicamento"
-                  required
-                />
+                <select id="medicamento" name="medicamento" required>
+                  <option value="" disabled selected>
+                    Carregando estoque...
+                  </option>
+                </select>
               </div>
+
               <div class="grupo-form campo-expandir">
                 <label for="tipo"
                   >Tipo / Forma <span class="obrigatorio">*</span></label
