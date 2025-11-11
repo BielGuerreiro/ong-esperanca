@@ -6,7 +6,7 @@
   if (!caminhoPagina.includes("/login/")) {
     if (!usuarioJSON || !loginTimestamp) {
       console.log("AuthGuard: Nenhum login local. Redirecionando...");
-      window.location.href = "/login/index.html";
+      window.location.href = "login/index.html";
       return;
     }
 
@@ -18,7 +18,7 @@
 
       localStorage.clear();
       alert("Sua sessão expirou. Por favor, faça login novamente.");
-      window.location.href = "/login/index.html";
+      window.location.href = "login/index.html";
       return;
     }
   }

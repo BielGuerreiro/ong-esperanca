@@ -16,6 +16,7 @@ function calcularIdade(dataNascimento) {
   if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
     idade--;
   }
+  3;
   return idade;
 }
 
@@ -398,11 +399,10 @@ async function iniciarPaginaResidentes() {
               `${API_URL}/residentes/${idParaExcluir}`,
               {
                 method: "DELETE",
-                credentials: "include", // Envia o cookie de login
+                credentials: "include",
               }
             );
 
-            // Verifica se a sessão expirou (erro 401)
             if (deleteResponse.status === 401) {
               alert("Sua sessão expirou. Por favor, faça login novamente.");
               localStorage.clear();
@@ -412,7 +412,7 @@ async function iniciarPaginaResidentes() {
 
             if (deleteResponse.ok) {
               alert("Residente excluído com sucesso!");
-              iniciarPaginaResidentes(); // Recarrega a lista
+              iniciarPaginaResidentes();
             } else {
               const erro = await deleteResponse.json();
               alert("Erro ao excluir: " + (erro.error || "desconhecido"));
