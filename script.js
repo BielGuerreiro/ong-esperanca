@@ -43,7 +43,19 @@ function atualizarSaudacao() {
     saudacao = "Boa noite";
   }
 
-  const nomeUsuario = "Usuário";
+  let nomeUsuario = "Visitante";
+  const usuarioJSON = localStorage.getItem("usuarioLogado");
+
+  if (usuarioJSON) {
+    try {
+      const usuario = JSON.parse(usuarioJSON);
+      if (usuario && usuario.nome) {
+        nomeUsuario = usuario.nome;
+      }
+    } catch (e) {
+      console.error("Erro ao ler dados do usuário para saudação:", e);
+    }
+  }
 
   elementoSaudacao.textContent = `Olá, ${saudacao}, ${nomeUsuario}!`;
 }
@@ -106,6 +118,56 @@ function configurarBusca(
   e medicamentos sejam gerados e exibidos na tela.
 */
 let graficoAtividades = null;
+
+function processarDadosGrafico(relatoriosDoResidente) {
+  const dadosPorMes = Array.from({ length: 12 }, () => ({
+    Regrediu: 0,
+    Estagnado: 0,
+    Progresso: 0,
+    Superou: 0,
+  }));
+
+  const topicosEvolucao = [
+    "evolucao_social",
+    "evolucao_pedagogica",
+    "evolucao_psicologica",
+    "evolucao_saude",
+    "evolucao_fisica",
+    "evolucao_comunicacao",
+  ];
+
+  for (const relatorio of relatoriosDoResidente) {
+    if (!relatorio.data_relatorio) continue;
+
+    const mes = new Date(relatorio.data_relatorio).getUTCMonth();
+
+    for (const topico of topicosEvolucao) {
+      const evolucao = relatorio[topico];
+
+      switch (evolucao) {
+        case "Regrediu":
+          dadosPorMes[mes].Regrediu++;
+          break;
+        case "Estagnado":
+          dadosPorMes[mes].Estagnado++;
+          break;
+        case "Progresso Esperado":
+          dadosPorMes[mes].Progresso++;
+          break;
+        case "Superou Expectativas":
+          dadosPorMes[mes].Superou++;
+          break;
+      }
+    }
+  }
+
+  return {
+    dadosRegrediu: dadosPorMes.map((m) => m.Regrediu),
+    dadosEstagnado: dadosPorMes.map((m) => m.Estagnado),
+    dadosProgresso: dadosPorMes.map((m) => m.Progresso),
+    dadosSuperou: dadosPorMes.map((m) => m.Superou),
+  };
+}
 
 async function iniciarPaginaDashboard() {
   atualizarSaudacao();
@@ -186,10 +248,12 @@ async function iniciarPaginaDashboard() {
   }
 
   if (listaResidentesDashboard && graficoContainer) {
-    listaResidentesDashboard.addEventListener("click", function (event) {
+    listaResidentesDashboard.addEventListener("click", async function (event) {
       if (event.target && event.target.nodeName === "LI") {
         const liClicado = event.target;
         const residenteId = liClicado.dataset.id;
+
+        if (!residenteId) return;
 
         listaResidentesDashboard
           .querySelectorAll("li")
@@ -206,6 +270,31 @@ async function iniciarPaginaDashboard() {
             <canvas id="grafico-desempenho-residente"></canvas>
           </div>
         `;
+
+        let dadosRegrediu = Array(12).fill(0);
+        let dadosEstagnado = Array(12).fill(0);
+        let dadosProgresso = Array(12).fill(0);
+        let dadosSuperou = Array(12).fill(0);
+
+        try {
+          const resGrafico = await fetch(
+            `${API_URL}/relatorios/residente/${residenteId}`
+          );
+          if (resGrafico.ok) {
+            const relatoriosDoResidente = await resGrafico.json();
+            const dadosProcessados = processarDadosGrafico(
+              relatoriosDoResidente
+            );
+            dadosRegrediu = dadosProcessados.dadosRegrediu;
+            dadosEstagnado = dadosProcessados.dadosEstagnado;
+            dadosProgresso = dadosProcessados.dadosProgresso;
+            dadosSuperou = dadosProcessados.dadosSuperou;
+          } else {
+            console.error("Erro ao buscar dados do gráfico");
+          }
+        } catch (err) {
+          console.error("Erro na API do gráfico:", err);
+        }
 
         const ctx = document
           .getElementById("grafico-desempenho-residente")
@@ -225,19 +314,6 @@ async function iniciarPaginaDashboard() {
           "Novembro",
           "Dezembro",
         ];
-
-        const dadosRegrediu = Array.from({ length: 12 }, () =>
-          Math.floor(Math.random() * 5)
-        );
-        const dadosEstagnado = Array.from({ length: 12 }, () =>
-          Math.floor(Math.random() * 5)
-        );
-        const dadosProgresso = Array.from({ length: 12 }, () =>
-          Math.floor(Math.random() * 5)
-        );
-        const dadosSuperou = Array.from({ length: 12 }, () =>
-          Math.floor(Math.random() * 5)
-        );
 
         graficoAtividades = new Chart(ctx, {
           type: "bar",
@@ -278,11 +354,18 @@ async function iniciarPaginaDashboard() {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
+              x: {
+                stacked: false,
+              },
               y: {
+                stacked: false,
                 beginAtZero: true,
                 title: {
                   display: true,
                   text: "Quantidade de Ocorrências",
+                },
+                ticks: {
+                  stepSize: 1,
                 },
               },
             },

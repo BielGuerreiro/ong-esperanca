@@ -297,7 +297,6 @@ body {
   transition: all 0.2s ease;
 }
 
-/* Efeito ao passar o mouse */
 .btn-ver-ficha:hover {
   background-color: #000;
   color: #ffffff;

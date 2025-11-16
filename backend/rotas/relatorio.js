@@ -79,6 +79,29 @@ router.get("/relatorios/:id", async (req, res) => {
   }
 });
 
+router.get("/relatorios/residente/:id", async (req, res) => {
+  const { id } = req.params;
+  let conn;
+  try {
+    conn = await db.getConnection();
+    const [rows] = await conn.query(
+      `SELECT 
+        data_relatorio, evolucao_social, evolucao_pedagogica, 
+        evolucao_psicologica, evolucao_saude, evolucao_fisica, 
+        evolucao_comunicacao 
+      FROM relatorios 
+      WHERE residente_id_residente = ?`,
+      [id]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error("Erro ao buscar relatórios do residente:", err);
+    res.status(500).json({ error: "Erro ao buscar relatórios do residente." });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
 router.post("/relatorios", async (req, res) => {
   let conn;
   try {
