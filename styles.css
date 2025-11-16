@@ -1021,13 +1021,23 @@ input:checked + .slider:before {
   }
 
   /* parte do container das paginas ________________________________________________________________________________*/
+  html {
+    overflow-y: auto;
+  }
+
   body {
     position: relative;
     background: white;
     height: auto;
-    overflow-y: auto;
-    padding-bottom: 0;
+    overflow-y: visible;
+
+    /* ESTA É A CORREÇÃO: */
+    /* Adiciona um "espaço no chão" de 120px para */
+    /* compensar o menu fixo do rodapé (que tem 9vh). */
+    padding-bottom: 120px;
   }
+
+  /* ... */
 
   .container-geral {
     margin-left: 0;
@@ -1037,10 +1047,14 @@ input:checked + .slider:before {
     border-top-left-radius: 45px;
     border-top-right-radius: 45px;
     box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
-    height: auto;
-    min-height: 90vh;
-    overflow: visible;
-    padding: 20px 15px 120px 15px;
+
+    /* --- TAMBÉM CORRIGIDO --- */
+    height: auto; /* Remove qualquer altura fixa */
+    min-height: 90vh; /* Garante que preencha a tela mas possa crescer */
+    overflow: visible; /* Deixa o conteúdo vazar para baixo */
+
+    /* Remove o padding-bottom daqui e deixa o BODY cuidar disso */
+    padding: 20px 15px 20px 15px;
     box-sizing: border-box;
   }
 
