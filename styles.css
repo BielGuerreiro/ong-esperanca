@@ -1021,6 +1021,14 @@ input:checked + .slider:before {
   }
 
   /* parte do container das paginas ________________________________________________________________________________*/
+  body {
+    position: relative;
+    background: white;
+    height: auto;
+    overflow-y: auto;
+    padding-bottom: 0;
+  }
+
   .container-geral {
     margin-left: 0;
     position: relative;
@@ -1029,7 +1037,11 @@ input:checked + .slider:before {
     border-top-left-radius: 45px;
     border-top-right-radius: 45px;
     box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
-    /* padding: 20px 5px 90px 5px; */
+    height: auto;
+    min-height: 90vh;
+    overflow: visible;
+    padding: 20px 15px 120px 15px;
+    box-sizing: border-box;
   }
 
   body::before {
@@ -1041,11 +1053,6 @@ input:checked + .slider:before {
     height: 190px;
     z-index: -1;
     background-color: var(--main-color);
-  }
-
-  body {
-    position: relative;
-    background: white;
   }
 
   /* teste de container  */
