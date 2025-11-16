@@ -163,7 +163,11 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
     }
   } else {
-    inputData.valueAsDate = new Date();
+    const hoje = new Date();
+    const yyyy = hoje.getFullYear();
+    const mm = String(hoje.getMonth() + 1).padStart(2, "0");
+    const dd = String(hoje.getDate()).padStart(2, "0");
+    inputData.value = `${yyyy}-${mm}-${dd}`;
   }
 
   accordionHeaders.forEach((header) => {
@@ -217,13 +221,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     if (primeiroCampoInvalido) {
       form.classList.add("form-foi-validado");
-      const etapaComErro = primeiroCampoInvalido.closest(".etapa-form");
-      if (etapaComErro) {
-        const indiceEtapaComErro = Array.from(etapas).indexOf(etapaComErro);
-        if (indiceEtapaComErro !== -1) {
-          mostrarEtapa(indiceEtapaComErro);
-        }
-      }
       primeiroCampoInvalido.focus();
       alert("Por favor, preencha todos os campos obrigatórios (*).");
       return;
