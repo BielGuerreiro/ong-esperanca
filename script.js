@@ -1,3 +1,12 @@
+const API_URL = "http://localhost:3000/api";
+
+// Funções Globais_______________________________________________________________________________
+/*
+  Estas são funções de "ajuda" que podem ser usadas em várias partes do sistema.
+  A função 'calcularIdade' recebe uma data de nascimento e retorna a idade atual da pessoa.
+  A função 'definirCategoria' recebe uma idade e retorna uma classificação 
+  (Criança, Adolescente, Adulto, Idoso).
+*/
 function calcularIdade(dataNascimento) {
   if (!dataNascimento) return "?";
   const hoje = new Date();
@@ -18,6 +27,7 @@ function definirCategoria(idade) {
   return "Idoso";
 }
 
+// FUNÇÃO PARA SAUDAÇÃO DINÂMICA _________________________________________________________________________________
 function atualizarSaudacao() {
   const elementoSaudacao = document.getElementById("mensagem-saudacao");
   if (!elementoSaudacao) return;
@@ -50,6 +60,7 @@ function atualizarSaudacao() {
   elementoSaudacao.textContent = `Olá, ${saudacao}, ${nomeUsuario}!`;
 }
 
+// Nivel de acesso _________________________________________________________________________________
 function aplicarControleDeAcesso() {
   const usuarioJSON = localStorage.getItem("usuarioLogado");
   if (!usuarioJSON) return;
@@ -68,6 +79,7 @@ function aplicarControleDeAcesso() {
   }
 }
 
+// barra de pesquisa universal _______________________________________________________________________________________
 function configurarBusca(
   inputId,
   listaContainerId,
@@ -97,6 +109,14 @@ function configurarBusca(
   });
 }
 
+// tabela dashboard ______________________________________________________________________________________________________________
+/*
+  Esta função inicializa a página de Dashboard. Ela é responsável por calcular e exibir 
+  os números nos cards de resumo (total de residentes, medicamentos pendentes e atividades 
+  de hoje). Além disso, ela cria a lista de residentes à esquerda e prepara a área 
+  dos gráficos, definindo que, ao clicar em um residente, os gráficos de atividades 
+  e medicamentos sejam gerados e exibidos na tela.
+*/
 let graficoAtividades = null;
 
 function processarDadosGrafico(relatoriosDoResidente) {
@@ -164,15 +184,36 @@ async function iniciarPaginaDashboard() {
   );
   const graficoContainer = document.querySelector(".grafico-dashboard");
 
-  let listaResidentes = mockResidentes;
-  let listaRelatorios = mockRelatorios;
-  let listaAtividades = mockAtividades;
+  let listaResidentes = [];
+  let listaRelatorios = [];
+  let listaAtividades = [];
 
   const dataAtual = new Date();
   const yyyy = dataAtual.getFullYear();
   const mm = String(dataAtual.getMonth() + 1).padStart(2, "0");
   const dd = String(dataAtual.getDate()).padStart(2, "0");
   const hoje = `${yyyy}-${mm}-${dd}`;
+
+  try {
+    const resResidentes = await fetch(`${API_URL}/residentes`);
+    if (resResidentes.ok) listaResidentes = await resResidentes.json();
+  } catch (e) {
+    console.error("Dashboard: Erro ao carregar residentes", e);
+  }
+
+  try {
+    const resRelatorios = await fetch(`${API_URL}/relatorios`);
+    if (resRelatorios.ok) listaRelatorios = await resRelatorios.json();
+  } catch (e) {
+    console.error("Dashboard: Erro ao carregar relatorios", e);
+  }
+
+  try {
+    const resAtividades = await fetch(`${API_URL}/atividades`);
+    if (resAtividades.ok) listaAtividades = await resAtividades.json();
+  } catch (e) {
+    console.error("Dashboard: Erro ao carregar atividades", e);
+  }
 
   if (contadorResidentesEl) {
     contadorResidentesEl.textContent = listaResidentes.length;
@@ -235,14 +276,25 @@ async function iniciarPaginaDashboard() {
         let dadosProgresso = Array(12).fill(0);
         let dadosSuperou = Array(12).fill(0);
 
-        const relatoriosDoResidente = mockRelatorios.filter(
-          (r) => r.residenteId == residenteId
-        );
-        const dadosProcessados = processarDadosGrafico(relatoriosDoResidente);
-        dadosRegrediu = dadosProcessados.dadosRegrediu;
-        dadosEstagnado = dadosProcessados.dadosEstagnado;
-        dadosProgresso = dadosProcessados.dadosProgresso;
-        dadosSuperou = dadosProcessados.dadosSuperou;
+        try {
+          const resGrafico = await fetch(
+            `${API_URL}/relatorios/residente/${residenteId}`
+          );
+          if (resGrafico.ok) {
+            const relatoriosDoResidente = await resGrafico.json();
+            const dadosProcessados = processarDadosGrafico(
+              relatoriosDoResidente
+            );
+            dadosRegrediu = dadosProcessados.dadosRegrediu;
+            dadosEstagnado = dadosProcessados.dadosEstagnado;
+            dadosProgresso = dadosProcessados.dadosProgresso;
+            dadosSuperou = dadosProcessados.dadosSuperou;
+          } else {
+            console.error("Erro ao buscar dados do gráfico");
+          }
+        } catch (err) {
+          console.error("Erro na API do gráfico:", err);
+        }
 
         const ctx = document
           .getElementById("grafico-desempenho-residente")
@@ -329,54 +381,146 @@ async function iniciarPaginaDashboard() {
   }
 }
 
+// tabela residentes ______________________________________________________________________________________________________________
+/*
+  Esta função inicializa a página de Residentes. Ela busca a lista de residentes salvos 
+  na memória, e então cria dinamicamente a tabela que é exibida na tela, adicionando 
+  uma linha para cada residente com suas informações (nome, idade, etc.) e os botões 
+  de ação (editar e excluir). Ela também ativa a funcionalidade do botão de excluir.
+*/
+
 async function iniciarPaginaResidentes() {
   const tabelaBodyDesktop = document.getElementById("lista-residentes-body");
   const listaBodyMobile = document.getElementById("lista-residentes-nova-body");
   if (!tabelaBodyDesktop || !listaBodyMobile) return;
 
-  let listaResidentes = mockResidentes;
-  listaResidentes.reverse();
+  tabelaBodyDesktop.innerHTML =
+    '<tr><td colspan="5" style="text-align: center;">Carregando...</td></tr>';
+  listaBodyMobile.innerHTML =
+    '<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Carregando...</li>';
 
-  tabelaBodyDesktop.innerHTML = "";
-  listaBodyMobile.innerHTML = "";
+  try {
+    const response = await fetch(`${API_URL}/residentes`, {
+      credentials: "include",
+    });
 
-  if (listaResidentes.length > 0) {
-    listaResidentes.forEach((residente) => {
-      const idade = calcularIdade(residente.data_nascimento);
-      const categoria = definirCategoria(idade);
-      const nomeCompleto = `${residente.primeiro_nome} ${residente.sobrenome}`;
-      const sexoFormatado = residente.sexo
-        ? residente.sexo.charAt(0).toUpperCase() + residente.sexo.slice(1)
-        : "N/A";
+    if (response.status === 401) {
+      console.error("Sessão expirada. Redirecionando para login.");
+      alert("Sua sessão expirou. Por favor, faça login novamente.");
+      localStorage.clear();
+      window.location.href = "login/index.html";
+      return;
+    }
 
-      const acoesHTML = `
-          <a href="#" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
+    if (!response.ok) throw new Error("Erro ao buscar residentes");
+
+    let listaResidentes = await response.json();
+    listaResidentes.reverse();
+
+    tabelaBodyDesktop.innerHTML = "";
+    listaBodyMobile.innerHTML = "";
+
+    if (listaResidentes.length > 0) {
+      listaResidentes.forEach((residente) => {
+        const idade = calcularIdade(residente.data_nascimento);
+        const categoria = definirCategoria(idade);
+        const nomeCompleto = `${residente.primeiro_nome} ${residente.sobrenome}`;
+        const sexoFormatado = residente.sexo
+          ? residente.sexo.charAt(0).toUpperCase() + residente.sexo.slice(1)
+          : "N/A";
+
+        const acoesHTML = `
+          <a href="cadastros/cadastro-residente/index.html?id=${residente.id_residente}&origem=pagina-residentes" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
           <a href="#" class="btn-acao-icone btn-excluir" data-id="${residente.id_residente}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
         `;
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
           <td>${nomeCompleto}</td>
           <td>${idade}</td>
           <td>${sexoFormatado}</td>
           <td>${categoria}</td>
           <td class="acoes">${acoesHTML}</td>
         `;
-      tabelaBodyDesktop.appendChild(tr);
+        tabelaBodyDesktop.appendChild(tr);
 
-      const li = document.createElement("li");
-      li.innerHTML = `
+        const li = document.createElement("li");
+        li.innerHTML = `
           <span class="residente-nome">${nomeCompleto}</span>
           <span class="residente-idade">${idade}</span>
           <div class="residente-acoes">${acoesHTML}</div>
         `;
-      listaBodyMobile.appendChild(li);
-    });
-  } else {
-    tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum residente cadastrado.</td></tr>`;
-    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum residente cadastrado.</li>`;
+        listaBodyMobile.appendChild(li);
+      });
+    } else {
+      tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum residente cadastrado.</td></tr>`;
+      listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum residente cadastrado.</li>`;
+    }
+
+    // --- Lógica de Exclusão ---
+    const paginaResidentes = document.getElementById("pagina-residentes");
+    if (paginaResidentes && !paginaResidentes.dataset.listenerExcluir) {
+      paginaResidentes.dataset.listenerExcluir = "true";
+      paginaResidentes.addEventListener("click", async function (event) {
+        const botaoExcluir = event.target.closest(".btn-excluir");
+        if (!botaoExcluir) return;
+
+        event.preventDefault();
+        const idParaExcluir = botaoExcluir.dataset.id;
+
+        const nomeDoResidente = botaoExcluir
+          .closest("tr, li")
+          .querySelector(".residente-nome, td:first-child").textContent;
+
+        if (
+          confirm(
+            `Tem certeza que deseja excluir o residente "${nomeDoResidente}"? Esta ação não pode ser desfeita.`
+          )
+        ) {
+          try {
+            const deleteResponse = await fetch(
+              `${API_URL}/residentes/${idParaExcluir}`,
+              {
+                method: "DELETE",
+                credentials: "include",
+              }
+            );
+
+            if (deleteResponse.status === 401) {
+              alert("Sua sessão expirou. Por favor, faça login novamente.");
+              localStorage.clear();
+              window.location.href = "login/index.html";
+              return;
+            }
+
+            if (deleteResponse.ok) {
+              alert("Residente excluído com sucesso!");
+              iniciarPaginaResidentes();
+            } else {
+              const erro = await deleteResponse.json();
+              alert("Erro ao excluir: " + (erro.error || "desconhecido"));
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Erro de rede ao excluir o residente.");
+          }
+        }
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Erro ao carregar residentes.</td></tr>`;
+    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Erro ao carregar residentes.</li>`;
   }
 }
+
+// tabela funcionario ______________________________________________________________________________________________________________
+/*
+  Esta função inicializa a página de Funcionários. Assim como a de residentes, ela 
+  lê a lista de funcionários salvos e constrói a tabela na tela, mostrando 
+  informações como nome, turno, e status de cada um. Ela também cria os links 
+  corretos para a edição de cada ficha e ativa a funcionalidade do botão de excluir.
+*/
 
 async function iniciarPaginaFuncionarios() {
   const tabelaBodyDesktop = document.getElementById("lista-funcionarios-body");
@@ -389,63 +533,142 @@ async function iniciarPaginaFuncionarios() {
     return;
   }
 
-  let listaFuncionarios = mockFuncionarios;
-  listaFuncionarios.reverse();
+  // Define o estado de "Carregando..." ______________________________________________________________________________
+  tabelaBodyDesktop.innerHTML =
+    '<tr><td colspan="5" style="text-align: center;">Carregando...</td></tr>';
+  listaBodyMobile.innerHTML =
+    '<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Carregando...</li>';
 
-  tabelaBodyDesktop.innerHTML = "";
-  listaBodyMobile.innerHTML = "";
+  try {
+    const response = await fetch(`${API_URL}/funcionarios`);
+    if (!response.ok) {
+      throw new Error("Erro ao buscar funcionários do servidor");
+    }
+    const listaFuncionarios = await response.json();
+    listaFuncionarios.reverse();
 
-  if (listaFuncionarios.length > 0) {
-    listaFuncionarios.forEach((funcionario) => {
-      const idDoFuncionario = funcionario.id_funcionario;
-      const numRegistro = funcionario.numero_registro || "N/A";
-      const nomeCompleto = `${funcionario.primeiro_nome} ${funcionario.sobrenome}`;
+    // 2. LIMPAR A TABELA ______________________________________________________________________________
+    tabelaBodyDesktop.innerHTML = "";
+    listaBodyMobile.innerHTML = "";
 
-      function definirHorario(turno) {
-        switch (turno) {
-          case "manha":
-            return "06:00 - 14:00";
-          case "tarde":
-            return "14:00 - 22:00";
-          case "noite":
-            return "22:00 - 06:00";
-          default:
-            return "N/A";
+    // 3. PREENCHER A TABELA ______________________________________________________________________________
+    if (listaFuncionarios.length > 0) {
+      listaFuncionarios.forEach((funcionario) => {
+        const idDoFuncionario = funcionario.id_funcionario;
+
+        const numRegistro = funcionario.numero_registro || "N/A";
+
+        const nomeCompleto = `${funcionario.primeiro_nome} ${funcionario.sobrenome}`;
+
+        // Função para formatar o turno ______________________________________________________________________________
+        function definirHorario(turno) {
+          switch (turno) {
+            case "manha":
+              return "06:00 - 14:00";
+            case "tarde":
+              return "14:00 - 22:00";
+            case "noite":
+              return "22:00 - 06:00";
+            default:
+              return "N/A";
+          }
         }
-      }
-      const horario = definirHorario(funcionario.turno);
-      const status = funcionario.status || "Ativo";
-      const classeStatus = `status-${status.toLowerCase()}`;
-      const statusFormatado = status.charAt(0).toUpperCase() + status.slice(1);
-      const statusHTML = `<span class="status ${classeStatus}">${statusFormatado}</span>`;
+        const horario = definirHorario(funcionario.turno);
 
-      const acoesHTML = `
-          <a href="#" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
+        const status = funcionario.status || "Ativo";
+        const classeStatus = `status-${status.toLowerCase()}`;
+
+        const statusFormatado =
+          status.charAt(0).toUpperCase() + status.slice(1);
+        const statusHTML = `<span class="status ${classeStatus}">${statusFormatado}</span>`;
+
+        const acoesHTML = `
+          <a href="cadastros/cadastro-funcionario/index.html?id=${idDoFuncionario}&origem=pagina-funcionarios" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
           <a href="#" class="btn-acao-icone btn-excluir" data-id="${idDoFuncionario}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
         `;
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
           <td>${horario}</td>
           <td>${nomeCompleto}</td>
           <td>${numRegistro}</td> <td>${statusHTML}</td>
           <td class="acoes">${acoesHTML}</td>
         `;
-      tabelaBodyDesktop.appendChild(tr);
+        tabelaBodyDesktop.appendChild(tr);
 
-      const li = document.createElement("li");
-      li.innerHTML = `
+        const li = document.createElement("li");
+        li.innerHTML = `
           <span class="funcionario-nome">${nomeCompleto}</span>
           <div class="funcionario-status">${statusHTML}</div>
           <div class="funcionario-acoes">${acoesHTML}</div>
         `;
-      listaBodyMobile.appendChild(li);
-    });
-  } else {
-    tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum funcionário cadastrado.</td></tr>`;
-    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum funcionário cadastrado.</li>`;
+        listaBodyMobile.appendChild(li);
+      });
+    } else {
+      tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum funcionário cadastrado.</td></tr>`;
+      listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum funcionário cadastrado.</li>`;
+    }
+
+    // 4. ADICIONAR LÓGICA DE EXCLUSÃO ______________________________________________________________________________
+    const paginaFuncionarios = document.getElementById("pagina-funcionarios");
+    if (paginaFuncionarios && !paginaFuncionarios.dataset.listenerAdicionado) {
+      paginaFuncionarios.dataset.listenerAdicionado = "true";
+
+      paginaFuncionarios.addEventListener("click", async function (event) {
+        const botaoExcluir = event.target.closest(".btn-excluir");
+        if (!botaoExcluir) return;
+
+        event.preventDefault();
+
+        const idParaExcluir = botaoExcluir.dataset.id;
+
+        const itemPai =
+          botaoExcluir.closest("tr") || botaoExcluir.closest("li");
+        const nomeEl =
+          itemPai.querySelector(".funcionario-nome") ||
+          itemPai.querySelector("td:nth-child(2)");
+        const nomeDoFuncionario = nomeEl ? nomeEl.textContent : "Funcionário";
+
+        if (
+          confirm(
+            `Tem certeza que deseja excluir o funcionário "${nomeDoFuncionario}"?`
+          )
+        ) {
+          try {
+            const deleteResponse = await fetch(
+              `${API_URL}/funcionarios/${idParaExcluir}`,
+              { method: "DELETE" }
+            );
+
+            if (deleteResponse.ok) {
+              alert("Funcionário excluído com sucesso!");
+              iniciarPaginaFuncionarios();
+            } else {
+              const erro = await deleteResponse.json();
+              alert("Erro ao excluir: " + (erro.error || "desconhecido"));
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Erro de rede ao excluir o funcionário.");
+          }
+        }
+      });
+    }
+  } catch (error) {
+    console.error(error);
+
+    tabelaBodyDesktop.innerHTML = `<tr><td colspan="5" style="text-align:center;">Erro ao carregar funcionários: ${error.message}</td></tr>`;
+    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Erro ao carregar funcionários. Tente recarregar.</li>`;
   }
 }
+
+// tabela responsavel  ______________________________________________________________________________________________________________
+/*
+  Esta função inicializa a página de Responsáveis. Ela lê a lista de responsáveis e 
+  de residentes para poder exibir a tabela completa, mostrando qual residente está 
+  vinculado a qual responsável. Assim como as outras, ela também cria os botões 
+  de ação (editar/excluir) e ativa a funcionalidade de exclusão.
+*/
 
 function iniciarPaginaResponsaveis() {
   const listaResponsaveis = JSON.parse(
@@ -480,34 +703,72 @@ function iniciarPaginaResponsaveis() {
         : "Não encontrado";
 
       const acoesHTML = `
-          <a href="#" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
-          <a href="#" class="btn-acao-icone btn-excluir" data-id="${responsavel.id}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
-        `;
+        <a href="cadastros/cadastro-responsavel/index.html?id=${responsavel.id}&origem=pagina-responsavel" class="btn-acao-icone btn-editar" title="Editar Ficha"><i class='bx bxs-pencil'></i></a>
+        <a href="#" class="btn-acao-icone btn-excluir" data-id="${responsavel.id}" title="Excluir Ficha"><i class='bx bx-trash-alt'></i></a>
+      `;
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
-          <td>${nomeCompleto}</td>
-          <td>${idade}</td>
-          <td>${categoria}</td>
-          <td>${parentesco}</td>
-          <td>${nomeResidente}</td>
-          <td class="acoes">${acoesHTML}</td>
-        `;
+        <td>${nomeCompleto}</td>
+        <td>${idade}</td>
+        <td>${categoria}</td>
+        <td>${parentesco}</td>
+        <td>${nomeResidente}</td>
+        <td class="acoes">${acoesHTML}</td>
+      `;
       tabelaBodyDesktop.appendChild(tr);
 
       const li = document.createElement("li");
       li.innerHTML = `
-          <span class="responsavel-nome">${nomeCompleto}</span>
-          <span class="responsavel-parentesco">${parentesco}</span>
-          <div class="responsavel-acoes">${acoesHTML}</div>
-        `;
+        <span class="responsavel-nome">${nomeCompleto}</span>
+        <span class="responsavel-parentesco">${parentesco}</span>
+        <div class="responsavel-acoes">${acoesHTML}</div>
+      `;
       listaBodyMobile.appendChild(li);
     });
   } else {
     tabelaBodyDesktop.innerHTML = `<td colspan="6" style="text-align:center;">Nenhum responsável cadastrado.</td>`;
     listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum responsável cadastrado.</li>`;
   }
+
+  const paginaResponsaveis = document.getElementById("pagina-responsavel");
+
+  paginaResponsaveis.addEventListener("click", function (event) {
+    const botaoExcluir = event.target.closest(".btn-excluir");
+    if (!botaoExcluir) return;
+
+    event.preventDefault();
+    const idParaExcluir = botaoExcluir.dataset.id;
+
+    const itemPai = botaoExcluir.closest("tr") || botaoExcluir.closest("li");
+    const nomeDoResponsavel = itemPai.querySelector(
+      "td:first-child, .responsavel-nome"
+    ).textContent;
+
+    if (
+      confirm(
+        `Tem certeza que deseja excluir o responsável "${nomeDoResponsavel}"?`
+      )
+    ) {
+      const novaLista = JSON.parse(
+        sessionStorage.getItem("listaResponsaveis") || "[]"
+      ).filter((resp) => resp.id != idParaExcluir);
+
+      sessionStorage.setItem("listaResponsaveis", JSON.stringify(novaLista));
+      alert("Responsável excluído com sucesso!");
+
+      iniciarPaginaResponsaveis();
+    }
+  });
 }
+
+// sessao medicamento -_____________________________________________________________________________________________________
+/*
+  Esta função inicializa a página de Medicamentos. Ela busca a lista de tratamentos e 
+  de residentes para montar a tabela de agendamentos de medicação. Para cada item, 
+  ela exibe o horário, o residente, o medicamento e o status ( ou Administrado),
+  junto com os botões de editar e excluir, e ativa a função de exclusão.
+*/
 
 async function iniciarPaginaMedicamentos() {
   const tabelaBodyDesktop = document.getElementById("lista-medicamentos-body");
@@ -522,30 +783,34 @@ async function iniciarPaginaMedicamentos() {
   tabelaBodyDesktop.innerHTML = "";
   listaBodyMobile.innerHTML = "";
 
-  const listaTratamentos = mockMedicamentos;
-  listaTratamentos.reverse();
+  try {
+    const response = await fetch(`${API_URL}/medicamentos`);
+    if (!response.ok)
+      throw new Error("Erro ao buscar medicamentos do servidor");
+    const listaTratamentos = await response.json();
+    listaTratamentos.reverse();
 
-  if (listaTratamentos.length > 0) {
-    listaTratamentos.forEach((tratamento) => {
-      const nomeResidente = tratamento.residenteNome || "Não encontrado";
+    if (listaTratamentos.length > 0) {
+      listaTratamentos.forEach((tratamento) => {
+        const nomeResidente = tratamento.residenteNome || "Não encontrado";
 
-      let acoesHTML = "";
+        let acoesHTML = "";
 
-      if (isGerente) {
-        acoesHTML = `
-            <a href="#" class="btn-acao-icone btn-editar" title="Editar Agendamento"><i class='bx bxs-pencil'></i></a>
+        if (isGerente) {
+          acoesHTML = `
+            <a href="cadastros/cadastro-medicamento/index.html?id=${tratamento.id}&origem=pagina-medicamentos" class="btn-acao-icone btn-editar" title="Editar Agendamento"><i class='bx bxs-pencil'></i></a>
             <a href="#" class="btn-acao-icone btn-excluir" data-id="${tratamento.id}" title="Excluir Agendamento"><i class='bx bx-trash-alt'></i></a>
           `;
-      } else {
-        acoesHTML = `
-            <a href="#" class="btn-acao-texto btn-ver-ficha" title="Ver Ficha">
+        } else {
+          acoesHTML = `
+            <a href="cadastros/cadastro-medicamento/index.html?id=${tratamento.id}&origem=pagina-medicamentos&view=true" class="btn-acao-texto btn-ver-ficha" title="Ver Ficha">
               <i class='bx bx-show'></i> Ver Ficha
             </a>
           `;
-      }
+        }
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
           <td>${tratamento.horario}</td>
           <td>${nomeResidente}</td>
           <td>${tratamento.medicamento}</td>
@@ -553,25 +818,83 @@ async function iniciarPaginaMedicamentos() {
           <td>${tratamento.tipo || "N/A"}</td>
           <td class="acoes">${acoesHTML}</td>
         `;
-      tabelaBodyDesktop.appendChild(tr);
+        tabelaBodyDesktop.appendChild(tr);
 
-      const li = document.createElement("li");
-      li.innerHTML = `
+        const li = document.createElement("li");
+        li.innerHTML = `
           <span class="medicamento-residente">${nomeResidente}</span>
           <span class="medicamento-nome">${tratamento.medicamento}</span>
           <div class="medicamento-acoes">${acoesHTML}</div>
         `;
-      listaBodyMobile.appendChild(li);
-    });
-  } else {
-    tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align:center;">Nenhum tratamento agendado.</td></tr>`;
-    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum tratamento agendado.</li>`;
+        listaBodyMobile.appendChild(li);
+      });
+    } else {
+      tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align:center;">Nenhum tratamento agendado.</td></tr>`;
+      listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum tratamento agendado.</li>`;
+    }
+
+    const paginaMedicamentos = document.getElementById("pagina-medicamentos");
+
+    if (!paginaMedicamentos.dataset.listenerExcluir) {
+      paginaMedicamentos.dataset.listenerExcluir = "true";
+
+      paginaMedicamentos.addEventListener("click", async function (event) {
+        const botaoExcluir = event.target.closest(".btn-excluir");
+        if (!botaoExcluir) return;
+
+        event.preventDefault();
+        const idParaExcluir = botaoExcluir.dataset.id;
+
+        if (confirm(`Tem certeza que deseja excluir este agendamento?`)) {
+          try {
+            const deleteResponse = await fetch(
+              `${API_URL}/medicamentos/${idParaExcluir}`,
+              { method: "DELETE" }
+            );
+
+            if (deleteResponse.ok) {
+              alert("Agendamento excluído com sucesso!");
+              iniciarPaginaMedicamentos();
+            } else {
+              const erro = await deleteResponse.json();
+              alert("Erro ao excluir: " + (erro.error || "desconhecido"));
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Erro de rede ao excluir o agendamento.");
+          }
+        }
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align:center;">Erro ao carregar tratamentos.</td></tr>`;
+    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Erro ao carregar tratamentos.</li>`;
   }
 }
 
+// sessao atividades  -_____________________________________________________________________________________________________
+
+/*
+  Esta função inicializa a página de Atividades. Ela contém uma sub-função 'renderizarTabela' 
+  que é responsável por ler os agendamentos de atividades e construir a tabela na tela, 
+  mostrando data, horário, nome da atividade, status, etc. A função também ativa a 
+  funcionalidade do botão de excluir, que ao ser clicado, remove o item e redesenha a 
+  tabela para refletir a mudança instantaneamente.
+*/
+
+// (A função carregarAtividades NÃO precisa estar aqui, ela está no script de cadastro)
+
 async function iniciarPaginaAtividades() {
-  let listaAgendamentos = mockAtividades;
-  listaAgendamentos.reverse();
+  let listaAgendamentos = [];
+  try {
+    const res = await fetch(`${API_URL}/atividades`);
+    if (!res.ok) throw new Error("Erro ao listar atividades");
+    listaAgendamentos = await res.json();
+    listaAgendamentos.reverse();
+  } catch (err) {
+    console.error("Erro ao listar atividades:", err);
+  }
 
   const tabelaBodyDesktop = document.getElementById("lista-atividades-body");
   const listaBodyMobile = document.getElementById("lista-atividades-nova-body");
@@ -582,6 +905,7 @@ async function iniciarPaginaAtividades() {
 
   if (listaAgendamentos.length > 0) {
     listaAgendamentos.forEach((agendamento) => {
+      // --- Normalização de status ---
       const statusOriginal = agendamento.status || "Agendada";
       const statusNormalizado = statusOriginal
         .toString()
@@ -598,6 +922,7 @@ async function iniciarPaginaAtividades() {
         <span class="status ${classeStatus}">${statusFormatado}</span>
       `;
 
+      // --- Data e hora ---
       const dataRaw = agendamento.data || agendamento.data_atividade;
       let dataFormatada = "N/A";
       if (dataRaw) {
@@ -619,15 +944,19 @@ async function iniciarPaginaAtividades() {
         <div><span class="col-data">${dataFormatada}</span></div>
       `;
 
+      // --- Duração ---
       const duracaoExibicao = agendamento.duracao || "N/A";
 
+      // --- Ações ---
       const acoesHTML = `
-        <a href="#" class="btn-acao-icone btn-editar" title="Editar Atividade">
-          <i class='bx bxs-pencil'></i></a>
+        <a href="cadastros/cadastro-atividade/index.html?id=${agendamento.id}&origem=pagina-atividades" 
+           class="btn-acao-icone btn-editar" title="Editar Atividade">
+           <i class='bx bxs-pencil'></i></a>
         <a href="#" class="btn-acao-icone btn-excluir" data-id="${agendamento.id}" title="Excluir Atividade">
-          <i class='bx bx-trash-alt'></i></a>
+           <i class='bx bx-trash-alt'></i></a>
       `;
 
+      // --- Participantes ---
       let participantesHTML = "Nenhum";
       if (agendamento.participantes_nomes) {
         const nomes = agendamento.participantes_nomes.split(", ");
@@ -647,6 +976,7 @@ async function iniciarPaginaAtividades() {
         participantesHTML += `</ul>`;
       }
 
+      // --- Linha Desktop (Permanece com 6 colunas, incluindo Status) ---
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${dataHoraHTML}</td>
@@ -658,6 +988,7 @@ async function iniciarPaginaAtividades() {
       `;
       tabelaBodyDesktop.appendChild(tr);
 
+      // --- Item Mobile (CORRIGIDO: Agora com 3 colunas) ---
       const li = document.createElement("li");
       li.innerHTML = `
         <div class="atividade-data-hora">
@@ -675,48 +1006,104 @@ async function iniciarPaginaAtividades() {
     tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align:center;">Nenhuma atividade agendada.</td></tr>`;
     listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhuma atividade agendada.</li>`;
   }
+
+  // --- Exclusão (Não quebra mais o menu) ---
+  const paginaAtividades = document.getElementById("pagina-atividades");
+
+  if (paginaAtividades && !paginaAtividades.dataset.listenerExcluir) {
+    paginaAtividades.dataset.listenerExcluir = "true";
+
+    paginaAtividades.addEventListener("click", async function (event) {
+      const botaoExcluir = event.target.closest(".btn-excluir");
+      if (!botaoExcluir) return;
+
+      event.preventDefault();
+      const idParaExcluir = botaoExcluir.dataset.id;
+
+      if (confirm(`Tem certeza que deseja excluir a atividade?`)) {
+        try {
+          const res = await fetch(`${API_URL}/atividades/${idParaExcluir}`, {
+            method: "DELETE",
+          });
+          if (res.ok) {
+            alert("Atividade excluída com sucesso!");
+            iniciarPaginaAtividades();
+          } else {
+            const erro = await res.json();
+            alert("Erro ao excluir: " + (erro.error || "desconhecido"));
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Erro de rede ao excluir atividade.");
+        }
+      }
+    });
+  }
 }
+
+// --- Inicialização ---
+if (document.getElementById("pagina-atividades")) {
+  iniciarPaginaAtividades();
+}
+
+// sessao relatorio   -_____________________________________________________________________________________________________
+
+/*
+  Esta função inicializa a página de Relatórios. Ela lê a lista de relatórios diários 
+  e de residentes para poder construir a tabela de registros salvos, mostrando a data, 
+  o residente, o responsável pelo registro, o medicamento e seu status. Assim como as 
+  outras, ela também cria os botões de ação e ativa a funcionalidade de exclusão.
+  */
 
 async function iniciarPaginaRelatorios() {
   const tabelaBodyDesktop = document.getElementById("lista-relatorios-body");
   const listaBodyMobile = document.getElementById("lista-relatorios-nova-body");
   if (!tabelaBodyDesktop || !listaBodyMobile) return;
 
-  const relatoriosOrdenados = mockRelatorios;
+  tabelaBodyDesktop.innerHTML =
+    '<tr><td colspan="6" style="text-align: center;">Carregando...</td></tr>';
+  listaBodyMobile.innerHTML =
+    '<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Carregando...</li>';
 
-  tabelaBodyDesktop.innerHTML = "";
-  listaBodyMobile.innerHTML = "";
+  try {
+    const response = await fetch(`${API_URL}/relatorios`);
+    if (!response.ok) throw new Error("Erro ao buscar relatórios");
 
-  if (relatoriosOrdenados.length > 0) {
-    relatoriosOrdenados.forEach((relatorio) => {
-      const nomeResidente = relatorio.residenteNome || "Não encontrado";
+    const relatoriosOrdenados = await response.json();
 
-      let dataFormatada = "N/A";
-      if (relatorio.data) {
-        const dataObj = new Date(relatorio.data + "T00:00:00");
-        if (!isNaN(dataObj.getTime())) {
-          dataFormatada = dataObj.toLocaleDateString("pt-BR");
+    tabelaBodyDesktop.innerHTML = "";
+    listaBodyMobile.innerHTML = "";
+
+    if (relatoriosOrdenados.length > 0) {
+      relatoriosOrdenados.forEach((relatorio) => {
+        const nomeResidente = relatorio.residenteNome || "Não encontrado";
+
+        let dataFormatada = "N/A";
+        if (relatorio.data) {
+          const dataObj = new Date(relatorio.data + "T00:00:00");
+          if (!isNaN(dataObj.getTime())) {
+            dataFormatada = dataObj.toLocaleDateString("pt-BR");
+          }
         }
-      }
 
-      const acoesHTML = `
-          <a href="#" class="btn-acao-icone btn-editar" title="Editar Relatório"><i class='bx bxs-pencil'></i></a>
+        const acoesHTML = `
+          <a href="cadastros/cadastro-relatorio/index.html?id=${relatorio.id}&origem=pagina-relatorios" class="btn-acao-icone btn-editar" title="Editar Relatório"><i class='bx bxs-pencil'></i></a>
           <a href="#" class="btn-acao-icone btn-excluir" data-id="${relatorio.id}" title="Excluir Relatório"><i class='bx bx-trash-alt'></i></a>
         `;
 
-      let statusHtml = relatorio.statusMedicacao || "N/A";
-      let classeStatus = "";
-      if (relatorio.statusMedicacao === "Medicado") {
-        classeStatus = "status-administrado";
-      } else if (relatorio.statusMedicacao === "Não Tomado") {
-        classeStatus = "status-nao-tomado";
-      }
-      if (classeStatus) {
-        statusHtml = `<span class="status ${classeStatus}">${relatorio.statusMedicacao}</span>`;
-      }
+        let statusHtml = relatorio.statusMedicacao || "N/A";
+        let classeStatus = "";
+        if (relatorio.statusMedicacao === "Medicado") {
+          classeStatus = "status-administrado";
+        } else if (relatorio.statusMedicacao === "Não Tomado") {
+          classeStatus = "status-nao-tomado";
+        }
+        if (classeStatus) {
+          statusHtml = `<span class="status ${classeStatus}">${relatorio.statusMedicacao}</span>`;
+        }
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
           <td>${dataFormatada}</td>
           <td>${nomeResidente}</td>
           <td>${relatorio.medicamento || "Nenhum"}</td>
@@ -724,22 +1111,66 @@ async function iniciarPaginaRelatorios() {
           <td>${statusHtml}</td>
           <td class="acoes">${acoesHTML}</td>
         `;
-      tabelaBodyDesktop.appendChild(tr);
+        tabelaBodyDesktop.appendChild(tr);
 
-      const li = document.createElement("li");
-      li.innerHTML = `
+        const li = document.createElement("li");
+        li.innerHTML = `
           <span class="relatorio-data">${dataFormatada}</span>
           <span class="relatorio-residente">${nomeResidente}</span>
           <div class="relatorio-acoes">${acoesHTML}</div>
         `;
-      listaBodyMobile.appendChild(li);
-    });
-  } else {
-    tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align: center;">Nenhum relatório cadastrado.</td></tr>`;
-    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum relatório cadastrado.</li>`;
+        listaBodyMobile.appendChild(li);
+      });
+    } else {
+      tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align: center;">Nenhum relatório cadastrado.</td></tr>`;
+      listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Nenhum relatório cadastrado.</li>`;
+    }
+
+    const paginaRelatorios = document.getElementById("pagina-relatorios");
+    if (paginaRelatorios && !paginaRelatorios.dataset.listenerExcluir) {
+      paginaRelatorios.dataset.listenerExcluir = "true";
+      paginaRelatorios.addEventListener("click", async function (event) {
+        const botaoExcluir = event.target.closest(".btn-excluir");
+        if (!botaoExcluir) return;
+
+        event.preventDefault();
+        const idParaExcluir = botaoExcluir.dataset.id;
+
+        if (confirm("Tem certeza que deseja excluir este relatório?")) {
+          try {
+            const deleteResponse = await fetch(
+              `${API_URL}/relatorios/${idParaExcluir}`,
+              { method: "DELETE" }
+            );
+
+            if (deleteResponse.ok) {
+              alert("Relatório excluído com sucesso!");
+              iniciarPaginaRelatorios();
+            } else {
+              const erro = await deleteResponse.json();
+              alert("Erro ao excluir: " + (erro.error || "desconhecido"));
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Erro de rede ao excluir o relatório.");
+          }
+        }
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    tabelaBodyDesktop.innerHTML = `<tr><td colspan="6" style="text-align: center;">Erro ao carregar relatórios.</td></tr>`;
+    listaBodyMobile.innerHTML = `<li style="display: block; text-align: center; background: none; color: var(--secondary-color);">Erro ao carregar relatórios.</li>`;
   }
 }
 
+// sessao adm  -_____________________________________________________________________________________________________
+/*
+  Esta função inicializa a página de Administração. No momento, sua única 
+  funcionalidade é ativar o botão "Sair da conta". Ao ser clicado, ele pede 
+  confirmação, limpa toda a memória da sessão (desconectando o usuário) e 
+  o redireciona para a página de login.
+*/
 function iniciarPaginaAdm() {
   const botaoLoginLogout = document.getElementById("btn-logout");
   if (!botaoLoginLogout) return;
@@ -747,7 +1178,17 @@ function iniciarPaginaAdm() {
   const handleLogout = async function (event) {
     event.preventDefault();
     if (confirm("Tem certeza que deseja sair da sua conta?")) {
+      try {
+        await fetch("http://localhost:3000/api/logout", {
+          method: "POST",
+          credentials: "include",
+        });
+      } catch (err) {
+        console.error("Erro ao fazer logout no backend:", err);
+      }
+
       localStorage.clear();
+
       window.location.href = "login/index.html";
     }
   };
@@ -757,6 +1198,8 @@ function iniciarPaginaAdm() {
   botaoLoginLogout.removeEventListener("click", handleLogout);
   botaoLoginLogout.addEventListener("click", handleLogout);
 }
+
+// NOVO: FUNÇÃO PARA GERAR COR DO AVATAR
 
 function getAvatarColor(nome, sexo) {
   const coresMasculinas = [
@@ -790,16 +1233,20 @@ function getAvatarColor(nome, sexo) {
   return paleta[index];
 }
 
+// sessao adm - PERFIL DO USUÁRIO _______________________________________________________________
 function carregarInfoPerfilUsuario() {
   const spanInicial = document.getElementById("perfil-inicial");
   const pNomeCompleto = document.getElementById("perfil-nome-completo");
+
   const avatarCircle = document.querySelector(".perfil-avatar");
 
   if (!spanInicial || !pNomeCompleto || !avatarCircle) return;
+
   const usuarioJSON = localStorage.getItem("usuarioLogado");
 
   if (usuarioJSON) {
     const usuario = JSON.parse(usuarioJSON);
+
     let inicial = "?";
     let nomeCompleto = "Usuário";
     let nomeParaHash = "Usuário";
@@ -821,6 +1268,7 @@ function carregarInfoPerfilUsuario() {
 
     spanInicial.textContent = inicial;
     pNomeCompleto.textContent = nomeCompleto;
+
     const corAvatar = getAvatarColor(nomeParaHash, sexoUsuario);
     avatarCircle.style.backgroundColor = corAvatar;
   } else {
@@ -830,6 +1278,15 @@ function carregarInfoPerfilUsuario() {
   }
 }
 
+// document da pagina principal ___________________________________________________________________________________
+/*
+  Este é o bloco de código mais importante para a navegação do site. Ele é executado 
+  quando a página principal carrega. Sua principal responsabilidade é gerenciar a 
+  troca entre as diferentes "páginas" (Dashboard, Residentes, etc.) do sistema, 
+  criando o efeito de transição e ajustando a altura do container. Ele também 
+  chama todas as funções 'iniciarPagina...' para garantir que cada seção seja 
+  carregada com seus dados corretos.
+*/
 document.addEventListener("DOMContentLoaded", function () {
   aplicarControleDeAcesso();
   const containerGeral = document.querySelector(".container-geral");
@@ -877,6 +1334,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  //CÓDIGO PARA O MENU FLYOUT ____________________________________________________________________________________________
   const btnMenuFlyout = document.getElementById("btn-menu-flyout");
   const flyoutContainer = document.querySelector(".flyout-container");
 
@@ -945,6 +1403,7 @@ document.addEventListener("DOMContentLoaded", function () {
     popularMenuFlyout();
   }
 
+  // --- TEXTO DE BOAS-VINDAS NO RESPONSIVO _________________________________________________________________________
   const bemVindoEl = document.querySelector("#pagina-dashboard .bem-vindo");
   const containerOriginal = document.querySelector("#pagina-dashboard");
   const bodyEl = document.body;
@@ -964,6 +1423,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   handleLayoutChange(mobileMediaQuery);
   mobileMediaQuery.addEventListener("change", handleLayoutChange);
+
+  // iniciacao __________________________________________________________________________________________________
 
   carregarInfoPerfilUsuario();
   iniciarPaginaDashboard();
@@ -995,6 +1456,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "grid"
   );
 
+  // --- Buscas para a página de RELATÓRIOS ---
   configurarBusca("busca-relatorios-desktop", "lista-relatorios-body", "tr");
   configurarBusca(
     "busca-relatorios-mobile",
@@ -1003,6 +1465,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "grid"
   );
 
+  // --- Buscas para a página de ATIVIDADES ---
   configurarBusca("busca-atividades-desktop", "lista-atividades-body", "tr");
   configurarBusca(
     "busca-atividades-mobile",
@@ -1011,6 +1474,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "grid"
   );
 
+  // --- Buscas para a página de MEDICAMENTOS ---
   configurarBusca(
     "busca-medicamentos-desktop",
     "lista-medicamentos-body",
