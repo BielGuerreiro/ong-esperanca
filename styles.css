@@ -1130,11 +1130,13 @@ input:checked + .slider:before {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     margin-bottom: 15px;
   }
+
   .search-bar-container i {
     font-size: 22px;
     color: var(--secondary-color);
     margin-right: 10px;
   }
+
   .search-bar-container input {
     border: none;
     outline: none;
@@ -1142,6 +1144,7 @@ input:checked + .slider:before {
     font-size: 16px;
     background: none;
   }
+
   .search-bar-container input::placeholder {
     color: var(--secondary-color);
   }
@@ -1149,12 +1152,16 @@ input:checked + .slider:before {
   .btn-adicionar-mobile {
     display: flex;
     align-items: center;
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+    white-space: normal;
+    text-align: center;
     background-color: white;
     padding: 15px;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     color: #333;
-    font-weight: 500;
     font-size: 16px;
     margin-bottom: 30px;
   }
