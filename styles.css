@@ -1021,9 +1021,6 @@ input:checked + .slider:before {
   }
 
   /* parte do container das paginas ________________________________________________________________________________*/
-  html {
-    overflow-y: auto;
-  }
 
   body {
     position: relative;
@@ -1056,6 +1053,14 @@ input:checked + .slider:before {
     /* Remove o padding-bottom daqui e deixa o BODY cuidar disso */
     padding: 20px 15px 20px 15px;
     box-sizing: border-box;
+  }
+
+  .lista-residentes-nova,
+  .lista-funcionarios-nova,
+  .lista-medicamentos-nova,
+  .lista-atividades-nova,
+  .lista-relatorios-nova {
+    padding-bottom: 120px;
   }
 
   body::before {
