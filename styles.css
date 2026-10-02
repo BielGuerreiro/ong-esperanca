@@ -1665,3 +1665,355 @@ body.role-gerente .menu-header .acesso-gerente {
 body.role-gerente .btn-excluir {
   display: inline-flex !important;
 }
+
+/* Estilos da página pública inicial */
+.landing-page {
+  min-height: 100vh;
+  padding-bottom: 0;
+  background: #f5f5f5;
+  color: #212121;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.6;
+}
+
+.landing-page *,
+.landing-page *::before,
+.landing-page *::after {
+  box-sizing: border-box;
+}
+
+.landing-page,
+.landing-page * {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.landing-page header {
+  padding: 30px 20px;
+  color: #fff;
+  background: #2e7d32;
+  text-align: center;
+}
+
+.landing-page header h1 {
+  margin-bottom: 8px;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 2rem;
+}
+
+.landing-page header p {
+  margin-bottom: 20px;
+}
+
+.landing-page .landing-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.landing-page .landing-brand > div {
+  min-width: 0;
+}
+
+.landing-page .landing-brand .brand-mark {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50% 50% 50% 12px;
+  color: #2e7d32;
+  background: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.landing-page nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+
+.landing-page nav a {
+  width: auto;
+  padding: 8px 12px;
+  border-radius: 5px;
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.landing-page nav a:hover {
+  background: #1b5e20;
+}
+
+.landing-page nav a:focus-visible,
+.landing-page .botao:focus-visible {
+  outline: 3px solid #f9a825;
+  outline-offset: 3px;
+}
+
+.landing-page main {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+.landing-page section {
+  margin-bottom: 40px;
+}
+
+.landing-page section h2 {
+  margin-bottom: 15px;
+  color: #2e7d32;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.5rem;
+}
+
+.landing-page section p {
+  margin-bottom: 15px;
+}
+
+.landing-page .apresentacao {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 5rem);
+}
+
+.landing-page .apresentacao h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.landing-page .apresentacao img {
+  display: block;
+  width: 100%;
+  max-width: 900px;
+  height: auto;
+  margin: 20px auto 0;
+  border-radius: 10px;
+}
+
+.landing-page .eyebrow {
+  margin: 0 0 0.8rem;
+  color: #2e7d32;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.landing-page .landing-section > .section-heading {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.landing-page .landing-section > .section-heading h2 {
+  margin-bottom: 0;
+}
+
+.landing-page .cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.landing-page .card {
+  flex: 1 1 300px;
+  padding: 24px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 12%);
+}
+
+.landing-page .missao-card {
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.landing-page .card h3 {
+  margin: 12px 0;
+  color: #2e7d32;
+}
+
+.landing-page .card p {
+  color: #444;
+}
+
+.landing-page .card:hover {
+  box-shadow: 0 4px 14px rgb(0 0 0 / 18%);
+}
+
+.landing-page .badge {
+  display: inline-block;
+  margin-bottom: 1rem;
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: #fff;
+  background: #2e7d32;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.landing-page .botao {
+  display: inline-block;
+  margin-top: 0.6rem;
+  padding: 10px 18px;
+  border-radius: 6px;
+  color: #fff;
+  background: #2e7d32;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.landing-page .botao:hover {
+  background: #1b5e20;
+  box-shadow: 0 3px 8px rgb(0 0 0 / 20%);
+}
+
+.landing-page .botao:active {
+  transform: scale(0.98);
+}
+
+.landing-page .alerta {
+  margin-top: 15px;
+  padding: 18px;
+  border-radius: 8px;
+}
+
+.landing-page .alerta p {
+  margin: 5px 0 0;
+}
+
+.landing-page .sucesso {
+  border: 1px solid #81c784;
+  color: #2e7d32;
+  background: #e8f5e9;
+}
+
+.landing-page .contato {
+  padding: 20px;
+  border-left: 5px solid #2e7d32;
+  border-radius: 8px;
+  background: #fff;
+  font-style: normal;
+}
+
+.landing-page .contato p {
+  margin-bottom: 8px;
+}
+
+.landing-page .contato a {
+  color: #1b5e20;
+}
+
+.landing-page .toast {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1000;
+  max-width: 320px;
+  padding: 15px 20px;
+  border-radius: 8px;
+  color: #fff;
+  background: #2e7d32;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 25%);
+}
+
+.landing-page footer {
+  padding: 25px 20px;
+  color: #fff;
+  background: #212121;
+  text-align: center;
+}
+
+.landing-page footer p {
+  margin-bottom: 0;
+}
+
+@media (max-width: 992px) {
+  .landing-page main {
+    padding: 25px 18px;
+  }
+
+  .landing-page .cards {
+    gap: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .landing-page header {
+    padding: 25px 15px;
+  }
+
+  .landing-page header h1 {
+    font-size: 1.7rem;
+  }
+
+  .landing-page nav {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .landing-page nav a {
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+  }
+
+  .landing-page .apresentacao {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-page .cards {
+    flex-direction: column;
+  }
+
+  .landing-page .card {
+    width: 100%;
+  }
+
+  .landing-page .toast {
+    right: 20px;
+    bottom: 15px;
+    left: 20px;
+    max-width: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .landing-page main {
+    padding: 20px 15px;
+  }
+
+  .landing-page section h2 {
+    font-size: 1.3rem;
+  }
+
+  .landing-page .card {
+    padding: 20px;
+  }
+
+  .landing-page .botao {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-page header h1 {
+    font-size: 1.5rem;
+  }
+
+  .landing-page header p,
+  .landing-page .toast {
+    font-size: 0.9rem;
+  }
+}

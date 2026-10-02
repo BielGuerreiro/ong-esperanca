@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Cadastre-se para receber notícias e participar das ações da ONG Esperança."
+    />
+    <title>Participe | ONG Esperança</title>
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="ONG Esperança — página inicial">
+        <span class="brand-mark" aria-hidden="true">OE</span>
+        <span>ONG Esperança</span>
+      </a>
+      <nav class="site-nav" aria-label="Navegação principal">
+        <a href="index.html">Início</a>
+        <a href="sobre.html">Sobre</a>
+        <a href="projetos.html">Projetos</a>
+        <a href="contato.html">Contato</a>
+        <a class="nav-cta" href="cadastro.html" aria-current="page">Participe</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page-intro" aria-labelledby="page-title">
+        <p class="eyebrow">Faça parte da mudança</p>
+        <h1 id="page-title">Faça parte da nossa rede de apoio</h1>
+        <p class="intro-lead">
+          Cadastre-se para receber notícias, participar de projetos e contribuir com ações
+          de impacto social.
+        </p>
+      </section>
+
+      <section class="section registration-section" aria-label="Cadastro para participação voluntária">
+        <article>
+          <form class="form-card registration-form" method="post">
+          <fieldset>
+            <legend>Dados pessoais</legend>
+            <div class="form-grid">
+              <div class="form-field form-field-full">
+                <label for="nome">Nome completo</label>
+                <input id="nome" name="nome" autocomplete="name" required />
+              </div>
+              <div class="form-field">
+                <label for="email">E-mail</label>
+                <input id="email" name="email" type="email" autocomplete="email" required />
+              </div>
+              <div class="form-field">
+                <label for="nascimento">Data de nascimento</label>
+                <input id="nascimento" name="nascimento" type="date" autocomplete="bday" required />
+              </div>
+              <div class="form-field">
+                <label for="cpf">CPF</label>
+                <input
+                  id="cpf"
+                  name="cpf"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  placeholder="000.000.000-00"
+                  pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
+                  title="Informe o CPF no formato 000.000.000-00"
+                  required
+                />
+              </div>
+              <div class="form-field">
+                <label for="telefone">Telefone</label>
+                <input
+                  id="telefone"
+                  name="telefone"
+                  type="tel"
+                  autocomplete="tel"
+                  placeholder="(00) 00000-0000"
+                  pattern="\(\d{2}\) \d{4,5}-\d{4}"
+                  title="Informe o telefone no formato (00) 00000-0000"
+                  required
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Endereço</legend>
+            <div class="form-grid">
+              <div class="form-field form-field-full">
+                <label for="endereco">Endereço</label>
+                <input id="endereco" name="endereco" autocomplete="street-address" required />
+              </div>
+              <div class="form-field">
+                <label for="cidade">Cidade</label>
+                <input id="cidade" name="cidade" autocomplete="address-level2" required />
+              </div>
+              <div class="form-field">
+                <label for="estado">Estado</label>
+                <select id="estado" name="estado" autocomplete="address-level1" required>
+                  <option value="">Selecione</option>
+                  <option value="AC">Acre</option>
+                  <option value="AL">Alagoas</option>
+                  <option value="AP">Amapá</option>
+                  <option value="AM">Amazonas</option>
+                  <option value="BA">Bahia</option>
+                  <option value="CE">Ceará</option>
+                  <option value="DF">Distrito Federal</option>
+                  <option value="ES">Espírito Santo</option>
+                  <option value="GO">Goiás</option>
+                  <option value="MA">Maranhão</option>
+                  <option value="MT">Mato Grosso</option>
+                  <option value="MS">Mato Grosso do Sul</option>
+                  <option value="MG">Minas Gerais</option>
+                  <option value="PA">Pará</option>
+                  <option value="PB">Paraíba</option>
+                  <option value="PR">Paraná</option>
+                  <option value="PE">Pernambuco</option>
+                  <option value="PI">Piauí</option>
+                  <option value="RJ">Rio de Janeiro</option>
+                  <option value="RN">Rio Grande do Norte</option>
+                  <option value="RS">Rio Grande do Sul</option>
+                  <option value="RO">Rondônia</option>
+                  <option value="RR">Roraima</option>
+                  <option value="SC">Santa Catarina</option>
+                  <option value="SP">São Paulo</option>
+                  <option value="SE">Sergipe</option>
+                  <option value="TO">Tocantins</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="cep">CEP</label>
+                <input
+                  id="cep"
+                  name="cep"
+                  inputmode="numeric"
+                  autocomplete="postal-code"
+                  placeholder="00000-000"
+                  pattern="\d{5}-\d{3}"
+                  title="Informe o CEP no formato 00000-000"
+                  required
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Participação voluntária</legend>
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="area">Área de interesse</label>
+                <select id="area" name="area" required>
+                  <option value="">Selecione uma área</option>
+                  <option value="acolhimento">Alimentação e acolhimento</option>
+                  <option value="educacao">Educação e oportunidades</option>
+                  <option value="saude">Saúde e bem-estar</option>
+                  <option value="comunidade">Comunidade e solidariedade</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="tipo-apoio">Tipo de apoio</label>
+                <select id="tipo-apoio" name="tipo-apoio" required>
+                  <option value="">Selecione uma opção</option>
+                  <option value="voluntario">Voluntário</option>
+                  <option value="doador">Doador</option>
+                  <option value="parceiro">Parceiro</option>
+                  <option value="beneficiario">Beneficiário</option>
+                </select>
+              </div>
+              <div class="form-field form-field-full">
+                <label for="disponibilidade">Disponibilidade</label>
+                <input
+                  id="disponibilidade"
+                  name="disponibilidade"
+                  placeholder="Ex.: sábados pela manhã"
+                  required
+                />
+              </div>
+              <div class="form-field form-field-full">
+                <label for="mensagem">Mensagem</label>
+                <textarea id="mensagem" name="mensagem" rows="4" required></textarea>
+              </div>
+            </div>
+          </fieldset>
+
+          <label class="checkbox-field" for="novidades">
+            <input id="novidades" name="novidades" type="checkbox" required />
+            <span>Aceito receber novidades da ONG e acompanhar as campanhas.</span>
+          </label>
+            <button class="button button-primary" type="submit">Cadastrar</button>
+          </form>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand brand-footer" href="index.html">
+        <span class="brand-mark" aria-hidden="true">OE</span>
+        <span>ONG Esperança</span>
+      </a>
+      <p>Com acolhimento, educação e esperança, construímos um futuro mais digno.</p>
+      <p class="copyright">© 2026 ONG Esperança. Todos os direitos reservados.</p>
+    </footer>
+  </body>
+</html>

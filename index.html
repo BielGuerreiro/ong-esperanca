@@ -1,544 +1,124 @@
 <!doctype html>
-<html lang="pt-br">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Acolhe +</title>
-
-    <link
-      href="https://cdn.boxicons.com/fonts/basic/boxicons.min.css"
-      rel="stylesheet"
+    <meta
+      name="description"
+      content="A ONG Esperança transforma vidas por meio da solidariedade, inclusão e apoio à comunidade."
     />
-
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-
-    <link rel="shortcut icon" href="img/Logos.png" type="image/x-icon" />
-
+    <title>ONG Esperança</title>
     <link rel="stylesheet" href="styles.css" />
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script src="auth-guard.js" defer></script>
   </head>
-  <body>
-    <header class="header1">
-      <div class="logo-header">
-        <img src="img/Logos.png" alt="" />
+  <body class="landing-page">
+    <header class="landing-header">
+      <div class="landing-brand">
+        <span class="brand-mark" aria-hidden="true">OE</span>
+        <div>
+          <h1>ONG Esperança</h1>
+          <p>Transformando vidas por meio da solidariedade e da inclusão.</p>
+        </div>
       </div>
-
-      <h1>Sistema de gestão e automação de controle</h1>
+      <nav class="landing-nav" aria-label="Navegação principal">
+        <a href="index.html" aria-current="page">Início</a>
+        <a href="sobre.html">Sobre nós</a>
+        <a href="projetos.html">Projetos</a>
+        <a href="contato.html">Contato</a>
+        <a href="cadastro.html">Cadastro</a>
+      </nav>
     </header>
 
-    <header class="header2">
-      <div class="menu-header">
-        <ul>
-          <li
-            data-pagina="pagina-dashboard"
-            class="menu-ativo item-menu-mobile item-menu-desktop"
-          >
-            <i class="bx bx-home"></i>
-            <span class="texto-lado">Dashboard</span>
-          </li>
-
-          <li
-            data-pagina="pagina-residentes"
-            class="item-menu-mobile item-menu-desktop acesso-gerente"
-          >
-            <i class="bx bx-user"></i>
-            <span class="texto-lado">Residentes</span>
-          </li>
-
-          <li
-            data-pagina="pagina-funcionarios"
-            class="item-menu-desktop acesso-gerente"
-          >
-            <i class="bx bx-user"></i>
-            <span class="texto-lado">Funcionários</span>
-          </li>
-
-          <li data-pagina="pagina-atividades" class="item-menu-desktop">
-            <i class="bx bx-walking"></i>
-            <span class="texto-lado">Atividades</span>
-          </li>
-
-          <li data-pagina="pagina-medicamentos" class="item-menu-desktop">
-            <i class="bx bx-pill"></i>
-            <span class="texto-lado">Medicamentos</span>
-          </li>
-
-          <li
-            data-pagina="pagina-relatorios"
-            class="item-menu-mobile item-menu-desktop"
-          >
-            <i class="bx bx-clipboard"></i
-            ><span class="texto-lado">Relatórios</span>
-          </li>
-
-          <li data-pagina="pagina-adm" class="item-menu-desktop">
-            <i class="bx bx-cog"></i
-            ><span class="texto-lado">Administração</span>
-          </li>
-
-          <li id="btn-menu-flyout" class="item-menu-mobile">
-            <i class="bx bx-menu"></i><span class="texto-lado">Menu</span>
-          </li>
-        </ul>
-      </div>
-    </header>
-
-    <main class="container-geral">
-      <div class="paginas-wrapper">
-        <!-- comeco sessao dashborad  ______________________________________________________________________________ -->
-        <div id="pagina-dashboard" class="pagina-conteudo">
-          <div class="bem-vindo">
-            <h2 id="mensagem-saudacao"></h2>
-          </div>
-
-          <div class="boxes-container">
-            <div class="box">
-              <h3 id="contador-residentes">8</h3>
-              <p>Residentes</p>
-            </div>
-
-            <div class="box">
-              <h3 id="contador-relatorios-hoje">7</h3>
-              <p>Relatórios Criados Hoje</p>
-            </div>
-
-            <div class="box">
-              <h3 id="contador-atividades-hoje">3</h3>
-              <p>Atividades Programadas Pra Hoje</p>
-            </div>
-          </div>
-
-          <div class="ficha-container-dashboard">
-            <div class="ficha">
-              <div class="ficha-header">
-                <h2>Análise Individual de Residentes</h2>
-              </div>
-
-              <div class="dashboard-container">
-                <div class="lista-residentes-dashboard">
-                  <ul id="residentes-chart-list">
-                    <li data-id="1">Ana Silva</li>
-                    <li data-id="2">Carlos Oliveira</li>
-                    <li data-id="3">Maria Souza</li>
-                    <li data-id="4">João Pereira</li>
-                    <li data-id="5">Teresa Lima</li>
-                    <li data-id="6">Antônio Gomes</li>
-                    <li data-id="7">Margarida Santos</li>
-                    <li data-id="8">Francisco Alves</li>
-                  </ul>
-                </div>
-
-                <div class="separador-vertical"></div>
-
-                <div class="grafico-dashboard">
-                  <div id="grafico-placeholder">
-                    <i class="bx bx-line-chart"></i>
-                    <p>
-                      Selecione um residente na lista para ver suas informações.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+    <main class="landing-main">
+      <section class="apresentacao" aria-labelledby="apresentacao-titulo">
+        <div>
+          <p class="eyebrow">Acolher, incluir, transformar</p>
+          <h2 id="apresentacao-titulo">Quem Somos</h2>
+          <p>
+            A ONG Esperança atua no apoio a pessoas em situação de vulnerabilidade social,
+            desenvolvendo projetos de inclusão, educação e assistência à comunidade.
+          </p>
+          <a class="botao" href="sobre.html">Conheça nossa história</a>
         </div>
+        <img
+          src="imagens/ong-esperanca.jpg"
+          alt="Voluntários da ONG Esperança realizando uma ação social"
+          width="1200"
+          height="800"
+        />
+      </section>
 
-        <!-- final sessao dashborad ______________________________________________________________________________ -->
-
-        <!-- comeco sessao residente ______________________________________________________________________________ -->
-        <div id="pagina-residentes" class="pagina-conteudo">
-          <div class="titulo">
-            <h2>Ficha de Residentes</h2>
-          </div>
-
-          <div class="residentes-desktop-view">
-            <div class="ficha-container">
-              <div class="ficha">
-                <div class="ficha-header">
-                  <h2>Lista de Residentes</h2>
-                  <a
-                    href="cadastros/cadastro-residente/index.html?origem=pagina-residentes"
-                    class="btn-nova-ficha item-gerente"
-                    >Nova Residente +</a
-                  >
-                </div>
-                <div class="lista-residentes-container">
-                  <table class="tabela-residentes">
-                    <thead>
-                      <tr>
-                        <th>Nome</th>
-                        <th>Idade</th>
-                        <th>Sexo</th>
-                        <th>Categoria</th>
-                        <th>Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody id="lista-residentes-body"></tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="residentes-mobile-view">
-            <div class="search-bar-container">
-              <i class="bx bx-search"></i>
-              <input
-                type="search"
-                id="busca-residentes-mobile"
-                placeholder="Procure por um residente"
-              />
-            </div>
-
-            <a
-              href="cadastros/cadastro-residente/index.html?origem=pagina-residentes"
-              class="btn-adicionar-mobile item-gerente"
-            >
-              <i class="bx bx-user-plus bx-flip-horizontal"></i>
-              <span>Adicionar residente</span>
-            </a>
-
-            <div class="lista-residentes-nova">
-              <div class="lista-header-nova">
-                <span>Nome</span>
-                <span>Idade</span>
-                <span>Ações</span>
-              </div>
-              <ul id="lista-residentes-nova-body"></ul>
-            </div>
-          </div>
+      <section class="landing-section" aria-labelledby="missao-titulo">
+        <div class="section-heading">
+          <p class="eyebrow">Nosso propósito</p>
+          <h2 id="missao-titulo">Nossa Missão</h2>
         </div>
-        <!-- Final sessao residente _______________________________________________________________________ -->
+        <article class="card missao-card">
+          <span class="badge">Projeto ativo</span>
+          <h3>Transformar através da solidariedade</h3>
+          <p>
+            Nosso objetivo é promover oportunidades e contribuir para uma sociedade mais
+            justa, solidária e inclusiva.
+          </p>
+        </article>
+      </section>
 
-        <!-- comeco sessao funcionario  ______________________________________________________________________________ -->
-        <div id="pagina-funcionarios" class="pagina-conteudo">
-          <div class="titulo">
-            <h2>Ficha de Funcionários</h2>
-          </div>
-          <div class="ficha-container">
-            <div class="ficha">
-              <div class="ficha-header">
-                <h2>Quadro de Funcionários</h2>
-                <a
-                  href="cadastros/cadastro-funcionario/index.html?origem=pagina-funcionarios"
-                  class="btn-nova-ficha item-gerente"
-                  >Novo Funcionário +</a
-                >
-              </div>
-              <div class="lista-funcionarios-container">
-                <table class="tabela-funcionarios">
-                  <thead>
-                    <tr>
-                      <th>Horário</th>
-                      <th>Nome</th>
-                      <th>Nº Registro</th>
-                      <th>Status</th>
-                      <th>Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody id="lista-funcionarios-body"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div class="funcionarios-mobile-view">
-            <div class="search-bar-container">
-              <i class="bx bx-search"></i>
-              <input
-                type="search"
-                id="busca-funcionarios-mobile"
-                placeholder="Procure por um funcionário"
-              />
-            </div>
-
-            <a
-              href="cadastros/cadastro-funcionario/index.html?origem=pagina-funcionarios"
-              class="btn-adicionar-mobile item-gerente"
-            >
-              <i class="bx bx-user-plus bx-flip-horizontal"></i>
-              <span>Adicionar funcionário</span>
-            </a>
-
-            <div class="lista-funcionarios-nova">
-              <div class="lista-header-funcionarios">
-                <span>Nome</span>
-                <span>Status</span>
-                <span>Ações</span>
-              </div>
-              <ul id="lista-funcionarios-nova-body"></ul>
-            </div>
-          </div>
+      <section class="landing-section" aria-labelledby="ajuda-titulo">
+        <div class="section-heading">
+          <p class="eyebrow">Faça a diferença</p>
+          <h2 id="ajuda-titulo">Como Você Pode Ajudar</h2>
         </div>
-
-        <!-- Final sessao funcionario  _______________________________________________________________________ -->
-
-        <!-- comeco sessao medicamento  ______________________________________________________________________________ -->
-
-        <div id="pagina-medicamentos" class="pagina-conteudo">
-          <div class="titulo">
-            <h2>Controle de Medicação</h2>
-          </div>
-
-          <div class="ficha-container">
-            <div class="ficha">
-              <div class="ficha-header">
-                <h2>Agendamentos de Hoje</h2>
-                <a
-                  href="cadastros/cadastro-medicamento/index.html?origem=pagina-medicamentos"
-                  class="btn-nova-ficha item-gerente"
-                  >Registrar Novo Medicamento +</a
-                >
-              </div>
-              <div class="lista-residentes-container">
-                <table class="tabela-medicamentos">
-                  <thead>
-                    <tr>
-                      <th>Horário</th>
-                      <th>Residente</th>
-                      <th>Medicamento</th>
-                      <th>Dosagem</th>
-                      <th>Tipo/Forma</th>
-                      <th>Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody id="lista-medicamentos-body"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div class="medicamentos-mobile-view">
-            <div class="search-bar-container">
-              <i class="bx bx-search"></i>
-              <input
-                type="search"
-                id="busca-medicamentos-mobile"
-                placeholder="Procure por um medicamento"
-              />
-            </div>
-
-            <a
-              href="cadastros/cadastro-medicamento/index.html?origem=pagina-medicamentos"
-              class="btn-adicionar-mobile item-gerente"
-            >
-              <i class="bx bx-pill"></i>
-              <span>Registrar Medicamento</span>
-            </a>
-
-            <div class="lista-medicamentos-nova">
-              <div class="lista-header-medicamentos">
-                <span>Residente</span>
-                <span>Medicamento</span>
-                <span>Ações</span>
-              </div>
-              <ul id="lista-medicamentos-nova-body"></ul>
-            </div>
-          </div>
+        <div class="cards">
+          <article class="card">
+            <span class="badge">Doação</span>
+            <h3>Faça uma contribuição</h3>
+            <p>
+              Sua contribuição ajuda a manter nossos projetos e ampliar o atendimento às
+              pessoas que precisam.
+            </p>
+            <a class="botao" href="contato.html">Saiba como contribuir</a>
+          </article>
+          <article class="card">
+            <span class="badge">Voluntariado</span>
+            <h3>Seja voluntário</h3>
+            <p>
+              Faça parte da nossa equipe oferecendo seu tempo e suas habilidades para
+              ajudar a comunidade.
+            </p>
+            <a class="botao" href="cadastro.html">Quero ser voluntário</a>
+          </article>
         </div>
+      </section>
 
-        <!-- final sessao medicamento ______________________________________________________________________________ -->
-
-        <!-- comeco sessao atividade  ______________________________________________________________________________ -->
-
-        <div id="pagina-atividades" class="pagina-conteudo">
-          <div class="titulo">
-            <h2>Agenda de Atividades</h2>
-          </div>
-          <div class="ficha-container">
-            <div class="ficha">
-              <div class="ficha-header">
-                <h2>Próximas Atividades</h2>
-                <a
-                  href="cadastros/cadastro-atividade/index.html?origem=pagina-atividades"
-                  class="btn-nova-ficha"
-                  >Nova Atividade +</a
-                >
-              </div>
-              <div class="lista-residentes-container">
-                <table class="tabela-atividades">
-                  <thead>
-                    <tr>
-                      <th>Data / Horário</th>
-                      <th>Participantes</th>
-                      <th>Atividade</th>
-                      <th>Duração</th>
-                      <th>Status</th>
-                      <th>Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody id="lista-atividades-body"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div class="atividades-mobile-view">
-            <div class="search-bar-container">
-              <i class="bx bx-search"></i>
-              <input
-                type="search"
-                id="busca-atividades-mobile"
-                placeholder="Procure por uma atividade"
-              />
-            </div>
-
-            <a
-              href="cadastros/cadastro-atividade/index.html?origem=pagina-atividades"
-              class="btn-adicionar-mobile item-gerente"
-            >
-              <i class="bx bx-calendar-plus"></i>
-              <span>Adicionar Atividade</span>
-            </a>
-
-            <div class="lista-atividades-nova">
-              <div class="lista-header-atividades">
-                <span>Data/Hora</span>
-                <span>Atividade</span>
-                <span>Ações</span>
-              </div>
-              <ul id="lista-atividades-nova-body"></ul>
-            </div>
-          </div>
+      <section class="landing-section" aria-labelledby="informacoes-titulo">
+        <div class="section-heading">
+          <p class="eyebrow">Juntos fazemos mais</p>
+          <h2 id="informacoes-titulo">Informações</h2>
         </div>
-
-        <!-- final sessao atividade ______________________________________________________________________________ -->
-
-        <!-- comeco sessao relatorio  ______________________________________________________________________________ -->
-
-        <div id="pagina-relatorios" class="pagina-conteudo">
-          <div class="titulo">
-            <h2>Relatórios Diários</h2>
-          </div>
-
-          <div class="ficha-container">
-            <div class="ficha">
-              <div class="ficha-header">
-                <h2>Registros Salvos</h2>
-                <a
-                  href="cadastros/cadastro-relatorio/index.html?origem=pagina-relatorios"
-                  class="btn-nova-ficha"
-                  >Novo Relatório +</a
-                >
-              </div>
-              <div class="lista-residentes-container">
-                <table class="tabela-relatorios">
-                  <thead>
-                    <tr>
-                      <th>Data</th>
-                      <th>Residente</th>
-                      <th>Medicamento</th>
-                      <th>Responsável pelo Registro</th>
-                      <th>Status Medicação</th>
-                      <th>Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody id="lista-relatorios-body"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div class="relatorios-mobile-view">
-            <div class="search-bar-container">
-              <i class="bx bx-search"></i>
-              <input
-                type="search"
-                id="busca-relatorios-mobile"
-                placeholder="Procure por data ou residente"
-              />
-            </div>
-
-            <a
-              href="cadastros/cadastro-relatorio/index.html?origem=pagina-relatorios"
-              class="btn-adicionar-mobile item-gerente"
-            >
-              <i class="bx bx-clipboard-plus"></i>
-              <span>Adicionar relatório</span>
-            </a>
-
-            <div class="lista-relatorios-nova">
-              <div class="lista-header-relatorios">
-                <span>Data</span>
-                <span>Residente</span>
-                <span>Ações</span>
-              </div>
-              <ul id="lista-relatorios-nova-body"></ul>
-            </div>
-          </div>
+        <div class="alerta sucesso" role="status">
+          <strong>Obrigado por apoiar a ONG Esperança!</strong>
+          <p>Sua participação ajuda a transformar vidas.</p>
         </div>
-        <!-- final sessao relatorio ______________________________________________________________________________ -->
+      </section>
 
-        <!-- comeco sessao adm  ______________________________________________________________________________ -->
-
-        <div id="pagina-adm" class="pagina-conteudo">
-          <div class="configuracoes-container">
-            <div class="perfil-usuario-container">
-              <div class="perfil-avatar">
-                <span id="perfil-inicial"></span>
-              </div>
-              <p class="perfil-nome" id="perfil-nome-completo"></p>
-            </div>
-
-            <h2>Configurações</h2>
-
-            <div class="configuracoes-opcoes">
-              <a href="estoque/index.html" class="opcao-config item-gerente">
-                <i class="bx bx-pill"></i>
-                <span>Estoque</span>
-              </a>
-
-              <div class="opcao-config opcao-dark-mode">
-                <i class="bx bx-moon"></i>
-                <span id="dark-mode-text">Modo Escuro</span>
-                <label class="switch">
-                  <input type="checkbox" id="dark-mode-toggle" />
-                  <span class="slider round"></span>
-                </label>
-              </div>
-
-              <a href="redefinir-senha/index.html" class="opcao-config">
-                <i class="bx bx-lock"></i>
-                <span>Alterar Senha</span>
-              </a>
-
-              <a
-                href="login/index.html"
-                id="btn-logout"
-                class="opcao-config opcao-logout"
-              >
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>Sair da conta</span>
-              </a>
-            </div>
-          </div>
+      <section class="landing-section contact-section" aria-labelledby="contato-titulo">
+        <div class="section-heading">
+          <p class="eyebrow">Estamos aqui para ouvir</p>
+          <h2 id="contato-titulo">Entre em Contato</h2>
         </div>
-
-        <!-- final sessao adm ______________________________________________________________________________ -->
-      </div>
+        <address class="contato">
+          <p><strong>Telefone:</strong> <a href="tel:+551733333333">(17) 3333-3333</a></p>
+          <p><strong>E-mail:</strong> <a href="mailto:contato@ongesperanca.org">contato@ongesperanca.org</a></p>
+          <p><strong>Endereço:</strong> Rua da Solidariedade, 100 - Centro</p>
+        </address>
+      </section>
     </main>
 
-    <div class="flyout-container">
-      <div class="flyout-backdrop"></div>
-      <div class="flyout-content">
-        <div class="flyout-header">
-          <h2>Menu</h2>
-          <button class="flyout-close">&times;</button>
-        </div>
-        <ul id="flyout-links-container"></ul>
-      </div>
+    <div class="toast" role="status">
+      Obrigado por apoiar a ONG Esperança!
     </div>
 
-    <script src="script.js"></script>
-    <script src="theme-manager.js" defer></script>
+    <footer class="site-footer">
+      <p>© 2026 ONG Esperança. Todos os direitos reservados.</p>
+    </footer>
   </body>
 </html>
